@@ -1,0 +1,905 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { athletes as initialAthletes, type Athlete, type MerchandiseItem } from "../../lib/athletes";
+import { fetchAthletes, createAthlete as apiCreateAthlete, updateAthlete as apiUpdateAthlete, deleteAthlete as apiDeleteAthlete } from "../../lib/api";
+
+// Password protection component
+function AdminLogin({ onLogin }: { onLogin: () => void }) {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [attempts, setAttempts] = useState(0);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Simple password check - in production, this should be more secure
+    if (password === '115294') {
+      onLogin();
+      setError('');
+    } else {
+      setError('Invalid password. Access denied.');
+      setAttempts(prev => prev + 1);
+      setPassword('');
+      
+      // Lock out after 3 failed attempts for 30 seconds
+      if (attempts >= 2) {
+        setError('Too many failed attempts. Please wait 30 seconds.');
+        setTimeout(() => {
+          setAttempts(0);
+          setError('');
+        }, 30000);
+      }
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 dark:bg-neutral-900 flex items-center justify-center">
+      <div className="bg-white dark:bg-neutral-800 p-8 rounded-2xl shadow-2xl border border-gray-200 dark:border-neutral-700 w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Admin Access
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300">
+            Enter the admin password to continue
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-neutral-700 text-gray-900 dark:text-white text-base transition-all duration-200"
+              placeholder="Enter admin password"
+              disabled={attempts >= 3}
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+              <p className="text-red-600 dark:text-red-400 text-sm font-medium">{error}</p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={attempts >= 3}
+            className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-xl text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none"
+          >
+            {attempts >= 3 ? 'Access Locked' : 'Access Admin'}
+          </button>
+        </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Unauthorized access is prohibited and monitored.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface AthleteModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  athlete?: Omit<Athlete, 'slug'>;
+  onSave: (athlete: Omit<Athlete, 'slug'>) => void;
+  mode: 'add' | 'edit';
+}
+
+function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalProps) {
+  const [formData, setFormData] = useState<Omit<Athlete, 'slug'>>({
+    name: '',
+    position: '',
+    school: '',
+    conference: '',
+    classYear: '',
+    number: '',
+    image: '',
+    bio: '',
+    colors: { from: 'from-blue-600', to: 'to-blue-600' },
+    stats: {
+      passingYards: 0,
+      rushingYards: 0,
+      receivingYards: 0,
+      touchdowns: 0,
+      interceptions: 0,
+      tackles: 0,
+      sacks: 0
+    },
+    hasMerchandise: false,
+    merchandise: []
+  });
+
+  useEffect(() => {
+    if (athlete) {
+      setFormData(athlete);
+    } else {
+      setFormData({
+        name: '',
+        position: '',
+        school: '',
+        conference: '',
+        classYear: '',
+        number: '',
+        image: '',
+        bio: '',
+        colors: { from: 'from-blue-600', to: 'to-blue-600' },
+        stats: {
+          passingYards: 0,
+          rushingYards: 0,
+          receivingYards: 0,
+          touchdowns: 0,
+          interceptions: 0,
+          tackles: 0,
+          sacks: 0
+        },
+        hasMerchandise: false,
+        merchandise: []
+      });
+    }
+  }, [athlete]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-neutral-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-neutral-700">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            {mode === 'add' ? 'Add New Athlete' : 'Edit Athlete'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Name *
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                placeholder="Athlete Name"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Position *
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.position}
+                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                placeholder="QB, RB, WR, etc."
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                School *
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.school}
+                onChange={(e) => setFormData({ ...formData, school: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                placeholder="University Name"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Conference
+              </label>
+              <input
+                type="text"
+                value={formData.conference}
+                onChange={(e) => setFormData({ ...formData, conference: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                placeholder="SEC, Big Ten, etc."
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Class Year
+              </label>
+              <input
+                type="text"
+                value={formData.classYear}
+                onChange={(e) => setFormData({ ...formData, classYear: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                placeholder="Freshman, Sophomore, etc."
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Jersey Number
+              </label>
+              <input
+                type="text"
+                value={formData.number}
+                onChange={(e) => setFormData({ ...formData, number: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                placeholder="1, 23, 99, etc."
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Image URL
+            </label>
+            <input
+              type="url"
+              value={formData.image}
+              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+              placeholder="https://example.com/image.jpg"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Bio
+            </label>
+            <textarea
+              value={formData.bio}
+              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+              placeholder="Tell us about this athlete..."
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Primary Color
+              </label>
+              <select
+                value={formData.colors.from}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  colors: { ...formData.colors, from: e.target.value }
+                })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+              >
+                <option value="from-blue-600">Blue</option>
+                <option value="from-red-600">Red</option>
+                <option value="from-green-600">Green</option>
+                <option value="from-purple-600">Purple</option>
+                <option value="from-orange-600">Orange</option>
+                <option value="from-yellow-500">Yellow</option>
+                <option value="from-gray-600">Gray</option>
+                <option value="from-black">Black</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Secondary Color
+              </label>
+              <select
+                value={formData.colors.to}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  colors: { ...formData.colors, to: e.target.value }
+                })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+              >
+                <option value="to-blue-600">Blue</option>
+                <option value="to-red-600">Red</option>
+                <option value="to-green-600">Green</option>
+                <option value="to-purple-600">Purple</option>
+                <option value="to-orange-600">Orange</option>
+                <option value="to-yellow-500">Yellow</option>
+                <option value="to-gray-600">Gray</option>
+                <option value="to-white">White</option>
+                <option value="to-black">Black</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="pt-4 border-t border-gray-200 dark:border-neutral-700">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Season Stats</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Passing Yards
+                </label>
+                <input
+                  type="number"
+                  value={formData.stats.passingYards}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    stats: { ...formData.stats, passingYards: parseInt(e.target.value) || 0 }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Rushing Yards
+                </label>
+                <input
+                  type="number"
+                  value={formData.stats.rushingYards}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    stats: { ...formData.stats, rushingYards: parseInt(e.target.value) || 0 }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Touchdowns
+                </label>
+                <input
+                  type="number"
+                  value={formData.stats.touchdowns}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    stats: { ...formData.stats, touchdowns: parseInt(e.target.value) || 0 }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Tackles
+                </label>
+                <input
+                  type="number"
+                  value={formData.stats.tackles}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    stats: { ...formData.stats, tackles: parseInt(e.target.value) || 0 }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Merchandise Section */}
+          <div className="pt-4 border-t border-gray-200 dark:border-neutral-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Merchandise</h3>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.hasMerchandise}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    hasMerchandise: e.target.checked,
+                    merchandise: e.target.checked ? formData.merchandise : []
+                  })}
+                  className="sr-only"
+                />
+                <div className={`relative w-10 h-5 transition-colors duration-200 ease-in-out rounded-full ${formData.hasMerchandise ? 'bg-red-600' : 'bg-gray-300 dark:bg-neutral-600'}`}>
+                  <div className={`absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full transition-transform duration-200 ease-in-out ${formData.hasMerchandise ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                </div>
+                <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  This athlete has merchandise
+                </span>
+              </label>
+            </div>
+            
+            {formData.hasMerchandise && (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Add merchandise items for this athlete. You can add photos and links to their products.
+                </p>
+                
+                {formData.merchandise && formData.merchandise.map((item, index) => (
+                  <div key={index} className="bg-gray-50 dark:bg-neutral-700 p-4 rounded-lg border border-gray-200 dark:border-neutral-600">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-white">Item #{index + 1}</h4>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newMerchandise = formData.merchandise?.filter((_, i) => i !== index) || [];
+                          setFormData({ ...formData, merchandise: newMerchandise });
+                        }}
+                        className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Product Name
+                        </label>
+                        <input
+                          type="text"
+                          value={item.name}
+                          onChange={(e) => {
+                            const newMerchandise = [...(formData.merchandise || [])];
+                            newMerchandise[index] = { ...item, name: e.target.value };
+                            setFormData({ ...formData, merchandise: newMerchandise });
+                          }}
+                          className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-neutral-600 rounded focus:ring-1 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                          placeholder="T-Shirt, Jersey, etc."
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Price
+                        </label>
+                        <input
+                          type="text"
+                          value={item.price}
+                          onChange={(e) => {
+                            const newMerchandise = [...(formData.merchandise || [])];
+                            newMerchandise[index] = { ...item, price: e.target.value };
+                            setFormData({ ...formData, merchandise: newMerchandise });
+                          }}
+                          className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-neutral-600 rounded focus:ring-1 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                          placeholder="$29.99"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Image URL
+                        </label>
+                        <input
+                          type="url"
+                          value={item.image}
+                          onChange={(e) => {
+                            const newMerchandise = [...(formData.merchandise || [])];
+                            newMerchandise[index] = { ...item, image: e.target.value };
+                            setFormData({ ...formData, merchandise: newMerchandise });
+                          }}
+                          className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-neutral-600 rounded focus:ring-1 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                          placeholder="https://example.com/product.jpg"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Purchase Link
+                        </label>
+                        <input
+                          type="url"
+                          value={item.link}
+                          onChange={(e) => {
+                            const newMerchandise = [...(formData.merchandise || [])];
+                            newMerchandise[index] = { ...item, link: e.target.value };
+                            setFormData({ ...formData, merchandise: newMerchandise });
+                          }}
+                          className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-neutral-600 rounded focus:ring-1 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                          placeholder="https://store.example.com/product"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newItem: MerchandiseItem = {
+                      id: Date.now().toString(),
+                      name: '',
+                      image: '',
+                      price: '',
+                      link: ''
+                    };
+                    setFormData({
+                      ...formData,
+                      merchandise: [...(formData.merchandise || []), newItem]
+                    });
+                  }}
+                  className="w-full px-4 py-2 border-2 border-dashed border-gray-300 dark:border-neutral-600 rounded-lg text-gray-600 dark:text-gray-400 hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200 flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Add Merchandise Item
+                </button>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex gap-3 pt-4">
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+            >
+              {mode === 'add' ? 'Add Athlete' : 'Save Changes'}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-neutral-600 dark:hover:bg-neutral-500 text-gray-700 dark:text-white rounded-lg font-medium transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminDashboard() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [athletes, setAthletes] = useState<Athlete[]>(initialAthletes);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingAthlete, setEditingAthlete] = useState<Athlete | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // Check if user is already authenticated and load athletes
+  useEffect(() => {
+    const authStatus = sessionStorage.getItem('adminAuthenticated');
+    if (authStatus === 'true') {
+      setIsAuthenticated(true);
+      loadAthletes();
+    }
+  }, []);
+
+  const loadAthletes = async () => {
+    setLoading(true);
+    try {
+      const fetchedAthletes = await fetchAthletes();
+      if (fetchedAthletes.length > 0) {
+        setAthletes(fetchedAthletes);
+      }
+    } catch (error) {
+      console.error('Error loading athletes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    sessionStorage.setItem('adminAuthenticated', 'true');
+    loadAthletes();
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('adminAuthenticated');
+  };
+
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return <AdminLogin onLogin={handleLogin} />;
+  }
+
+  const filteredAthletes = athletes.filter(athlete =>
+    athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    athlete.school.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    athlete.position.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const generateSlug = (name: string) => {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  };
+
+  const handleAddAthlete = async (athleteData: Omit<Athlete, 'slug'>) => {
+    setLoading(true);
+    try {
+      const newAthlete: Athlete = {
+        ...athleteData,
+        slug: generateSlug(athleteData.name)
+      };
+      
+      const createdAthlete = await apiCreateAthlete(newAthlete);
+      if (createdAthlete) {
+        setAthletes([...athletes, createdAthlete]);
+        setShowAddModal(false);
+      } else {
+        alert('Failed to create athlete. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error adding athlete:', error);
+      alert('Failed to create athlete. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditAthlete = (athlete: Athlete) => {
+    setEditingAthlete(athlete);
+  };
+
+  const handleSaveEdit = async (athleteData: Omit<Athlete, 'slug'>) => {
+    if (!editingAthlete) return;
+    
+    setLoading(true);
+    try {
+      const updatedAthlete = { ...athleteData, slug: editingAthlete.slug };
+      const result = await apiUpdateAthlete(editingAthlete.slug, updatedAthlete);
+      
+      if (result) {
+        const updatedAthletes = athletes.map(athlete =>
+          athlete.slug === editingAthlete.slug ? result : athlete
+        );
+        setAthletes(updatedAthletes);
+        setEditingAthlete(null);
+      } else {
+        alert('Failed to update athlete. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error updating athlete:', error);
+      alert('Failed to update athlete. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAthlete = async (slug: string) => {
+    if (!confirm('Are you sure you want to delete this athlete?')) return;
+    
+    setLoading(true);
+    try {
+      const success = await apiDeleteAthlete(slug);
+      
+      if (success) {
+        setAthletes(athletes.filter(athlete => athlete.slug !== slug));
+      } else {
+        alert('Failed to delete athlete. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error deleting athlete:', error);
+      alert('Failed to delete athlete. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-gray-50 dark:bg-neutral-900">
+      {/* Header */}
+      <header className="bg-white dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 bg-red-600 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Optimal Sports Admin</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setShowAddModal(true)}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                + Add Athlete
+              </button>
+              <button 
+                onClick={handleLogout}
+                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Athletes</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{athletes.length}</p>
+              </div>
+              <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Active Athletes</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{athletes.length}</p>
+              </div>
+              <div className="h-12 w-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Schools</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {new Set(athletes.map(a => a.school)).size}
+                </p>
+              </div>
+              <div className="h-12 w-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Positions</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {new Set(athletes.map(a => a.position)).size}
+                </p>
+              </div>
+              <div className="h-12 w-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 p-6 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search athletes by name, school, or position..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                />
+              </div>
+            </div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {filteredAthletes.length} of {athletes.length} athletes
+            </div>
+          </div>
+        </div>
+
+        {/* Athletes Table */}
+        <div className="bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Athletes Management</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-neutral-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Athlete</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Position</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">School</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Conference</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Class</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-neutral-800 divide-y divide-gray-200 dark:divide-neutral-700">
+                {filteredAthletes.map((athlete) => (
+                  <tr key={athlete.slug} className="hover:bg-gray-50 dark:hover:bg-neutral-700">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-200 dark:bg-neutral-600">
+                          <img src={athlete.image} alt={athlete.name} className="h-full w-full object-cover" />
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">{athlete.name}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">#{athlete.number || 'N/A'}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300">
+                        {athlete.position}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{athlete.school}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{athlete.conference || 'N/A'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{athlete.classYear || 'N/A'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleEditAthlete(athlete)}
+                          className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAthlete(athlete.slug)}
+                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Add Athlete Modal */}
+      <AthleteModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={handleAddAthlete}
+        mode="add"
+      />
+
+      {/* Edit Athlete Modal */}
+      <AthleteModal
+        isOpen={!!editingAthlete}
+        onClose={() => setEditingAthlete(null)}
+        athlete={editingAthlete || undefined}
+        onSave={handleSaveEdit}
+        mode="edit"
+      />
+    </main>
+  );
+}
