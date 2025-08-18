@@ -11,12 +11,12 @@ export async function GET(
     const { slug } = params;
     
     // Try to get from individual record first (faster)
-    let athlete = await kv.get<Athlete>(`athlete:${slug}`);
+    let athlete: Athlete | null = await kv.get<Athlete>(`athlete:${slug}`);
     
     if (!athlete) {
       // Fallback: search in full athletes list
       const allAthletes = await kv.get<Athlete[]>('athletes:all') || defaultAthletes;
-      athlete = allAthletes.find(a => a.slug === slug);
+      athlete = allAthletes.find(a => a.slug === slug) ?? null;
       
       // If found, cache it for future requests
       if (athlete) {
