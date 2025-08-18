@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" fill="none">
+  <!-- This is a placeholder - replace with your actual football players cutout -->
+  <rect x="0" y="0" width="400" height="600" fill="transparent"/>
+  <text x="200" y="300" text-anchor="middle" fill="white" font-family="Arial" font-size="24">
+    Football Players Cutout
+  </text>
+  <text x="200" y="330" text-anchor="middle" fill="white" font-family="Arial" font-size="16">
+    Replace this file with your actual SVG
+  </text>
+</svg>

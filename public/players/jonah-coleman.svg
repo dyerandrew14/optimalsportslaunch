@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#g)"/>
+  <text x="200" y="160" font-size="64" text-anchor="middle" fill="#fff" font-family="Arial, Helvetica, sans-serif">UW</text>
+  <text x="200" y="210" font-size="18" text-anchor="middle" fill="#fff" opacity=".9">Jonah Coleman</text>
+</svg>
+
