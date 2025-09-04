@@ -1,4 +1,3 @@
-import Link from "next/link";
 import VideoBackground from "../../components/VideoBackground";
 
 export default function ServicesPage() {
@@ -71,7 +70,7 @@ export default function ServicesPage() {
         <VideoBackground />
         
         {/* Enhanced Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/30 to-black/60" />
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -132,28 +131,7 @@ export default function ServicesPage() {
                       className="w-full h-[400px] lg:h-[500px] object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     
-                    {/* Image Overlay */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-60 group-hover:opacity-40 transition-opacity duration-500`}></div>
-                    
-                    {/* Floating Badges */}
-                    <div className="absolute top-6 left-6">
-                      <div className="bg-black/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-black border border-red-500/50 shadow-xl">
-                        {service.badge}
-                      </div>
-                    </div>
-                    
-                    <div className="absolute top-6 right-6">
-                      <div className="bg-red-600/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-bold border border-white/30 shadow-xl">
-                        {service.stats}
-                      </div>
-                    </div>
-                    
-                    {/* Bottom Number Badge */}
-                    <div className="absolute bottom-6 right-6">
-                      <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-white/40 shadow-xl">
-                        <span className="text-2xl font-black text-white">{String(index + 1).padStart(2, '0')}</span>
-                      </div>
-                    </div>
+                    {/* Overlays and badges removed as requested */}
                   </div>
                 </div>
 
@@ -178,37 +156,7 @@ export default function ServicesPage() {
                     ))}
                   </div>
 
-                  {/* Action Button */}
-                  <div className="pt-6">
-                    <Link 
-                      href="/contact"
-                      className="inline-flex items-center gap-3 bg-gradient-to-r from-red-600 via-red-700 to-red-800 hover:from-red-700 hover:via-red-800 hover:to-black text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 shadow-2xl hover:shadow-red-500/30 transform hover:scale-105 group/btn border border-red-500/50"
-                    >
-                      <span className="text-lg">Get Started</span>
-                      <svg className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
-                  </div>
-
-                  {/* Service Number Indicator */}
-                  <div className="flex items-center gap-3 pt-4">
-                    <div className="flex space-x-2">
-                      {services.map((_, i) => (
-                        <div 
-                          key={i} 
-                          className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                            i === index 
-                              ? 'bg-red-500 shadow-lg shadow-red-500/50' 
-                              : 'bg-white/20'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-gray-400 text-sm font-medium">
-                      {String(index + 1).padStart(2, '0')} / {String(services.length).padStart(2, '0')}
-                    </span>
-                  </div>
+                  {/* Per-section CTA and step indicators removed as requested */}
                 </div>
               </div>
             ))}

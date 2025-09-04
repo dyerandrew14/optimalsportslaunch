@@ -228,6 +228,7 @@ export default function Navigation() {
         <ul className="hidden md:flex items-center gap-6 text-[15px]">
           <li><Link href="/athletes" className="text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Athletes</Link></li>
           <li><Link href="/services" className="text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Services</Link></li>
+          <li><Link href="/catalog" className="text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Shop</Link></li>
           <li><Link href="/about" className="text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors">About</Link></li>
 
           <li><ThemeToggle /></li>
@@ -359,6 +360,13 @@ export default function Navigation() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Services
+              </Link>
+              <Link 
+                href="/catalog" 
+                className="block py-2 text-lg font-medium text-gray-900 dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Shop
               </Link>
               <Link 
                 href="/about" 

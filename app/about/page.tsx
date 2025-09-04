@@ -37,6 +37,13 @@ export default function AboutPage() {
       image: "/damian-ochoa-placeholder.jpg",
       bio: "Damian Ochoa is a proud graduate of Chapman University where he attained his Bachelor's degree in Political Science and a minor in Entrepreneurship. He is currently attending the University of San Francisco and is attaining his Master's of Science in Sports Management. Prior to joining Optimal Sports Management, Damian worked for Steinberg Sports & Entertainment as an Account Executive, where he collaborated with agents to facilitate collegiate NIL deals.",
       credentials: ["Chapman University Graduate", "USF MS Sports Management", "Steinberg Sports & Entertainment"]
+    },
+    {
+      name: "Jerry",
+      title: "Senior Advisor",
+      image: "/IMG_3969.webp",
+      bio: "Jerry is a seasoned advisor supporting athletes across contract preparation, career planning, and brand strategy.",
+      credentials: ["Advisory", "Career Planning", "Brand Strategy"]
     }
   ];
 

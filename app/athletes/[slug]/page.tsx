@@ -131,9 +131,10 @@ export default function AthleteProfile({ params }: { params: Params }) {
           athleteName={athlete.name}
           hasMerchandise={athlete.hasMerchandise}
           merchandiseItems={athlete.merchandise ?? []}
+          athleteSlug={athlete.slug}
         />
 
-        {/* Stats and Clips Section */}
+        {/* Stats Section */}
         <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Season Stats</h3>
@@ -148,17 +149,14 @@ export default function AthleteProfile({ params }: { params: Params }) {
               </div>
             </div>
           </div>
-
+          {/* Right column - Player Mini Shop */}
           <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Game Clips</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="aspect-video rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                <span className="text-gray-500 dark:text-gray-400 text-sm">Video 1</span>
-              </div>
-              <div className="aspect-video rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                <span className="text-gray-500 dark:text-gray-400 text-sm">Video 2</span>
-              </div>
-            </div>
+            <AthleteShop
+              athleteName={athlete.name}
+              hasMerchandise={true}
+              merchandiseItems={athlete.merchandise ?? []}
+              athleteSlug={athlete.slug}
+            />
           </div>
         </div>
       </div>

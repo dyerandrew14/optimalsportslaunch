@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { athletes } from "@/lib/athletes";
-import { schools, getSchoolByName } from "@/lib/schools";
+import { getSchoolByName } from "@/lib/schools";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -10,14 +10,10 @@ export default function AthletesPage() {
   const searchParams = useSearchParams();
   const [filteredAthletes, setFilteredAthletes] = useState(athletes);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSchool, setSelectedSchool] = useState("");
-  const [selectedPosition, setSelectedPosition] = useState("");
-  const [selectedConference, setSelectedConference] = useState("");
+  const [selectedLeague, setSelectedLeague] = useState(""); // "College" | "NFL" | ""
 
-  // Get unique values for filters
-  const uniqueSchools = [...new Set(athletes.map(a => a.school))].sort();
-  const uniquePositions = [...new Set(athletes.map(a => a.position))].sort();
-  const uniqueConferences = [...new Set(athletes.map(a => a.conference))].sort();
+  // Helper to determine league
+  const getLeague = (conference: string) => (conference === "NFL" ? "NFL" : "College");
 
   // Apply filters
   useEffect(() => {
@@ -26,39 +22,30 @@ export default function AthletesPage() {
     // URL-based filtering (for search results)
     const schoolFromUrl = searchParams.get('school');
     if (schoolFromUrl) {
-      setSelectedSchool(schoolFromUrl);
       filtered = filtered.filter(a => a.school === schoolFromUrl);
     }
 
     // Apply other filters
     if (searchTerm) {
       filtered = filtered.filter(a => 
-        a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        a.school.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        a.position.toLowerCase().includes(searchTerm.toLowerCase())
+        a.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (selectedSchool) {
-      filtered = filtered.filter(a => a.school === selectedSchool);
-    }
-
-    if (selectedPosition) {
-      filtered = filtered.filter(a => a.position === selectedPosition);
-    }
-
-    if (selectedConference) {
-      filtered = filtered.filter(a => a.conference === selectedConference);
+    if (selectedLeague) {
+      if (selectedLeague === "NFL") {
+        filtered = filtered.filter(a => getLeague(a.conference) === "NFL");
+      } else if (selectedLeague === "College") {
+        filtered = filtered.filter(a => getLeague(a.conference) === "College");
+      }
     }
 
     setFilteredAthletes(filtered);
-  }, [searchTerm, selectedSchool, selectedPosition, selectedConference, searchParams]);
+  }, [searchTerm, selectedLeague, searchParams]);
 
   const clearFilters = () => {
     setSearchTerm("");
-    setSelectedSchool("");
-    setSelectedPosition("");
-    setSelectedConference("");
+    setSelectedLeague("");
   };
 
   return (
@@ -70,52 +57,32 @@ export default function AthletesPage() {
         </div>
       </section>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Advanced search/filter */}
+        {/* Search / League filter */}
         <div className="-mt-10 mb-6">
           <div className="bg-white dark:bg-neutral-900 border rounded-xl p-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
               <input 
                 className="border rounded-lg px-3 py-2" 
-                placeholder="Search player name, school, or position"
+                placeholder="Search player name"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <select 
+              <select
                 className="border rounded-lg px-3 py-2"
-                value={selectedSchool}
-                onChange={(e) => setSelectedSchool(e.target.value)}
+                value={selectedLeague}
+                onChange={(e) => setSelectedLeague(e.target.value)}
               >
-                <option value="">All Schools</option>
-                {uniqueSchools.map(school => (
-                  <option key={school} value={school}>{school}</option>
-                ))}
+                <option value="">All Leagues</option>
+                <option value="College">College</option>
+                <option value="NFL">NFL</option>
               </select>
-              <select 
-                className="border rounded-lg px-3 py-2"
-                value={selectedPosition}
-                onChange={(e) => setSelectedPosition(e.target.value)}
-              >
-                <option value="">All Positions</option>
-                {uniquePositions.map(position => (
-                  <option key={position} value={position}>{position}</option>
-                ))}
-              </select>
-              <select 
-                className="border rounded-lg px-3 py-2"
-                value={selectedConference}
-                onChange={(e) => setSelectedConference(e.target.value)}
-              >
-                <option value="">All Conferences</option>
-                {uniqueConferences.map(conference => (
-                  <option key={conference} value={conference}>{conference}</option>
-                ))}
-              </select>
+              <div className="hidden md:block" />
             </div>
             <div className="flex justify-between items-center">
               <div className="text-sm text-gray-600">
                 Showing {filteredAthletes.length} of {athletes.length} athletes
               </div>
-              {(searchTerm || selectedSchool || selectedPosition || selectedConference) && (
+              {(searchTerm || selectedLeague) && (
                 <button
                   onClick={clearFilters}
                   className="text-sm text-red-600 hover:text-red-700 font-medium"

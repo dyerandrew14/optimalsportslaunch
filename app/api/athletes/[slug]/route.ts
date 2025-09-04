@@ -1,5 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
+import { type Athlete, athletes as defaultAthletes } from '@/lib/athletes';
+
+// GET /api/athletes/[slug]
+export async function GET(_req: NextRequest, { params }: { params: { slug: string } }) {
+  const { slug } = params;
+  try {
+    const athlete = (await kv.get<Athlete | null>(`athlete:${slug}`)) ?? null;
+    if (!athlete) {
+      // Attempt fallback from the default list if exists
+      const fallback = defaultAthletes.find((a) => a.slug === slug) ?? null;
+      if (!fallback) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      return NextResponse.json(fallback);
+    }
+    return NextResponse.json(athlete);
+  } catch (e) {
+    return NextResponse.json({ error: 'Failed to fetch athlete' }, { status: 500 });
+  }
+}
+
+// PUT /api/athletes/[slug]
+export async function PUT(request: NextRequest, { params }: { params: { slug: string } }) {
+  const { slug } = params;
+  try {
+    const input: Athlete = await request.json();
+    // Update individual
+    await kv.set(`athlete:${slug}`, input);
+    // Update list
+    const all = (await kv.get<Athlete[]>('athletes:all')) || defaultAthletes;
+    const idx = all.findIndex((a) => a.slug === slug);
+    const next = [...all];
+    if (idx === -1) next.push(input); else next[idx] = input;
+    await kv.set('athletes:all', next);
+    return NextResponse.json(input);
+  } catch (e) {
+    return NextResponse.json({ error: 'Failed to update athlete' }, { status: 500 });
+  }
+}
+
+// DELETE /api/athletes/[slug]
+export async function DELETE(_request: NextRequest, { params }: { params: { slug: string } }) {
+  const { slug } = params;
+  try {
+    // Remove from list
+    const all = (await kv.get<Athlete[]>('athletes:all')) || [];
+    const next = all.filter((a) => a.slug !== slug);
+    await kv.set('athletes:all', next);
+    // Remove individual
+    await kv.del(`athlete:${slug}`);
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    return NextResponse.json({ error: 'Failed to delete athlete' }, { status: 500 });
+  }
+}
+
+import { NextRequest, NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 import { athletes as defaultAthletes, type Athlete } from '@/lib/athletes';
 
 // GET /api/athletes/[slug] - Get specific athlete

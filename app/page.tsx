@@ -1,12 +1,10 @@
 import Link from "next/link";
 import VideoBackground from "../components/VideoBackground";
-import { athletes } from "../lib/athletes";
-import { getSchoolByName } from "../lib/schools";
+import dynamic from "next/dynamic";
+
+const ServicesScroller = dynamic(() => import("../components/ServicesScroller"), { ssr: false });
 
 export default function HomePage() {
-  // Get first 4 athletes for homepage
-  const featuredAthletes = athletes.slice(0, 4);
-  
   const instagramPhotos = [
     { 
       src: "/503434072_18050765681603363_2382997233816373608_n.jpg", 
@@ -85,88 +83,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Our Athletes Grid */}
-      <section className="py-16 bg-white dark:bg-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Athletes</h2>
-            <p className="text-gray-600 dark:text-gray-300 text-lg">Meet the exceptional talent driving our success</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredAthletes.map((athlete) => {
-              const schoolInfo = getSchoolByName(athlete.school);
-              return (
-                <Link
-                  key={athlete.slug}
-                  href={`/athletes/${athlete.slug}`}
-                  className="relative bg-black rounded-3xl shadow-2xl overflow-hidden group hover:shadow-red-500/20 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105"
-                >
-                  {/* Full Background Image */}
-                  <div className="relative h-[450px] w-full overflow-hidden rounded-3xl">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={athlete.image} 
-                      alt={athlete.name} 
-                      className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                    />
-                    
-                    {/* Position and Number Badges */}
-                    <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold border border-red-500/50">
-                      {athlete.position}
-                    </div>
-                    <div className="absolute top-4 right-4 bg-red-600/90 backdrop-blur-sm text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 border-white/30">
-                      #{athlete.number}
-                    </div>
-                    
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent"></div>
-                    
-                    {/* Transparent Info Section */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md border-t border-white/20 p-6">
-                      <div className="flex items-center gap-3 mb-3">
-                        {schoolInfo && (
-                          <div className="w-12 h-12 rounded-full overflow-hidden bg-white/20 backdrop-blur-sm border-2 border-white/30 flex-shrink-0">
-                            <img 
-                              src={schoolInfo.logo} 
-                              alt={schoolInfo.mascot} 
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-                        <div className="flex-1">
-                          <h3 className="text-lg font-bold text-white mb-1 group-hover:text-red-200 transition-colors">
-                            {athlete.name}
-                          </h3>
-                          <div className="flex items-center gap-2">
-                            <p className="text-gray-200 text-sm font-medium">{athlete.school}</p>
-                            {schoolInfo && (
-                              <span className="text-xs bg-white/20 backdrop-blur-sm text-white px-2 py-1 rounded-full border border-white/30">
-                                {schoolInfo.mascot}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-gray-300 text-sm line-clamp-2 mb-3 opacity-90">{athlete.bio}</p>
-                      <div className="flex justify-between text-sm text-gray-300">
-                        <span className="bg-red-600/20 backdrop-blur-sm px-3 py-1 rounded-full border border-red-500/30">
-                          {athlete.conference}
-                        </span>
-                        <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full border border-white/30">
-                          {athlete.classYear}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       {/* Athlete Vision Section - Brand New */}
-      <section className="py-20 bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
+      <section
+        className="py-20 bg-gray-100 dark:bg-black text-gray-900 dark:text-white -mt-8 md:-mt-12 lg:-mt-16 relative z-10"
+        style={{
+          clipPath:
+            "polygon(24px 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%, 0 24px)",
+          WebkitClipPath:
+            "polygon(24px 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%, 0 24px)",
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
@@ -386,273 +313,30 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* How We Serve Our Athletes - Enhanced Visual Section */}
+          {/* How We Serve Our Athletes – Pinned Scrollytelling */}
           <div className="mb-16">
-            <div className="text-center mb-20">
-              <h3 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-8">How We Serve Our Athletes</h3>
-              <p className="text-gray-600 dark:text-gray-200 text-xl max-w-4xl mx-auto leading-relaxed">
-                Elite services crafted to transform your athletic potential into lasting success and recognition
+            <div className="text-center mb-8">
+              <h3 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">How We Serve Our Athletes</h3>
+              <p className="text-gray-600 dark:text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+                Scroll to explore our services. The section pins to the screen and updates as you scroll.
               </p>
             </div>
-            
-            <div className="space-y-16">
-              {/* NIL Representation */}
-              <div className="flex flex-col lg:flex-row gap-12 items-center">
-                <div className="lg:w-1/2">
-                  <div className="relative h-80 rounded-3xl overflow-hidden group shadow-2xl">
-                    <img 
-                      src="/IMG_5172.webp" 
-                      alt="NIL Representation and Brand Partnerships" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-700/20 via-purple-800/30 to-black/70"></div>
-                    <div className="absolute top-6 left-6 bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-semibold border border-white/20">
-                      NIL EXPERTS
-                    </div>
-                    <div className="absolute bottom-6 right-6 bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-semibold border border-white/20">
-                      BRAND PARTNERSHIPS
-                    </div>
-                  </div>
-                </div>
-                <div className="lg:w-1/2 space-y-6">
-                  <h4 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">NIL Representation & Brand Partnerships</h4>
-                  <p className="text-gray-600 dark:text-gray-600 dark:text-gray-300 text-base leading-relaxed">
-                    Connect with premium brands and maximize your NIL earning potential through strategic partnerships.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/>
-                          <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-gray-900 dark:text-white font-medium text-sm">Brand Strategy</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Contract Optimization</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Partnership Management</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Revenue Growth</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Innovative Marketing - Reversed */}
-              <div className="flex flex-col lg:flex-row-reverse gap-12 items-center">
-                <div className="lg:w-1/2">
-                  <div className="relative h-80 rounded-3xl overflow-hidden group shadow-2xl">
-                    <img 
-                      src="/IMG_3969.webp" 
-                      alt="Innovative Marketing Campaigns" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-700/20 via-teal-800/30 to-black/70"></div>
-                    <div className="absolute top-6 left-6 bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-semibold border border-white/20">
-                      MARKETING
-                    </div>
-                    <div className="absolute bottom-6 right-6 bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-semibold border border-white/20">
-                      VIRAL CAMPAIGNS
-                    </div>
-                  </div>
-                </div>
-                <div className="lg:w-1/2 space-y-6">
-                  <h4 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">Innovative Marketing & Brand Development</h4>
-                  <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">
-                    Build your brand with strategic marketing campaigns that drive engagement and recognition.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm8 0a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1V8z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Campaign Development</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Social Media Strategy</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Content Creation</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Digital Innovation</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Contracting & Coordination */}
-              <div className="flex flex-col lg:flex-row gap-12 items-center">
-                <div className="lg:w-1/2">
-                  <div className="relative h-80 rounded-3xl overflow-hidden group shadow-2xl">
-                    <img 
-                      src="/IMG_3743.webp" 
-                      alt="Professional Contract Management" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-br from-amber-700/20 via-orange-800/30 to-black/70"></div>
-                    <div className="absolute top-6 left-6 bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-semibold border border-white/20">
-                      CONTRACTS
-                    </div>
-                    <div className="absolute bottom-6 right-6 bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-semibold border border-white/20">
-                      LEGAL PROTECTION
-                    </div>
-                  </div>
-                </div>
-                <div className="lg:w-1/2 space-y-6">
-                  <h4 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">Professional Contract Management</h4>
-                  <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">
-                    Expert contract management and legal protection for all your athletic opportunities.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z"/>
-                          <path d="M6 8h8v2H6V8zM6 12h5v2H6v-2z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Contract Review</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Legal Protection</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Event Coordination</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Full Support</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Nationwide Reach - Reversed */}
-              <div className="flex flex-col lg:flex-row-reverse gap-12 items-center">
-                <div className="lg:w-1/2">
-                  <div className="relative h-80 rounded-3xl overflow-hidden group shadow-2xl">
-                    <img 
-                      src="/IMG_1546.webp" 
-                      alt="Nationwide Network and Reach" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-br from-gray-700/20 via-gray-800/30 to-black/70"></div>
-                    <div className="absolute top-6 left-6 bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-semibold border border-white/20">
-                      NETWORK
-                    </div>
-                    <div className="absolute bottom-6 right-6 bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-semibold border border-white/20">
-                      NATIONWIDE REACH
-                    </div>
-                  </div>
-                </div>
-                <div className="lg:w-1/2 space-y-6">
-                  <h4 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">Nationwide Network & Expansion</h4>
-                  <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">
-                    Access our nationwide network to unlock opportunities in every major market across the country.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Coast-to-Coast</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Elite Partnerships</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z"/>
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Market Access</span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-black/20 rounded-lg p-4 backdrop-blur-sm border border-white/10">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-900 dark:text-white font-medium text-sm">Global Reach</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-            
-          {/* Explore All Services Button - Moved here */}
-          <div className="text-center mt-12">
+            <ServicesScroller />
+            <div className="text-center mt-8">
             <Link 
               href="/services" 
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              Explore All Services
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                className="group relative inline-flex items-center justify-center gap-3 px-10 py-4 font-bold text-white rounded-2xl overflow-hidden"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-red-600 via-red-600 to-red-700 transition-transform duration-300 group-hover:scale-105" />
+                <span className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-red-400/0 via-white/20 to-red-400/0 opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
+                <span className="relative z-10">Explore All Services</span>
+                <svg className="relative z-10 w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>
           </div>
+          </div>
+          
         </div>
       </section>
 
