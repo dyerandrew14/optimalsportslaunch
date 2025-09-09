@@ -1,24 +1,9 @@
 import { fetchProducts } from '@/lib/products';
 import { athletes } from '@/lib/athletes';
 import SafeImage from '@/components/SafeImage';
-import dynamic from 'next/dynamic';
-import fs from 'fs';
-import path from 'path';
-const CatalogExplorer = dynamic(() => import('@/components/CatalogExplorer'), { ssr: false });
+import CatalogExplorer from '@/components/CatalogExplorer';
 
-function getCatalogFolderImages(max: number = 12): string[] {
-  const publicDir = path.join(process.cwd(), 'public');
-  const rel = 'catalog';
-  const dir = path.join(publicDir, rel);
-  const exts = new Set(['.webp', '.png', '.jpg', '.jpeg', '.svg']);
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir)
-    .filter((f) => exts.has(path.extname(f).toLowerCase()))
-    .map((f) => `/${rel}/${f}`)
-    .slice(0, max);
-}
-// Using direct public paths for reliability in dev
-// Static image paths for catalog visuals (from /public/catalog)
+// Static image paths for catalog visuals
 
 export default async function CatalogPage({ searchParams }: { searchParams?: { school?: string; athlete?: string } }) {
   const school = searchParams?.school || '';
@@ -34,7 +19,7 @@ export default async function CatalogPage({ searchParams }: { searchParams?: { s
   const infoImg2 = `/players/maliki_crawford.webp${buster}`;
   const infoImg3 = `/players/madden_faraimo.webp${buster}`;
   // Provide product images (from public/catalog) to the explorer above
-  const featuredImages = getCatalogFolderImages(12);
+  //
 
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950">
