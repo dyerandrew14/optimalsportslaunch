@@ -81,15 +81,15 @@ export default function ServicesPage() {
       </section>
 
       {/* NFL-Style Alternating Services */}
-      <section className="py-20 bg-gray-900 dark:bg-black text-white" id="nil">
+      <section className="py-20 bg-white dark:bg-black text-gray-900 dark:text-white" id="nil">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-6xl font-black mb-6">
-              <span className="bg-gradient-to-r from-white via-red-200 to-white bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-gray-900 via-red-600 to-gray-900 dark:from-white dark:via-red-200 dark:to-white bg-clip-text text-transparent">
                 Elite Services
               </span>
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Professional expertise that elevates champions to the next level
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-red-600 mx-auto mt-6 rounded-full"></div>
@@ -141,15 +141,15 @@ export default function ServicesPage() {
       </section>
 
       {/* Clean Process Section */}
-      <section className="py-16 bg-gray-900 dark:bg-black text-white">
+      <section className="py-16 bg-white dark:bg-black text-gray-900 dark:text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-white via-red-200 to-white bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-gray-900 via-red-600 to-gray-900 dark:from-white dark:via-red-200 dark:to-white bg-clip-text text-transparent">
                 Our Process
               </span>
             </h2>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               A proven methodology that delivers results
             </p>
           </div>

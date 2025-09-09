@@ -255,10 +255,10 @@ export default function HomePage() {
                   <img src="/Colorado-Buffaloes-Logo-tumb.png" alt="Colorado Buffaloes" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/California-Golden-Bears-Logo-thumb.png" alt="California Golden Bears" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/Cal_logo.png" alt="California Golden Bears" className="h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/UCLA-Bruins-Logo-thumb.png" alt="UCLA Bruins" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/ucla_logo.png" alt="UCLA Bruins" className="h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
               </div>
               {/* Duplicate set for seamless loop */}
@@ -279,10 +279,10 @@ export default function HomePage() {
                   <img src="/Colorado-Buffaloes-Logo-tumb.png" alt="Colorado Buffaloes" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/California-Golden-Bears-Logo-thumb.png" alt="California Golden Bears" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/Cal_logo.png" alt="California Golden Bears" className="h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/UCLA-Bruins-Logo-thumb.png" alt="UCLA Bruins" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/ucla_logo.png" alt="UCLA Bruins" className="h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
               </div>
             </div>
