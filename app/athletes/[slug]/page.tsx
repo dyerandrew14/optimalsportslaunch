@@ -23,6 +23,7 @@ export async function generateStaticParams() {
 
 export default async function AthleteProfile({ params }: { params: Params }) {
   const { slug } = params;
+  console.log('Looking for athlete with slug:', slug);
   // Prefer KV so Admin edits are live, fall back to static list
   let athlete = null as (typeof athletes)[number] | null;
   try {
@@ -36,7 +37,31 @@ export default async function AthleteProfile({ params }: { params: Params }) {
       athlete = athletes.find(a => a.slug === slug && a.name.trim().toLowerCase() !== "to be announced") || null;
     }
   }
-  if (!athlete) return notFound();
+  
+  // Final fallback: try the API route
+  if (!athlete) {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+      const response = await fetch(`${baseUrl}/api/athletes/${slug}`, { 
+        cache: 'no-store',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (response.ok) {
+        athlete = await response.json();
+      }
+    } catch (error) {
+      console.error('Error fetching athlete from API:', error);
+    }
+  }
+  
+  if (!athlete) {
+    console.log('Athlete not found for slug:', slug);
+    return notFound();
+  }
+  
+  console.log('Found athlete:', athlete.name, 'with slug:', athlete.slug);
 
   const schoolInfo = getSchoolByName(athlete.school);
 

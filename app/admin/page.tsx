@@ -669,7 +669,9 @@ export default function AdminDashboard() {
   );
 
   const generateSlug = (name: string) => {
-    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    console.log('Generated slug for', name, ':', slug);
+    return slug;
   };
 
   const handleAddAthlete = async (athleteData: Omit<Athlete, 'slug'>) => {
