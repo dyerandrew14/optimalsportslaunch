@@ -3,6 +3,8 @@ import Link from 'next/link';
 import type { Product } from '@/lib/products';
 import { athletes } from '@/lib/athletes';
 import { kv } from '@vercel/kv';
+import Image from 'next/image';
+export const dynamic = 'force-dynamic';
 
 async function getProductServer(id: string): Promise<Product | null> {
   // Try individual record first
@@ -79,6 +81,10 @@ export default async function ProductDetail({ params }: { params: { id: string }
       } catch {}
     }
   }
+  // Ensure we always show a player card – default to first known athlete
+  if (!assignedAthlete) {
+    assignedAthlete = athletes[0];
+  }
   const derivedFromName = (name: string | undefined) => name ? `/players/${name.toLowerCase().replace(/[^a-z0-9]+/g, '_')}.webp` : '/IMG_3743.webp';
   const athleteAvatar = assignedAthlete?.image || derivedFromName(product.athleteName) || '/IMG_3743.webp';
 
@@ -87,14 +93,24 @@ export default async function ProductDetail({ params }: { params: { id: string }
       <section className="py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-7">
-            <div className="aspect-square rounded-2xl overflow-hidden border border-gray-200 dark:border-neutral-700 bg-black">
-              {images[0] && (<img src={images[0]} alt={product.name} className="w-full h-full object-cover" />)}
+            <div className="aspect-square rounded-2xl overflow-hidden border border-gray-200 dark:border-neutral-700 bg-black relative">
+              {images[0] && (
+                <Image
+                  src={images[0]}
+                  alt={product.name}
+                  fill
+                  sizes="(min-width:1024px) 50vw, 100vw"
+                  className="object-cover"
+                  priority
+                  unoptimized
+                />
+              )}
             </div>
             {images.length > 1 && (
               <div className="grid grid-cols-4 gap-3 mt-3">
                 {images.slice(1, 5).map((img, i) => (
-                  <div key={i} className="aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-700 bg-black">
-                    <img src={img} alt={`${product.name} ${i+2}`} className="w-full h-full object-cover" />
+                  <div key={i} className="aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-700 bg-black relative">
+                    <Image src={img} alt={`${product.name} ${i+2}`} fill sizes="(min-width:1024px) 10vw, 25vw" className="object-cover" unoptimized />
                   </div>
                 ))}
               </div>
@@ -121,28 +137,36 @@ export default async function ProductDetail({ params }: { params: { id: string }
                 </div>
               )}
 
-              <a href={checkoutUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-full lg:w-auto px-7 py-3 rounded-xl bg-[#95BF47] text-white font-bold shadow-lg hover:bg-[#84aa3f] transition-transform hover:scale-[1.02]">
-                <img src="/shopify.svg" alt="Shopify" className="w-5 h-5 mr-2" />
+              <a href={checkoutUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-full lg:w-auto px-7 py-3 rounded-xl bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-transform hover:scale-[1.02]">
                 Checkout on Shopify
               </a>
 
               <div>
-                <div className="rounded-2xl p-[1px] bg-gradient-to-r from-red-600/60 to-red-400/60">
-                  <div className="rounded-2xl p-4 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-red-500/40 flex-shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={athleteAvatar} alt={assignedAthlete?.name || product.athleteName || 'Player'} className="w-full h-full object-cover" onError={(e)=>{(e.currentTarget as HTMLImageElement).src='/IMG_3743.webp';}} />
+                <div className="relative bg-black rounded-3xl shadow-2xl overflow-hidden group hover:shadow-red-500/20 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 max-w-xl">
+                  {/* subtle border glow */}
+                  <div className="absolute inset-0 rounded-3xl pointer-events-none ring-1 ring-white/10" />
+                  <div className="p-6 flex items-center gap-5">
+                    <div className="w-20 h-20 rounded-full overflow-hidden ring-2 ring-red-500/40 flex-shrink-0 relative">
+                      <Image src={athleteAvatar} alt={assignedAthlete?.name || product.athleteName || 'Player'} fill sizes="80px" className="object-cover" unoptimized />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-xs uppercase tracking-wide text-gray-500">Player</div>
-                      <div className="font-semibold text-gray-900 dark:text-white truncate">{assignedAthlete?.name || product.athleteName || 'Unassigned'}</div>
-                      {(assignedAthlete?.school || assignedAthlete?.position || product.school) && (
-                        <div className="text-sm text-gray-600 dark:text-gray-400 truncate">{assignedAthlete?.school || product.school} {assignedAthlete?.position ? `• ${assignedAthlete.position}` : ''}</div>
-                      )}
+                      <div className="text-xs uppercase tracking-wide text-white/60">Player</div>
+                      <div className="text-xl font-bold text-white truncate group-hover:text-red-200 transition-colors">{assignedAthlete?.name || product.athleteName}</div>
+                      <div className="mt-1 flex flex-wrap items-center gap-2">
+                        {(assignedAthlete?.school || product.school) && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-white/80 border border-white/10">{assignedAthlete?.school || product.school}</span>
+                        )}
+                        {assignedAthlete?.conference && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-white/80 border border-white/10">{assignedAthlete.conference}</span>
+                        )}
+                        {assignedAthlete?.classYear && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-white/80 border border-white/10">{assignedAthlete.classYear}</span>
+                        )}
+                      </div>
                     </div>
                     {assignedAthlete?.slug && (
-                      <Link href={`/athletes/${assignedAthlete.slug}`} className="px-3 py-2 rounded-lg border border-gray-200 dark:border-neutral-700 text-sm font-medium text-gray-800 dark:text-gray-200 hover:border-red-500 hover:text-red-600 transition-colors">
-                        View athlete
+                      <Link href={`/athletes/${assignedAthlete.slug}`} className="px-3 py-2 rounded-lg border border-white/20 text-sm font-medium text-white hover:border-red-500 hover:text-red-400 transition-colors whitespace-nowrap">
+                        View profile
                       </Link>
                     )}
                   </div>

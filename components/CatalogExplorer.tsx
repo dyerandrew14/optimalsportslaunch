@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/lib/products";
-import SafeImage from "@/components/SafeImage";
+import Image from "next/image";
 
 type GroupBy = "none" | "school" | "athlete";
 
@@ -248,9 +248,9 @@ export default function CatalogExplorer() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {(groupBy === 'none' ? grouped[key].slice(0, 8) : grouped[key]).map((p) => (
                     <a key={p.id} href={`/catalog/${p.id}`} className="bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-700 overflow-hidden block group">
-                      <div className="h-56 bg-gray-200 dark:bg-neutral-700 flex items-center justify-center">
+                      <div className="h-56 bg-gray-200 dark:bg-neutral-700 flex items-center justify-center relative">
                         {p.imageUrl ? (
-                          <SafeImage src={p.imageUrl} fallbackSrc="/IMG_3743.webp" alt={p.name} className="w-full h-full object-cover" />
+                          <Image src={p.imageUrl} alt={p.name} fill sizes="(min-width:1024px) 25vw, 50vw" className="object-cover" />
                         ) : (
                           <span className="text-gray-500 dark:text-gray-400 text-sm">No image</span>
                         )}
@@ -259,8 +259,8 @@ export default function CatalogExplorer() {
                         <div className="flex items-center gap-3 mb-1">
                           {p.athleteName ? (
                             <span className="inline-flex items-center gap-2 px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-xs text-gray-700 dark:text-gray-200">
-                              <span className="inline-block w-6 h-6 rounded-full overflow-hidden bg-gray-200 dark:bg-neutral-700">
-                                <img src={`/players/${(p.athleteName || '').toLowerCase().replace(/[^a-z0-9]+/g,'_')}.webp`} alt={p.athleteName} className="w-full h-full object-cover" onError={(e)=>{(e.currentTarget as HTMLImageElement).src='/IMG_3743.webp';}} />
+                              <span className="inline-block w-6 h-6 rounded-full overflow-hidden bg-gray-200 dark:bg-neutral-700 relative">
+                                <Image src={`/players/${(p.athleteName || '').toLowerCase().replace(/[^a-z0-9]+/g,'_')}.webp`} alt={p.athleteName} fill sizes="24px" className="object-cover" />
                               </span>
                               {p.athleteName}
                             </span>
