@@ -248,9 +248,22 @@ export default function CatalogExplorer() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {(groupBy === 'none' ? grouped[key].slice(0, 8) : grouped[key]).map((p) => (
                     <a key={p.id} href={`/catalog/${p.id}`} className="bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-700 overflow-hidden block group">
-                      <div className="h-56 bg-gray-200 dark:bg-neutral-700 flex items-center justify-center relative">
-                        {p.imageUrl ? (
-                          <Image src={p.imageUrl} alt={p.name} fill sizes="(min-width:1024px) 25vw, 50vw" className="object-cover" />
+                      <div className="h-56 bg-gray-200 dark:bg-neutral-700 flex items-center justify-center relative group">
+                        {p.imageUrl || (p.images && p.images.length > 0) ? (
+                          <div className="relative w-full h-full">
+                            <Image 
+                              src={p.imageUrl || p.images?.[0] || ''} 
+                              alt={p.name} 
+                              fill 
+                              sizes="(min-width:1024px) 25vw, 50vw" 
+                              className="object-cover transition-transform duration-300 group-hover:scale-105" 
+                            />
+                            {p.images && p.images.length > 1 && (
+                              <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                                +{p.images.length - 1}
+                              </div>
+                            )}
+                          </div>
                         ) : (
                           <span className="text-gray-500 dark:text-gray-400 text-sm">No image</span>
                         )}

@@ -1013,8 +1013,13 @@ export default function AdminDashboard() {
             ))}
             <div className="pt-4 border-t border-gray-200 dark:border-neutral-700">
               <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium" onClick={async()=>{
-                await fetch('/api/executives',{method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(executives)});
-                alert('Executives saved');
+                console.log('Saving executives:', executives.length);
+                const res = await fetch('/api/executives',{method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(executives)});
+                if (res.ok) {
+                  alert('Executives saved successfully!');
+                } else {
+                  alert('Failed to save executives. Please try again.');
+                }
               }}>Save Executives</button>
             </div>
           </div>
@@ -1056,8 +1061,14 @@ export default function AdminDashboard() {
                   const updated = await apiUpdateProduct(id, { ...rest });
                   if (updated) setProducts(products.map(p => p.id === id ? updated : p));
                 } else {
+                  console.log('Creating product:', rest.name, 'with images:', rest.images?.length || 0);
                   const created = await apiCreateProduct({ ...rest } as any);
-                  if (created) setProducts([created, ...products]);
+                  if (created) {
+                    setProducts([created, ...products]);
+                    alert('Product created successfully!');
+                  } else {
+                    alert('Failed to create product. Please try again.');
+                  }
                 }
                 setEditingProduct(null);
               }}
@@ -1066,7 +1077,18 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="Product name" value={editingProduct.name} onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })} required />
                 <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" type="number" step="0.01" placeholder="Price" value={editingProduct.price} onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) || 0 })} required />
-                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white md:col-span-2" placeholder="Image URL (optional)" value={editingProduct.imageUrl || ''} onChange={(e) => setEditingProduct({ ...editingProduct, imageUrl: e.target.value })} />
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white md:col-span-2" placeholder="Main Image URL (optional)" value={editingProduct.imageUrl || ''} onChange={(e) => setEditingProduct({ ...editingProduct, imageUrl: e.target.value })} />
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2">Additional Images (one per line)</label>
+                  <textarea 
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" 
+                    placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
+                    rows={4}
+                    value={(editingProduct.images || []).join('\n')} 
+                    onChange={(e) => setEditingProduct({ ...editingProduct, images: e.target.value.split('\n').map(url => url.trim()).filter(Boolean) })} 
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Enter one image URL per line. These will be used as a gallery.</p>
+                </div>
                 <select className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" value={editingProduct.athleteSlug} onChange={(e) => {
                   const slug = e.target.value; const name = slug ? (athletes.find(a => a.slug === slug)?.name || '') : '';
                   setEditingProduct({ ...editingProduct, athleteSlug: slug, athleteName: name });

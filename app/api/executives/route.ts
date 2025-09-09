@@ -16,7 +16,9 @@ export async function GET() {
   let all: Executive[] = [];
   try {
     all = (await kv.get<Executive[]>(KEY_ALL)) || [];
-  } catch {
+    console.log('Executives from KV:', all.length);
+  } catch (error) {
+    console.log('KV error for executives:', error);
     all = [];
   }
   if (all.length === 0) {
@@ -36,6 +38,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const input = (await request.json()) as Omit<Executive, 'id'> & { id?: string };
+    console.log('Creating executive:', input.name);
     const newExec: Executive = {
       id: input.id || crypto.randomUUID(),
       name: input.name,
@@ -48,8 +51,10 @@ export async function POST(request: NextRequest) {
     all.push(newExec);
     await kv.set(KEY_ALL, all);
     await kv.set(`executive:${newExec.id}`, newExec);
+    console.log('Successfully saved executive to KV');
     return NextResponse.json(newExec, { status: 201 });
   } catch (e) {
+    console.error('Error creating executive:', e);
     return NextResponse.json({ error: 'Failed to create executive' }, { status: 500 });
   }
 }

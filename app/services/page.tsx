@@ -81,7 +81,7 @@ export default function ServicesPage() {
       </section>
 
       {/* NFL-Style Alternating Services */}
-      <section className="py-20 bg-black text-white" id="nil">
+      <section className="py-20 bg-gray-900 dark:bg-black text-white" id="nil">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-6xl font-black mb-6">
@@ -141,7 +141,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Clean Process Section */}
-      <section className="py-16 bg-black text-white">
+      <section className="py-16 bg-gray-900 dark:bg-black text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">

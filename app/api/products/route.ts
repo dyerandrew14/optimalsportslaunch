@@ -20,7 +20,9 @@ export async function GET(request: NextRequest) {
   let all: Product[] = [];
   try {
     all = (await kv.get<Product[]>(KEY_ALL)) || [];
-  } catch {
+    console.log('Products from KV:', all.length);
+  } catch (error) {
+    console.log('KV error, using memory products:', error);
     all = memoryProducts;
   }
   if (all.length === 0) {
@@ -98,6 +100,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const input = await request.json();
+    console.log('Creating product:', input.name, 'with images:', input.images?.length || 0);
     const now = Date.now();
     const newProduct: Product = {
       id: crypto.randomUUID(),
@@ -123,11 +126,14 @@ export async function POST(request: NextRequest) {
       await kv.set(`product:${newProduct.id}`, newProduct);
       await kv.zadd(`products:byAthlete:${newProduct.athleteSlug}`, { score: now, member: newProduct.id });
       await kv.zadd(`products:bySchool:${newProduct.school}`, { score: now, member: newProduct.id });
-    } catch {
+      console.log('Successfully saved product to KV');
+    } catch (error) {
+      console.log('KV error, saving to memory:', error);
       memoryProducts = [newProduct, ...memoryProducts];
     }
     return NextResponse.json(newProduct, { status: 201 });
   } catch (e) {
+    console.error('Error creating product:', e);
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
   }
 }
