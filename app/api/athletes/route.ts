@@ -13,14 +13,14 @@ export async function GET() {
     console.log('KV stored athletes:', storedAthletes ? storedAthletes.length : 'null');
     
     // If no athletes in KV, use default athletes and save them
-    if (!storedAthletes) {
+    if (!storedAthletes || storedAthletes.length === 0) {
       console.log('No athletes in KV, seeding with defaults');
       await kv.set('athletes:all', defaultAthletes);
       memoryAthletes = [...defaultAthletes];
       return NextResponse.json(defaultAthletes);
     }
     
-    console.log('Returning stored athletes from KV');
+    console.log('Returning stored athletes from KV:', storedAthletes.length);
     return NextResponse.json(storedAthletes);
   } catch (error) {
     console.error('Error fetching athletes:', error);

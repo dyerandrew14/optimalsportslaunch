@@ -120,7 +120,7 @@ export default async function ProductDetail({ params }: { params: { id: string }
             <div className="lg:sticky lg:top-24 space-y-6">
               <div>
                 <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white">{product.name}</h1>
-                <p className="mt-2 text-gray-600 dark:text-gray-300">{[product.athleteName, product.school].filter(Boolean).join(' • ')}</p>
+                <p className="mt-2 text-gray-600 dark:text-gray-300">{product.athleteName}</p>
                 <div className="mt-4 text-2xl font-bold text-red-600 dark:text-red-400">${product.price.toFixed(2)}</div>
               </div>
 
@@ -153,8 +153,8 @@ export default async function ProductDetail({ params }: { params: { id: string }
                       <div className="text-xs uppercase tracking-wide text-white/60">Player</div>
                       <div className="text-xl font-bold text-white truncate group-hover:text-red-200 transition-colors">{assignedAthlete?.name || product.athleteName}</div>
                       <div className="mt-1 flex flex-wrap items-center gap-2">
-                        {(assignedAthlete?.school || product.school) && (
-                          <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-white/80 border border-white/10">{assignedAthlete?.school || product.school}</span>
+                        {assignedAthlete?.school && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-white/80 border border-white/10">{assignedAthlete.school}</span>
                         )}
                         {assignedAthlete?.conference && (
                           <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-white/80 border border-white/10">{assignedAthlete.conference}</span>

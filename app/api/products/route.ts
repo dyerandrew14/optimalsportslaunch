@@ -25,6 +25,12 @@ export async function GET(request: NextRequest) {
     console.log('KV error, using memory products:', error);
     all = memoryProducts;
   }
+  
+  // If KV is empty but we have memory products, use memory products
+  if (all.length === 0 && memoryProducts.length > 0) {
+    console.log('Using memory products as fallback:', memoryProducts.length);
+    all = memoryProducts;
+  }
   if (all.length === 0) {
     const now = Date.now();
     // Seed exactly three products based on the current catalog

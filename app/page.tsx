@@ -103,7 +103,7 @@ export default function HomePage() {
       </div>
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 mb-8 md:mb-20">
             {/* Left Side - Vision Content */}
             <div className="space-y-8">
               {/* Our Foundation Card */}
@@ -114,7 +114,7 @@ export default function HomePage() {
                 <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-red-400/20 rounded-full blur-lg group-hover:scale-125 transition-transform duration-700 delay-100"></div>
                 
                 {/* Floating Icons */}
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200 transform translate-y-2 group-hover:translate-y-0">
+                <div className="absolute top-4 right-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 delay-200 transform translate-y-0 group-hover:translate-y-0">
                   <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                     <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -152,7 +152,7 @@ export default function HomePage() {
                       { icon: "🏪", text: "Dedicated Storefront" },
                       { icon: "🤝", text: "Personal Support" }
                     ].map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200" style={{ transitionDelay: `${200 + index * 100}ms` }}>
+                      <div key={index} className="flex items-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 delay-200" style={{ transitionDelay: `${200 + index * 100}ms` }}>
                         <div className="w-6 h-6 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center text-xs shadow-md">
                           {feature.icon}
                         </div>
@@ -171,7 +171,7 @@ export default function HomePage() {
                 <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-red-400/20 rounded-full blur-lg group-hover:scale-125 transition-transform duration-700 delay-100"></div>
                 
                 {/* Floating Icons */}
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200 transform translate-y-2 group-hover:translate-y-0">
+                <div className="absolute top-4 right-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 delay-200 transform translate-y-0 group-hover:translate-y-0">
                   <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                     <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -209,7 +209,7 @@ export default function HomePage() {
                       { icon: "🤝", text: "Strategic Partnerships" },
                       { icon: "📈", text: "Maximum Exposure" }
                     ].map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200" style={{ transitionDelay: `${200 + index * 100}ms` }}>
+                      <div key={index} className="flex items-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 delay-200" style={{ transitionDelay: `${200 + index * 100}ms` }}>
                         <div className="w-6 h-6 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center text-xs shadow-md">
                           {feature.icon}
                         </div>
@@ -240,19 +240,19 @@ export default function HomePage() {
               {/* First set of actual college logos */}
               <div className="flex items-center gap-8 md:gap-12 lg:gap-16 pr-8 md:pr-12 lg:pr-16 min-w-max">
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/Boise-State-Broncos-Logo-tumb.png" alt="Boise State Broncos" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/Boise-State-Broncos-Logo-tumb.png" alt="Boise State Broncos" className="h-18 w-18 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/BYU-Cougars-Logo-thumb.png" alt="BYU Cougars" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/BYU-Cougars-Logo-thumb.png" alt="BYU Cougars" className="h-18 w-18 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/Central-Florida-Knights-Logo-tumb.png" alt="UCF Knights" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/Central-Florida-Knights-Logo-tumb.png" alt="UCF Knights" className="h-18 w-18 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/Clemson-Tigers-Logo-tumb.png" alt="Clemson Tigers" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/Clemson-Tigers-Logo-tumb.png" alt="Clemson Tigers" className="h-18 w-18 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/Colorado-Buffaloes-Logo-tumb.png" alt="Colorado Buffaloes" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/Colorado-Buffaloes-Logo-tumb.png" alt="Colorado Buffaloes" className="h-18 w-18 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
                   <img src="/Cal_logo.png" alt="California Golden Bears" className="h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
@@ -264,19 +264,19 @@ export default function HomePage() {
               {/* Duplicate set for seamless loop */}
               <div className="flex items-center gap-8 md:gap-12 lg:gap-16 pr-8 md:pr-12 lg:pr-16 min-w-max">
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/Boise-State-Broncos-Logo-tumb.png" alt="Boise State Broncos" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/Boise-State-Broncos-Logo-tumb.png" alt="Boise State Broncos" className="h-18 w-18 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/BYU-Cougars-Logo-thumb.png" alt="BYU Cougars" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/BYU-Cougars-Logo-thumb.png" alt="BYU Cougars" className="h-18 w-18 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/Central-Florida-Knights-Logo-tumb.png" alt="UCF Knights" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/Central-Florida-Knights-Logo-tumb.png" alt="UCF Knights" className="h-18 w-18 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/Clemson-Tigers-Logo-tumb.png" alt="Clemson Tigers" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/Clemson-Tigers-Logo-tumb.png" alt="Clemson Tigers" className="h-18 w-18 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
-                  <img src="/Colorado-Buffaloes-Logo-tumb.png" alt="Colorado Buffaloes" className="h-16 w-16 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
+                  <img src="/Colorado-Buffaloes-Logo-tumb.png" alt="Colorado Buffaloes" className="h-18 w-18 md:h-24 md:w-24 lg:h-32 lg:w-32 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
                 </div>
                 <div className="h-20 w-20 md:h-28 md:w-28 lg:h-36 lg:w-36 flex items-center justify-center">
                   <img src="/Cal_logo.png" alt="California Golden Bears" className="h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300" style={{background: 'transparent'}} />
@@ -300,7 +300,7 @@ export default function HomePage() {
           </div>
 
           {/* How We Serve Our Athletes – Pinned Scrollytelling */}
-          <div className="mb-16">
+          <div className="mb-8 md:mb-16">
             <div className="text-center mb-8">
               <h3 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">How We Serve Our Athletes</h3>
               <p className="text-gray-600 dark:text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">

@@ -639,11 +639,21 @@ export default function AdminDashboard() {
   const loadProducts = async () => {
     try {
       const fetched = await fetchAllProducts();
+      console.log('Loaded products:', fetched.length);
       setProducts(fetched);
     } catch (e) {
       console.error('Error loading products', e);
     }
   };
+
+  // Load data on component mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadAthletes();
+      loadProducts();
+      loadExecutives();
+    }
+  }, [isAuthenticated]);
 
   const loadExecutives = async () => {
     try {
@@ -896,7 +906,7 @@ export default function AdminDashboard() {
               </thead>
               <tbody className="bg-white dark:bg-neutral-800 divide-y divide-gray-200 dark:divide-neutral-700">
                 {filteredAthletes.map((athlete) => (
-                  <tr key={athlete.slug} className="hover:bg-gray-50 dark:hover:bg-neutral-700">
+                  <tr key={athlete.slug} className="hover:bg-gray-50 dark:hover:bg-neutral-700 cursor-pointer" onClick={() => window.open(`/athletes/${athlete.slug}`, '_blank')}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-200 dark:bg-neutral-600">
@@ -950,12 +960,20 @@ export default function AdminDashboard() {
       <div className="mt-10 bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Products</h3>
-          <button
-            onClick={() => setEditingProduct({ id: '', name: '', price: 0, imageUrl: '', athleteSlug: '', athleteName: '', school: '', active: true, createdAt: Date.now(), updatedAt: Date.now() })}
-            className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium"
-          >
-            + Add Product
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={loadProducts}
+              className="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium"
+            >
+              Refresh
+            </button>
+            <button
+              onClick={() => setEditingProduct({ id: '', name: '', price: 0, imageUrl: '', athleteSlug: '', athleteName: '', school: '', active: true, createdAt: Date.now(), updatedAt: Date.now() })}
+              className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium"
+            >
+              + Add Product
+            </button>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">

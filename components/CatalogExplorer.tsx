@@ -280,7 +280,7 @@ export default function CatalogExplorer() {
                           ) : null}
                         </div>
                         <h4 className="font-bold text-gray-900 dark:text-white line-clamp-2">{p.name}</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{p.school}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{p.athleteName}</p>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-red-600 dark:text-red-400 font-bold">${p.price.toFixed(2)}</span>
                           {p.externalUrl && (
