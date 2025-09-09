@@ -136,19 +136,13 @@ export async function POST(request: NextRequest) {
     };
     
     const all = (await kv.get<Product[]>(KEY_ALL)) || [];
-    console.log('Current products count:', all.length);
-    
     all.push(newProduct);
-    console.log('Updated products count:', all.length);
-    
     await kv.set(KEY_ALL, all);
     await kv.set(`product:${newProduct.id}`, newProduct);
-    
     console.log('Successfully saved product to KV');
     return NextResponse.json(newProduct, { status: 201 });
-  } catch (error) {
-    console.error('Error creating product:', error);
-    console.error('Error details:', error);
+  } catch (e) {
+    console.error('Error creating product:', e);
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
   }
 }

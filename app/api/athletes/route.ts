@@ -47,21 +47,14 @@ export async function POST(request: NextRequest) {
       slug: slug,
     };
     
-    const currentAthletes = (await kv.get<Athlete[]>('athletes:all')) || memoryAthletes || defaultAthletes;
-    console.log('Current athletes count:', currentAthletes.length);
-    
-    const updatedAthletes = [...currentAthletes, newAthlete];
-    console.log('Updated athletes count:', updatedAthletes.length);
-    
-    await kv.set('athletes:all', updatedAthletes);
+    const all = (await kv.get<Athlete[]>('athletes:all')) || [];
+    all.push(newAthlete);
+    await kv.set('athletes:all', all);
     await kv.set(`athlete:${newAthlete.slug}`, newAthlete);
-    memoryAthletes = updatedAthletes;
-    
     console.log('Successfully saved athlete to KV');
     return NextResponse.json(newAthlete, { status: 201 });
-  } catch (error) {
-    console.error('Error creating athlete:', error);
-    console.error('Error details:', error);
+  } catch (e) {
+    console.error('Error creating athlete:', e);
     return NextResponse.json({ error: 'Failed to create athlete' }, { status: 500 });
   }
 }

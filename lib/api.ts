@@ -44,6 +44,9 @@ export async function fetchAthlete(slug: string): Promise<Athlete | null> {
 
 export async function createAthlete(athlete: Athlete): Promise<Athlete | null> {
   try {
+    console.log('Frontend: Creating athlete with data:', JSON.stringify(athlete, null, 2));
+    console.log('Frontend: API_BASE is:', API_BASE);
+    
     const response = await fetch(`${API_BASE}/api/athletes`, {
       method: 'POST',
       headers: {
@@ -52,13 +55,20 @@ export async function createAthlete(athlete: Athlete): Promise<Athlete | null> {
       body: JSON.stringify(athlete),
     });
     
+    console.log('Frontend: Response status:', response.status);
+    console.log('Frontend: Response ok:', response.ok);
+    
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Frontend: Error response body:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
     }
     
-    return await response.json();
+    const result = await response.json();
+    console.log('Frontend: Success response:', result);
+    return result;
   } catch (error) {
-    console.error('Error creating athlete:', error);
+    console.error('Frontend: Error creating athlete:', error);
     return null;
   }
 }
