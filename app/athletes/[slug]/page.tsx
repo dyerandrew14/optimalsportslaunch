@@ -7,12 +7,14 @@ import { AthleteShop } from "@/components/AthleteShop";
 type Params = { slug: string };
 
 export function generateStaticParams() {
-  return athletes.map((a) => ({ slug: a.slug }));
+  return athletes
+    .filter(a => a.name.trim().toLowerCase() !== "to be announced")
+    .map((a) => ({ slug: a.slug }));
 }
 
 export default function AthleteProfile({ params }: { params: Params }) {
   const { slug } = params;
-  const athlete = athletes.find((a) => a.slug === slug);
+  const athlete = athletes.find((a) => a.slug === slug && a.name.trim().toLowerCase() !== "to be announced");
   if (!athlete) return notFound();
 
   const schoolInfo = getSchoolByName(athlete.school);

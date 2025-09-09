@@ -1,6 +1,7 @@
 import Link from "next/link";
 import VideoBackground from "../components/VideoBackground";
 import dynamic from "next/dynamic";
+import VisionCarousel from "../components/VisionCarousel";
 
 const ServicesScroller = dynamic(() => import("../components/ServicesScroller"), { ssr: false });
 
@@ -50,7 +51,7 @@ export default function HomePage() {
               <span className="block bg-gradient-to-r from-white via-red-100 to-white bg-clip-text text-transparent drop-shadow-2xl" style={{ textShadow: '0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(255, 255, 255, 0.2)' }}>
                 OPTIMAL
               </span>
-              <span className="block text-3xl md:text-4xl lg:text-5xl font-bold text-red-200 tracking-wider" style={{ textShadow: '0 0 15px rgba(248, 113, 113, 0.4), 0 0 30px rgba(248, 113, 113, 0.2)' }}>
+              <span className="block text-3xl md:text-4xl lg:text-5xl font-bold tracking-wider bg-gradient-to-r from-red-600 to-red-500 bg-clip-text text-transparent" style={{ textShadow: '0 0 10px rgba(239,68,68,0.3), 0 0 20px rgba(239,68,68,0.2)' }}>
                 SPORTS MANAGEMENT
               </span>
             </h1>
@@ -64,17 +65,14 @@ export default function HomePage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-            <Link href="/contact" className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.5)] hover:shadow-[0_0_25px_rgba(239,68,68,0.7)] text-center transform hover:scale-105">
-              Get Started
-            </Link>
             <Link href="/athletes" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold px-8 py-4 rounded-xl text-center transition-all duration-300 transform hover:scale-105">
               View Athletes
             </Link>
           </div>
           
           <div className="mt-8">
-            <Link href="/athletes" className="inline-flex items-center gap-2 text-white/80 hover:text-white text-lg font-medium transition-colors">
-              <span>Discover our complete roster</span>
+            <Link href="/catalog" className="inline-flex items-center gap-2 text-white/80 hover:text-white text-lg font-medium transition-colors">
+              <span>Shop merchandise from your favorite players</span>
               <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -224,39 +222,15 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Side - Two Photos */}
-            <div className="space-y-6">
-              <div className="relative">
-                <div className="h-64 rounded-2xl overflow-hidden border-4 border-white/20 shadow-2xl">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img 
-                    src="/STARTSUPPORTING.webp" 
-                    alt="Start Supporting Your Favorite Athletes" 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <h4 className="text-white font-bold text-lg mb-1">Supporting Excellence</h4>
-                    <p className="text-gray-200 text-sm">Empowering athletes to reach their full potential</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="relative">
-                <div className="h-64 rounded-2xl overflow-hidden border-4 border-white/20 shadow-2xl">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img 
-                    src="/DRIVENTOGIVEUP.webp" 
-                    alt="Driven to Give Up" 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <h4 className="text-white font-bold text-lg mb-1">Never Give Up</h4>
-                    <p className="text-gray-200 text-sm">The determination that drives champions</p>
-                  </div>
-                </div>
-              </div>
+            {/* Right Side - Single auto-rotating panel with combined height */}
+            <div>
+              <VisionCarousel
+                slides={[
+                  { src: "/STARTSUPPORTING.webp", title: "Supporting Excellence", subtitle: "Empowering athletes to reach their full potential" },
+                  { src: "/players/rico_flores.webp", title: "Driven by Our Athletes", subtitle: "Relentless commitment to the vision of our players" },
+                ]}
+                intervalMs={6000}
+              />
             </div>
           </div>
 

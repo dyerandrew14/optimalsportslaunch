@@ -8,7 +8,9 @@ import { useState, useEffect } from "react";
 
 export default function AthletesPage() {
   const searchParams = useSearchParams();
-  const [filteredAthletes, setFilteredAthletes] = useState(athletes);
+  // Ensure placeholders like "To Be Announced" never render
+  const playersOnly = athletes.filter(a => a.name.trim().toLowerCase() !== "to be announced");
+  const [filteredAthletes, setFilteredAthletes] = useState(playersOnly);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLeague, setSelectedLeague] = useState(""); // "College" | "NFL" | ""
 
@@ -17,7 +19,7 @@ export default function AthletesPage() {
 
   // Apply filters
   useEffect(() => {
-    let filtered = athletes;
+    let filtered = playersOnly;
 
     // URL-based filtering (for search results)
     const schoolFromUrl = searchParams.get('school');
@@ -38,6 +40,13 @@ export default function AthletesPage() {
       } else if (selectedLeague === "College") {
         filtered = filtered.filter(a => getLeague(a.conference) === "College");
       }
+    } else {
+      // Default ordering when no league filter: College first, NFL clients at the bottom
+      filtered = [...filtered].sort((a, b) => {
+        const la = getLeague(a.conference) === 'NFL' ? 1 : 0;
+        const lb = getLeague(b.conference) === 'NFL' ? 1 : 0;
+        return la - lb;
+      });
     }
 
     setFilteredAthletes(filtered);
@@ -80,7 +89,7 @@ export default function AthletesPage() {
             </div>
             <div className="flex justify-between items-center">
               <div className="text-sm text-gray-600">
-                Showing {filteredAthletes.length} of {athletes.length} athletes
+                Showing {filteredAthletes.length} of {playersOnly.length} athletes
               </div>
               {(searchTerm || selectedLeague) && (
                 <button
@@ -126,15 +135,13 @@ export default function AthletesPage() {
                   {/* Transparent Info Section */}
                   <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md border-t border-white/20 p-6">
                     <div className="flex items-center gap-3 mb-3">
-                      {schoolInfo && (
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-white/20 backdrop-blur-sm border-2 border-white/30 flex-shrink-0">
-                          <img 
-                            src={schoolInfo.logo} 
-                            alt={schoolInfo.mascot} 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
+                      <div className="w-12 h-12 rounded-full overflow-hidden bg-white/20 backdrop-blur-sm border-2 border-white/30 flex-shrink-0">
+                        <img 
+                          src={athlete.image} 
+                          alt={athlete.name} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                       <div className="flex-1">
                         <h3 className="text-lg font-bold text-white mb-1 group-hover:text-red-200 transition-colors">
                           {athlete.name}

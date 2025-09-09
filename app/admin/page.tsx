@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { athletes as initialAthletes, type Athlete, type MerchandiseItem } from "../../lib/athletes";
 import { fetchAthletes, createAthlete as apiCreateAthlete, updateAthlete as apiUpdateAthlete, deleteAthlete as apiDeleteAthlete } from "../../lib/api";
+import { type Product, fetchProducts as fetchAllProducts, createProduct as apiCreateProduct, updateProduct as apiUpdateProduct, deleteProduct as apiDeleteProduct } from "../../lib/products";
 
 // Password protection component
 function AdminLogin({ onLogin }: { onLogin: () => void }) {
@@ -263,15 +264,33 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
           
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Image URL
+              Image
             </label>
-            <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
-              placeholder="https://example.com/image.jpg"
-            />
+            <div className="flex gap-3 items-center">
+              <input
+                type="url"
+                value={formData.image}
+                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                className="flex-1 px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                placeholder="https://example.com/image.jpg or upload below"
+              />
+              <label className="inline-flex items-center px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-sm text-gray-800 dark:text-gray-200 cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    // Create a local object URL for immediate preview/reference
+                    const localUrl = URL.createObjectURL(file);
+                    setFormData({ ...formData, image: localUrl });
+                  }}
+                />
+                Upload
+              </label>
+            </div>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Using a hosted URL is recommended for production. Upload sets a temporary local URL for preview; persist by uploading to /public and saving the path.</p>
           </div>
           
           <div>
@@ -567,18 +586,17 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [athletes, setAthletes] = useState<Athlete[]>(initialAthletes);
+  const [products, setProducts] = useState<Product[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingAthlete, setEditingAthlete] = useState<Athlete | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
+  const [executives, setExecutives] = useState<any[]>([]);
 
-  // Check if user is already authenticated and load athletes
+  // Always require login every visit (no persistence)
   useEffect(() => {
-    const authStatus = sessionStorage.getItem('adminAuthenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-      loadAthletes();
-    }
+    try { sessionStorage.removeItem('adminAuthenticated'); } catch {}
   }, []);
 
   const loadAthletes = async () => {
@@ -595,15 +613,33 @@ export default function AdminDashboard() {
     }
   };
 
+  const loadProducts = async () => {
+    try {
+      const fetched = await fetchAllProducts();
+      setProducts(fetched);
+    } catch (e) {
+      console.error('Error loading products', e);
+    }
+  };
+
+  const loadExecutives = async () => {
+    try {
+      const res = await fetch('/api/executives', { cache: 'no-store' });
+      const data = res.ok ? await res.json() : [];
+      setExecutives(data);
+    } catch {}
+  };
+
   const handleLogin = () => {
     setIsAuthenticated(true);
-    sessionStorage.setItem('adminAuthenticated', 'true');
     loadAthletes();
+    loadProducts();
+    loadExecutives();
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    sessionStorage.removeItem('adminAuthenticated');
+    try { sessionStorage.removeItem('adminAuthenticated'); } catch {}
   };
 
   // Show login screen if not authenticated
@@ -699,15 +735,10 @@ export default function AdminDashboard() {
       <header className="bg-white dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 bg-red-600 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Optimal Sports Admin</h1>
-            </div>
-            <div className="flex items-center gap-4">
+            <a href="/" className="mx-auto lg:mx-0">
+              <img src="/Final_2_Transparent_png_180x-_1_.png" alt="Optimal Sports" className="h-7" />
+            </a>
+            <div className="flex items-center gap-4 ml-auto">
               <button 
                 onClick={() => setShowAddModal(true)}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
@@ -882,6 +913,91 @@ export default function AdminDashboard() {
             </table>
           </div>
         </div>
+
+      </div>
+
+      {/* Products Management */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mt-10 bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Products</h3>
+          <button
+            onClick={() => setEditingProduct({ id: '', name: '', price: 0, imageUrl: '', athleteSlug: '', athleteName: '', school: '', active: true, createdAt: Date.now(), updatedAt: Date.now() })}
+            className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium"
+          >
+            + Add Product
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-neutral-700">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Product</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Athlete</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">School</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Active</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-neutral-800 divide-y divide-gray-200 dark:divide-neutral-700">
+              {products.map((p) => (
+                <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-neutral-700">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{p.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{p.athleteName}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{p.school}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${'{'}p.price.toFixed(2){'}'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{p.active ? 'Yes' : 'No'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setEditingProduct(p)}
+                        className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                      >Edit</button>
+                      <button
+                        onClick={async () => { if (confirm('Delete product?')) { const ok = await apiDeleteProduct(p.id); if (ok) setProducts(products.filter(x => x.id !== p.id)); } }}
+                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                      >Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      </div>
+
+      {/* Executives Management (below products) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mt-10 bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Executive Roster</h3>
+            <button onClick={() => setExecutives([...executives, { id: Date.now().toString(), name: '', title: '', image: '', bio: '' }])} className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium">+ Add Executive</button>
+          </div>
+          <div className="p-6 space-y-4">
+            {executives.length === 0 && (
+              <div className="text-sm text-gray-500">No executives yet. Click “Add Executive”.</div>
+            )}
+            {executives.map((ex, idx) => (
+              <div key={ex.id} className="grid grid-cols-1 md:grid-cols-5 gap-3 items-start">
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="Name" value={ex.name} onChange={(e) => { const next=[...executives]; next[idx].name=e.target.value; setExecutives(next); }} />
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="Title" value={ex.title} onChange={(e) => { const next=[...executives]; next[idx].title=e.target.value; setExecutives(next); }} />
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="Image URL (public path)" value={ex.image} onChange={(e) => { const next=[...executives]; next[idx].image=e.target.value; setExecutives(next); }} />
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white md:col-span-2" placeholder="Short bio (optional)" value={ex.bio || ''} onChange={(e) => { const next=[...executives]; next[idx].bio=e.target.value; setExecutives(next); }} />
+                <div className="md:col-span-5 flex items-center gap-2">
+                  <button className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-neutral-600 text-sm" onClick={() => setExecutives(executives.filter((_,i)=>i!==idx))} type="button">Remove</button>
+                </div>
+              </div>
+            ))}
+            <div className="pt-4 border-t border-gray-200 dark:border-neutral-700">
+              <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium" onClick={async()=>{
+                await fetch('/api/executives',{method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(executives)});
+                alert('Executives saved');
+              }}>Save Executives</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Add Athlete Modal */}
@@ -900,6 +1016,84 @@ export default function AdminDashboard() {
         onSave={handleSaveEdit}
         mode="edit"
       />
+
+      {/* Product Modal */}
+      {editingProduct && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-neutral-800 rounded-xl max-w-2xl w-full">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-neutral-700">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{editingProduct.id ? 'Edit Product' : 'Add Product'}</h2>
+              <button onClick={() => setEditingProduct(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const { id, ...rest } = editingProduct;
+                if (id) {
+                  const updated = await apiUpdateProduct(id, { ...rest });
+                  if (updated) setProducts(products.map(p => p.id === id ? updated : p));
+                } else {
+                  const created = await apiCreateProduct({ ...rest } as any);
+                  if (created) setProducts([created, ...products]);
+                }
+                setEditingProduct(null);
+              }}
+              className="p-6 space-y-4"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="Product name" value={editingProduct.name} onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })} required />
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" type="number" step="0.01" placeholder="Price" value={editingProduct.price} onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) || 0 })} required />
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white md:col-span-2" placeholder="Image URL (optional)" value={editingProduct.imageUrl || ''} onChange={(e) => setEditingProduct({ ...editingProduct, imageUrl: e.target.value })} />
+                <select className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" value={editingProduct.athleteSlug} onChange={(e) => {
+                  const slug = e.target.value; const name = slug ? (athletes.find(a => a.slug === slug)?.name || '') : '';
+                  setEditingProduct({ ...editingProduct, athleteSlug: slug, athleteName: name });
+                }}>
+                  <option value="">Unassigned (general)</option>
+                  {athletes.map(a => (<option key={a.slug} value={a.slug}>{a.name}</option>))}
+                </select>
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="School" value={editingProduct.school} onChange={(e) => setEditingProduct({ ...editingProduct, school: e.target.value })} />
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="External purchase URL (optional)" value={editingProduct.externalUrl || ''} onChange={(e) => setEditingProduct({ ...editingProduct, externalUrl: e.target.value })} />
+                <label className="inline-flex items-center gap-2 text-sm md:col-span-2">
+                  <input type="checkbox" checked={editingProduct.active} onChange={(e) => setEditingProduct({ ...editingProduct, active: e.target.checked })} /> Active
+                </label>
+                {/* Categories */}
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white md:col-span-2" placeholder="Categories (comma-separated)" value={(editingProduct.categories || []).join(', ')} onChange={(e) => setEditingProduct({ ...editingProduct, categories: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} />
+                {/* Sizes */}
+                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="Sizes (e.g., S,M,L,XL)" value={(editingProduct.sizes || []).join(',')} onChange={(e) => setEditingProduct({ ...editingProduct, sizes: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} />
+                {/* Inventory by size */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-1">Inventory by size</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {(editingProduct.sizes || ['S','M','L','XL']).map((size) => (
+                      <div key={size} className="flex items-center gap-2">
+                        <span className="w-8 text-sm font-semibold">{size}</span>
+                        <input type="number" min={0} className="w-20 px-2 py-1 rounded border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" value={(editingProduct.inventoryBySize?.[size] ?? 0)} onChange={(e) => {
+                          const qty = parseInt(e.target.value) || 0;
+                          setEditingProduct({ ...editingProduct, inventoryBySize: { ...(editingProduct.inventoryBySize || {}), [size]: qty } });
+                        }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="submit" className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium">Save</button>
+                <button type="button" onClick={() => setEditingProduct(null)} className="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-neutral-600 dark:hover:bg-neutral-500 text-gray-700 dark:text-white rounded-lg font-medium">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Admin Footer */}
+      <footer className="mt-10 py-6 text-center text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex items-center justify-center gap-4">
+          <span>© 2025 Optimal Sports</span>
+          <a href="https://www.linkedin.com/company/optimal-sports-management/" target="_blank" rel="noopener noreferrer" className="hover:text-red-600">LinkedIn</a>
+          <a href="https://instagram.com/optimalsportsmgmt" target="_blank" rel="noopener noreferrer" className="hover:text-red-600">Instagram</a>
+        </div>
+      </footer>
     </main>
   );
 }

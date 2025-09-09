@@ -3,9 +3,13 @@ export type Product = {
   name: string;
   price: number;
   imageUrl?: string;
+  images?: string[]; // optional gallery
   athleteSlug: string;
   athleteName: string;
   school: string;
+  categories?: string[]; // e.g., ["Tees","Hoodies"]
+  sizes?: string[]; // e.g., ["S","M","L","XL"]
+  inventoryBySize?: Record<string, number>; // e.g., { S: 10, M: 5 }
   active: boolean;
   createdAt: number;
   updatedAt: number;
@@ -16,10 +20,15 @@ const API_BASE = process.env.NODE_ENV === 'production'
   ? 'https://your-site.vercel.app'
   : 'http://localhost:3000';
 
-export async function fetchProducts(params?: { athleteSlug?: string; school?: string }): Promise<Product[]> {
+export async function fetchProducts(params?: { athleteSlug?: string; school?: string; name?: string; category?: string; size?: string; page?: number; limit?: number }): Promise<Product[]> {
   const qs = new URLSearchParams();
   if (params?.athleteSlug) qs.set('athlete', params.athleteSlug);
   if (params?.school) qs.set('school', params.school);
+  if (params?.name) qs.set('name', params.name);
+  if (params?.category) qs.set('category', params.category);
+  if (params?.size) qs.set('size', params.size);
+  if (params?.page) qs.set('page', String(params.page));
+  if (params?.limit) qs.set('limit', String(params.limit));
   const url = `${API_BASE}/api/products${qs.toString() ? `?${qs.toString()}` : ''}`;
   const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) return [];

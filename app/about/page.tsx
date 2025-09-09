@@ -1,49 +1,43 @@
 import Link from "next/link";
 import Image from "next/image";
+import FounderCard from "@/components/FounderCard";
 
 export default function AboutPage() {
   const teamMembers = [
     {
       name: "Christopher Gil",
       title: "Founder & Chief Executive Officer",
-      image: "/imagejpeg_0.jpg",
+      image: "/founders/christopher.webp",
       bio: "Christopher is the Founder and CEO of Optimal Sports Management. He is originally from Los Angeles, California. He brings three years of sports management experience working for several Los Angeles based professional sports teams and two sports management firms, prior to graduating from USC in Fall 2020 with a degree in Sports Media. While at USC, he was a member of the Sports Business Association. Christopher is also a proud graduate of Loyola Marymount University, having attained his Master's of Science in Business Management from the Hilton Center for Business in May of 2023. Christopher became an NFLPA Certified Contract Advisor in 2023.",
       credentials: ["USC Sports Media Graduate", "LMU MS Business Management", "NFLPA Certified Contract Advisor"]
     },
     {
       name: "Frank Yip",
       title: "Co-Founder and Director of Football Operations",
-      image: "/IMG_0069.JPG",
+      image: "/founders/frankyip.webp",
       bio: "Frank Yip is a proud graduate of the Marshall School of Business at the University of Southern California and the School of Law at Santa Clara University. He is also a certified financial planner from the Denver School of Financial Planning and the University of Southern California. He currently serves as the Founder and CEO of Coaches Athletic Advisory Services (CAAS). Frank brings a wealth of experience in the sports industry, having worked primarily in the collegiate and professional football industry.",
       credentials: ["USC Marshall School of Business", "Santa Clara University School of Law", "Certified Financial Planner"]
     },
     {
       name: "Jon Kingdon",
       title: "Director of Scouting",
-      image: "/jon-kingdon-placeholder.jpg",
+      image: "/founders/jonkingdom.webp",
       bio: "Jon Kingdon dedicated 33 years to the legendary Al Davis and the Oakland Raiders, beginning as an intern in 1978 and serving as Director of College Scouting until his departure in 2012. A trusted advisor to Davis, Kingdon played a key role in player evaluations, though they occasionally differed on draft selections. He co-authored Al Davis: Behind the Raider Shield with Bruce Kebric, offering an insider's perspective on the Raiders' iconic leader.",
       credentials: ["33 Years with Oakland Raiders", "Oberlin College Graduate", "Co-author of Al Davis Biography"]
     },
     {
       name: "Steve Briscoe",
       title: "Director of Youth Football",
-      image: "/steve-briscoe-placeholder.jpg",
+      image: "/founders/stevebriscoe.webp",
       bio: "Coach Steve Briscoe is the Co-Founder and President of Next Level Sports & Academics. He has been coaching and mentoring student athletes for 8+ years. He has coached on many levels from Little League Youth to Elite High School and National 7v7 teams. Coach Briscoe is currently the Passing Coordinator/ College Relations Coordinator for Mount Diablo High School, located in Northern California.",
       credentials: ["8+ Years Coaching Experience", "Next Level Sports & Academics", "Mount Diablo High School"]
     },
     {
       name: "Damian Ochoa",
-      title: "Marketing Coordinator",
-      image: "/damian-ochoa-placeholder.jpg",
+      title: "Chief Operating Officer",
+      image: "/founders/damianochoa.webp",
       bio: "Damian Ochoa is a proud graduate of Chapman University where he attained his Bachelor's degree in Political Science and a minor in Entrepreneurship. He is currently attending the University of San Francisco and is attaining his Master's of Science in Sports Management. Prior to joining Optimal Sports Management, Damian worked for Steinberg Sports & Entertainment as an Account Executive, where he collaborated with agents to facilitate collegiate NIL deals.",
       credentials: ["Chapman University Graduate", "USF MS Sports Management", "Steinberg Sports & Entertainment"]
-    },
-    {
-      name: "Jerry",
-      title: "Senior Advisor",
-      image: "/IMG_3969.webp",
-      bio: "Jerry is a seasoned advisor supporting athletes across contract preparation, career planning, and brand strategy.",
-      credentials: ["Advisory", "Career Planning", "Brand Strategy"]
     }
   ];
 
@@ -164,69 +158,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* What Makes Us Unique */}
-      <section className="py-20 bg-white dark:bg-neutral-950">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              What Makes Us Unique?
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Our selective approach and elite athlete roster sets us apart
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-20 h-20 mx-auto bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-6">
-                <span className="text-3xl">⭐</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                Selective Agency
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                We maintain exclusivity by working with only elite athletes, ensuring 
-                the highest quality representation for our clients.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 mx-auto bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-6">
-                <span className="text-3xl">🤝</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                Close Relationships
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Our selective approach allows us to maintain close relationships with 
-                clients and create tailored marketing strategies.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 mx-auto bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-6">
-                <span className="text-3xl">🚀</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                Tailored Strategies
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                We work with a variety of companies across the nation and have our 
-                own storefront to meet all client needs.
-              </p>
-            </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <Link 
-              href="/signup" 
-              className="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-4 rounded-lg text-lg transition-colors"
-            >
-              Join Optimal Today
-            </Link>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Team Section */}
       <section className="py-20 bg-gray-50 dark:bg-neutral-900">
@@ -235,88 +167,78 @@ export default function AboutPage() {
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
               Optimal Sports Management Executive Team
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Meet the experienced professionals dedicated to your success
-            </p>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">Meet the experienced professionals dedicated to your success</p>
           </div>
 
+          {/* CEO & COO on top row, rest below */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {teamMembers.filter(m => ["Christopher Gil", "Damian Ochoa"].includes(m.name)).map((member, index) => (
+              <FounderCard
+                key={`lead-${index}`}
+                name={member.name}
+                title={member.title}
+                imageSrc={member.image}
+                bio={member.bio}
+                credentials={member.credentials}
+                imageClassName={member.name === "Damian Ochoa" ? "object-[50%_35%]" : undefined}
+              />
+            ))}
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <div key={index} className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg overflow-hidden group hover:shadow-xl transition-shadow">
-                <div className="relative h-64 bg-gray-200 dark:bg-neutral-700">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    {member.name}
-                  </h3>
-                  <p className="text-red-600 dark:text-red-400 font-semibold mb-4">
-                    {member.title}
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4 line-clamp-4">
-                    {member.bio}
-                  </p>
-                  <div className="space-y-2">
-                    {member.credentials.map((credential, credIndex) => (
-                      <div key={credIndex} className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {credential}
-                        </span>
-                      </div>
-                    ))}
+            {teamMembers.filter(m => !["Christopher Gil", "Damian Ochoa"].includes(m.name)).map((member, index) => (
+              <FounderCard
+                key={`rest-${index}`}
+                name={member.name}
+                title={member.title}
+                imageSrc={member.image}
+                bio={member.bio}
+                credentials={member.credentials}
+              />
+            ))}
+          </div>
+
+          {/* LinkedIn Promo */}
+          <div className="mt-16">
+            <div className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-neutral-800 bg-gradient-to-br from-gray-50 to-white dark:from-neutral-900 dark:to-black p-8">
+              <div className="flex flex-col lg:flex-row items-center gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-[#0A66C2]/10 flex items-center justify-center">
+                    <svg className="w-7 h-7 text-[#0A66C2]" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                      <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v13H0V8zm7.5 0h4.8v1.8h.07c.67-1.2 2.3-2.46 4.73-2.46 5.05 0 5.98 3.33 5.98 7.66V21H18v-6.67c0-1.59-.03-3.63-2.21-3.63-2.22 0-2.56 1.73-2.56 3.52V21H7.5V8z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Follow Optimal Sports on LinkedIn</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">News, signings, and behind-the-scenes updates from our executive team.</p>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-20 bg-white dark:bg-neutral-950">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              Get answers to common questions about working with us
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            {faqs.map((faq, index) => (
-              <details key={index} className="group border border-gray-200 dark:border-neutral-700 rounded-lg">
-                <summary className="flex items-center justify-between p-6 cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors">
-                  <h3 className="font-medium text-gray-900 dark:text-white text-left pr-4">
-                    {faq.question}
-                  </h3>
-                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="px-6 pb-6 border-t border-gray-200 dark:border-neutral-700">
-                  <p className="pt-4 text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {faq.answer}
-                  </p>
+                <div className="flex-1" />
+                <div className="flex items-center gap-4">
+                  <a
+                    href="https://www.linkedin.com/company/optimal-sports-management/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0A66C2] text-white font-semibold hover:bg-[#0a5ab0] transition-colors"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                      <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v13H0V8zm7.5 0h4.8v1.8h.07c.67-1.2 2.3-2.46 4.73-2.46 5.05 0 5.98 3.33 5.98 7.66V21H18v-6.67c0-1.59-.03-3.63-2.21-3.63-2.22 0-2.56 1.73-2.56 3.52V21H7.5V8z"/>
+                    </svg>
+                    View LinkedIn
+                  </a>
                 </div>
-              </details>
-            ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      
 
       {/* Enhanced Social Section - Instagram CTA Style from Homepage */}
-      <section className="bg-black text-white">
+      <section className="bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-8">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white">
               Follow Our Journey
             </h2>
           </div>

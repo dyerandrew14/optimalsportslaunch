@@ -40,7 +40,7 @@ export const athletes: Athlete[] = [
     classYear: "Junior",
     number: "0",
     bio: "Dynamic back with elite balance and contact courage. Versatile in the passing game with strong lower-body power.",
-    image: "/Jonah_Washington.webp",
+    image: "/players/jonah_coleman.webp",
     colors: { from: "from-purple-600", to: "to-blue-600" },
     stats: {
       passingYards: 0,
@@ -63,7 +63,7 @@ export const athletes: Athlete[] = [
     classYear: "Sophomore",
     number: "45",
     bio: "Physical linebacker with excellent instincts and tackling ability. Leader on the defensive side of the ball.",
-    image: "/IMG_8057.webp",
+    image: "/players/madden_faraimo.webp",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -86,7 +86,7 @@ export const athletes: Athlete[] = [
     classYear: "Sophomore",
     number: "4",
     bio: "Polished route runner with reliable hands and YAC ability. Creates separation with pacing and leverage.",
-    image: "/IMG_5310.webp",
+    image: "/players/rico_flores.webp",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -109,7 +109,7 @@ export const athletes: Athlete[] = [
     classYear: "Senior",
     number: "1",
     bio: "Electric receiver with elite short-area quickness and field vision. Game-changer on offense and special teams.",
-    image: "/Image-1.webp",
+    image: "/players/jacob_de_jesus.webp",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -132,7 +132,7 @@ export const athletes: Athlete[] = [
     classYear: "Junior",
     number: "87",
     bio: "Versatile tight end with strong blocking skills and reliable hands. Creates mismatches in the passing game.",
-    image: "/jackpedersenstats-1681095450582.jpg",
+    image: "/players/jack_pedersen.jpg",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -155,7 +155,7 @@ export const athletes: Athlete[] = [
     classYear: "Junior",
     number: "27",
     bio: "Physical, disciplined safety with range and playmaking instincts. Communicator on the back end.",
-    image: "/IMG_8057.webp",
+    image: "/players/christian_pierce.webp",
     colors: { from: "from-red-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -178,7 +178,7 @@ export const athletes: Athlete[] = [
     classYear: "Senior",
     number: "23",
     bio: "Lockdown corner with elite speed and ball skills. Shuts down opposing receivers with physical play.",
-    image: "/IMG_4305_dcdcea1a-a3ad-4712-9bc5-13f84f6380a9.webp",
+    image: "/players/al'zillion_hamiliton.webp",
     colors: { from: "from-blue-600", to: "to-red-600" },
     stats: {
       passingYards: 0,
@@ -201,7 +201,7 @@ export const athletes: Athlete[] = [
     classYear: "Sophomore",
     number: "3",
     bio: "Rangy safety with excellent coverage skills and ball-hawking ability. Leader of the secondary.",
-    image: "/IMG_4305_dcdcea1a-a3ad-4712-9bc5-13f84f6380a9.webp",
+    image: "/players/jadyn_hudson.webp",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -224,7 +224,7 @@ export const athletes: Athlete[] = [
     classYear: "Junior",
     number: "12",
     bio: "Dual-threat quarterback with strong arm and mobility. Natural leader who makes plays under pressure.",
-    image: "/IMG_4472.webp",
+    image: "/players/michael_tollefson.webp",
     colors: { from: "from-maroon-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -247,7 +247,7 @@ export const athletes: Athlete[] = [
     classYear: "Sophomore",
     number: "8",
     bio: "Explosive receiver with breakaway speed and reliable hands. Creates big plays down the field.",
-    image: "/IMG_3489.webp",
+    image: "/players/zachary_card.webp",
     colors: { from: "from-orange-600", to: "to-black" },
     stats: {
       passingYards: 0,
@@ -270,7 +270,7 @@ export const athletes: Athlete[] = [
     classYear: "Junior",
     number: "99",
     bio: "Physical defensive lineman with strong hands and motor. Disrupts plays in the backfield consistently.",
-    image: "/IMG_3903.webp",
+    image: "/players/grant_buckey.webp",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -293,7 +293,7 @@ export const athletes: Athlete[] = [
     classYear: "Senior",
     number: "21",
     bio: "Shutdown corner with excellent technique and ball skills. Matches up against top receivers.",
-    image: "/IMG_3897.webp",
+    image: "/players/michael_dansby.webp",
     colors: { from: "from-red-600", to: "to-blue-600" },
     stats: {
       passingYards: 0,
@@ -316,7 +316,7 @@ export const athletes: Athlete[] = [
     classYear: "Sophomore",
     number: "15",
     bio: "Hard-hitting safety with excellent range and tackling ability. Leader of the defensive backfield.",
-    image: "/IMG_3899.webp",
+    image: "/players/marquis_gallegos.jpg",
     colors: { from: "from-red-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -339,7 +339,7 @@ export const athletes: Athlete[] = [
     classYear: "Junior",
     number: "44",
     bio: "Physical linebacker with excellent instincts and tackling ability. Leader on the defensive side.",
-    image: "/IMG_5172.webp",
+    image: "/players/sefo_akuila.webp",
     colors: { from: "from-blue-600", to: "to-white" },
     stats: {
       passingYards: 0,
@@ -362,7 +362,7 @@ export const athletes: Athlete[] = [
     classYear: "Senior",
     number: "7",
     bio: "Versatile safety with excellent coverage skills and ball-hawking ability. Leader of the secondary.",
-    image: "/IMG_3743.webp",
+    image: "/players/skyler_thomas.webp",
     colors: { from: "from-orange-600", to: "to-black" },
     stats: {
       passingYards: 0,
@@ -385,7 +385,7 @@ export const athletes: Athlete[] = [
     classYear: "Sophomore",
     number: "11",
     bio: "Explosive receiver with breakaway speed and reliable hands. Creates big plays down the field.",
-    image: "/Bryce_Cain_2.webp",
+    image: "/players/bryce_cain.webp",
     colors: { from: "from-orange-600", to: "to-blue-600" },
     stats: {
       passingYards: 0,
@@ -408,7 +408,7 @@ export const athletes: Athlete[] = [
     classYear: "Junior",
     number: "22",
     bio: "Powerful running back with excellent vision and breakaway speed. Workhorse of the offense.",
-    image: "/IMG_1134.webp",
+    image: "/players/derrick_blanche.webp",
     colors: { from: "from-green-600", to: "to-white" },
     stats: {
       passingYards: 0,
@@ -431,7 +431,7 @@ export const athletes: Athlete[] = [
     classYear: "Senior",
     number: "5",
     bio: "Elite high school receiver with exceptional route running and hands. Future star at the next level.",
-    image: "/IMG_1546.webp",
+    image: "/players/cynai_thomas.webp",
     colors: { from: "from-purple-600", to: "to-gold-500" },
     stats: {
       passingYards: 0,
@@ -454,7 +454,7 @@ export const athletes: Athlete[] = [
     classYear: "Sophomore",
     number: "33",
     bio: "Physical linebacker with excellent instincts and tackling ability. Leader on the defensive side.",
-    image: "/IMG_5198.webp",
+    image: "/players/naki_tuakoi.webp",
     colors: { from: "from-blue-600", to: "to-white" },
     stats: {
       passingYards: 0,
@@ -477,7 +477,7 @@ export const athletes: Athlete[] = [
     classYear: "Senior",
     number: "28",
     bio: "Powerful running back with excellent vision and breakaway speed. Workhorse of the offense.",
-    image: "/Herschel_Turner_-_Jan.8-7.webp",
+    image: "/players/herschel_turner.webp",
     colors: { from: "from-blue-600", to: "to-silver-500" },
     stats: {
       passingYards: 0,
@@ -500,7 +500,7 @@ export const athletes: Athlete[] = [
     classYear: "Freshman",
     number: "25",
     bio: "Elite freshman running back with exceptional talent and potential. Future star for the Fighting Irish.",
-    image: "/IMG_1167.webp",
+    image: "/players/kedren_young.webp",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -523,7 +523,7 @@ export const athletes: Athlete[] = [
     classYear: "Senior",
     number: "24",
     bio: "Elite high school running back with exceptional speed and power. Future star at the next level.",
-    image: "/IMG_3969.webp",
+    image: "/players/ansu_sanoe.webp",
     colors: { from: "from-blue-600", to: "to-white" },
     stats: {
       passingYards: 0,
@@ -546,7 +546,7 @@ export const athletes: Athlete[] = [
     classYear: "Junior",
     number: "77",
     bio: "Physical offensive guard with excellent technique and strength. Anchors the offensive line.",
-    image: "/IMG_4305_dcdcea1a-a3ad-4712-9bc5-13f84f6380a9.webp",
+    image: "/players/tyson_ruffins.webp",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -569,7 +569,7 @@ export const athletes: Athlete[] = [
     classYear: "Sophomore",
     number: "19",
     bio: "Shutdown corner with excellent technique and ball skills. Matches up against top receivers.",
-    image: "/IMG_5548.jpg",
+    image: "/players/maliki_crawford.webp",
     colors: { from: "from-red-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -585,14 +585,14 @@ export const athletes: Athlete[] = [
   },
   {
     slug: "jadyn-marshall",
-    name: "Jaydn Marshall",
+    name: "Jadyn Marshall",
     position: "Cornerback",
     school: "UCLA",
     conference: "Big Ten",
     classYear: "Sophomore",
     number: "2",
     bio: "Elite cornerback with exceptional speed and coverage skills. Shuts down opposing receivers.",
-    image: "/IMG_9977_683fc1a5-7e82-4ac5-85a7-bda96443fb35.webp",
+    image: "/players/jadyn_marshall.webp",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -610,12 +610,12 @@ export const athletes: Athlete[] = [
     slug: "kenny-moore-iii",
     name: "Kenny Moore III",
     position: "Wide Receiver",
-    school: "UCLA commit",
+    school: "UCLA",
     conference: "High School",
     classYear: "Senior",
     number: "9",
     bio: "Elite high school receiver with exceptional route running and hands. Future star for UCLA.",
-    image: "/image5.webp",
+    image: "/players/kenny_moore.webp",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -638,7 +638,7 @@ export const athletes: Athlete[] = [
     classYear: "Senior",
     number: "6",
     bio: "Elite high school receiver with exceptional speed and hands. Future star at the next level.",
-    image: "/image7.webp",
+    image: "/players/blake_wong.webp",
     colors: { from: "from-red-600", to: "to-white" },
     stats: {
       passingYards: 0,
@@ -661,7 +661,7 @@ export const athletes: Athlete[] = [
     classYear: "Pro",
     number: "70",
     bio: "NFL offensive tackle with excellent technique and strength. Protects the quarterback at the highest level.",
-    image: "/Screenshot_2024-07-23_at_10.51.11_PM.webp",
+    image: "/players/raiqwon_oneal.webp",
     colors: { from: "from-red-600", to: "to-white" },
     stats: {
       passingYards: 0,
@@ -684,7 +684,7 @@ export const athletes: Athlete[] = [
     classYear: "Pro",
     number: "29",
     bio: "NFL cornerback with exceptional speed and coverage skills. Shuts down opposing receivers at the highest level.",
-    image: "/Screenshot_2024-02-08_at_9.00.49_PM.webp",
+    image: "/players/myles_purchase.webp",
     colors: { from: "from-blue-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -707,7 +707,7 @@ export const athletes: Athlete[] = [
     classYear: "Pro",
     number: "18",
     bio: "NFL wide receiver with exceptional route running and hands. Creates big plays at the highest level.",
-    image: "/IMG_7169.webp",
+    image: "/players/justin_lockhart.webp",
     colors: { from: "from-red-600", to: "to-yellow-500" },
     stats: {
       passingYards: 0,
@@ -730,7 +730,7 @@ export const athletes: Athlete[] = [
     classYear: "Pro",
     number: "55",
     bio: "NFL linebacker with excellent instincts and tackling ability. Leader on the defensive side at the highest level.",
-    image: "/IMG_7169.webp",
+    image: "/players/tuasivi_nomura.webp",
     colors: { from: "from-blue-600", to: "to-black" },
     stats: {
       passingYards: 0,

@@ -1,4 +1,4 @@
-import VideoBackground from "../../components/VideoBackground";
+// Removed video background for a cleaner hero consistent with other pages
 
 export default function ServicesPage() {
 
@@ -6,7 +6,7 @@ export default function ServicesPage() {
     {
       title: "NFL Contract Representation",
       description: "Expert contract negotiation and salary optimization to ensure you receive the compensation you deserve. We handle performance bonuses, guaranteed money, and complex contract structures.",
-      image: "/IMG_3969.webp",
+      image: "/players/zachary_card.webp",
       imageAlt: "Professional athlete contract representation",
       gradient: "from-red-600 via-red-700 to-black",
       features: ["Contract Negotiation", "Salary Optimization", "Performance Bonuses", "Guaranteed Money"],
@@ -16,7 +16,7 @@ export default function ServicesPage() {
     {
       title: "NIL Representation & Marketing",
       description: "Strategic brand development and endorsement deals that maximize your market value. We create comprehensive marketing strategies that scale with your career.",
-      image: "/IMG_5172.webp",
+      image: "/players/madden_faraimo.webp",
       imageAlt: "NIL marketing and brand partnerships for athletes",
       gradient: "from-blue-600 via-purple-600 to-red-600",
       features: ["Brand Strategy", "Market Research", "Endorsement Deals", "Social Media Growth"],
@@ -26,7 +26,7 @@ export default function ServicesPage() {
     {
       title: "Client Relations & Support",
       description: "Comprehensive personal and professional support to handle your everyday needs. From charity management to family logistics, we ensure you can focus on your game.",
-      image: "/IMG_3743.webp",
+      image: "/players/maliki_crawford.webp",
       imageAlt: "Comprehensive athlete support and client relations",
       gradient: "from-green-600 via-teal-600 to-blue-600",
       features: ["Charity Management", "Family Logistics", "Travel Coordination", "Personal Assistance"],
@@ -34,19 +34,9 @@ export default function ServicesPage() {
       badge: "FULL SERVICE"
     },
     {
-      title: "NIL Collective Representation",
-      description: "Specialized representation for collective deals with NCAA compliance expertise. We maximize your collective value while ensuring regulatory adherence.",
-      image: "/IMG_3897.webp",
-      imageAlt: "College athletes NIL collective representation",
-      gradient: "from-purple-600 via-pink-600 to-red-600",
-      features: ["Collective Deals", "NCAA Compliance", "Brand Alignment", "Risk Mitigation"],
-      stats: "100% compliance rate",
-      badge: "NCAA COMPLIANT"
-    },
-    {
       title: "Wealth Management & Career Planning",
       description: "Long-term financial planning and career transition support. We help you build lasting wealth and prepare for life after sports.",
-      image: "/IMG_1546.webp",
+      image: "/players/jonah_coleman.webp",
       imageAlt: "Athlete wealth management and career planning",
       gradient: "from-yellow-600 via-orange-600 to-red-600",
       features: ["Financial Planning", "Investment Strategy", "Career Transition", "Legacy Building"],
@@ -64,40 +54,26 @@ export default function ServicesPage() {
 
   return (
     <main className="min-h-screen">
-      {/* Professional Header with Video Background */}
-      <section className="relative py-12 bg-gradient-to-br from-red-600 via-red-700 to-black text-white overflow-hidden">
-        {/* Video Background */}
-        <VideoBackground />
-        
-        {/* Enhanced Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/30 to-black/60" />
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-black mb-4">
-              <span className="bg-gradient-to-r from-white via-red-100 to-white bg-clip-text text-transparent drop-shadow-2xl">
-                Professional Sports Management
-              </span>
-            </h1>
-            <p className="text-lg text-gray-200 max-w-2xl mx-auto leading-relaxed">
-              Comprehensive services designed to maximize your potential and secure your future
-            </p>
-          </div>
+      {/* Consistent Hero (matches other pages) */}
+      <section className="py-16 bg-gradient-to-br from-red-600 via-red-700 to-black text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-black mb-3">Our Services</h1>
+          <p className="text-gray-100/90 max-w-2xl mx-auto">
+            Comprehensive representation, branding, and career support for elite athletes
+          </p>
+          <div className="w-24 h-1 bg-gradient-to-r from-red-400 to-red-600 mx-auto mt-6 rounded-full"></div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800">
+      {/* Subtle Stats */}
+      <section className="py-14 bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800" id="overview">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-red-600 dark:text-red-400 mb-2">
-                  {stat.number}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                  {stat.label}
-                </div>
+                <div className="w-8 h-1 bg-red-600/80 dark:bg-red-500/80 mx-auto mb-2 rounded-full" />
+                <div className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white/90 mb-1">{stat.number}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400 tracking-wide uppercase">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -105,7 +81,7 @@ export default function ServicesPage() {
       </section>
 
       {/* NFL-Style Alternating Services */}
-      <section className="py-20 bg-black text-white">
+      <section className="py-20 bg-black text-white" id="nil">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-6xl font-black mb-6">
@@ -121,7 +97,7 @@ export default function ServicesPage() {
 
           <div className="space-y-24">
             {services.map((service, index) => (
-              <div key={index} className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-16`}>
+              <div key={index} id={index===0? 'contract' : index===1? 'marketing' : index===2? 'merchandise' : 'career'} className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-16`}>
                 {/* Image Side */}
                 <div className="flex-1 group">
                   <div className="relative overflow-hidden rounded-3xl shadow-2xl">

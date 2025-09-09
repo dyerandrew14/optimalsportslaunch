@@ -40,7 +40,7 @@ export const schools: School[] = [
     name: "UCLA",
     shortName: "UCLA",
     mascot: "Bruins",
-    logo: "/IMG_5310.webp", // Using existing athlete photo as placeholder
+    logo: "/IMG_5310.webp",
     colors: {
       primary: "from-blue-600",
       secondary: "to-yellow-500",
@@ -49,10 +49,22 @@ export const schools: School[] = [
     conference: "Big Ten"
   },
   {
+    name: "Oregon State University",
+    shortName: "Oregon State",
+    mascot: "Beavers",
+    logo: "/IMG_3743.webp",
+    colors: {
+      primary: "from-orange-600",
+      secondary: "to-black",
+      accent: "orange"
+    },
+    conference: "Pac-12"
+  },
+  {
     name: "Cal",
     shortName: "Cal",
     mascot: "Golden Bears",
-    logo: "/Image-1.webp", // Using existing athlete photo as placeholder
+    logo: "/California-Golden-Bears-Logo-tumb.png",
     colors: {
       primary: "from-blue-600",
       secondary: "to-yellow-500",
@@ -64,7 +76,7 @@ export const schools: School[] = [
     name: "USC",
     shortName: "USC",
     mascot: "Trojans",
-    logo: "/IMG_8057.webp", // Using existing athlete photo as placeholder
+    logo: "/imagejpeg_0_d5c9f8c8-1ae4-46ec-9bb9-7a2c43faf502.webp",
     colors: {
       primary: "from-red-600",
       secondary: "to-yellow-500",
@@ -97,22 +109,10 @@ export const schools: School[] = [
     conference: "Big 12"
   },
   {
-    name: "Oregon State University",
-    shortName: "Oregon State",
-    mascot: "Beavers",
-    logo: "/IMG_8057.webp",
-    colors: {
-      primary: "from-orange-600",
-      secondary: "to-black",
-      accent: "orange"
-    },
-    conference: "Pac-12"
-  },
-  {
     name: "University of Arizona",
     shortName: "Arizona",
     mascot: "Wildcats",
-    logo: "/IMG_8057.webp",
+    logo: "/IMG_3897.webp",
     colors: {
       primary: "from-red-600",
       secondary: "to-blue-600",
@@ -124,7 +124,7 @@ export const schools: School[] = [
     name: "BYU",
     shortName: "BYU",
     mascot: "Cougars",
-    logo: "/IMG_8057.webp",
+    logo: "/BYU-Cougars-Logo-thumb.png",
     colors: {
       primary: "from-blue-600",
       secondary: "to-white",
@@ -136,7 +136,7 @@ export const schools: School[] = [
     name: "Auburn",
     shortName: "Auburn",
     mascot: "Tigers",
-    logo: "/IMG_8057.webp",
+    logo: "/Auburn-Tigers-Logos.jpg",
     colors: {
       primary: "from-orange-600",
       secondary: "to-blue-600",
@@ -148,7 +148,7 @@ export const schools: School[] = [
     name: "Portland State University",
     shortName: "Portland State",
     mascot: "Vikings",
-    logo: "/IMG_8057.webp",
+    logo: "/IMG_1134.webp",
     colors: {
       primary: "from-green-600",
       secondary: "to-white",
@@ -160,13 +160,81 @@ export const schools: School[] = [
     name: "Nevada",
     shortName: "Nevada",
     mascot: "Wolf Pack",
-    logo: "/IMG_8057.webp",
+    logo: "/Herschel_Turner_-_Jan.8-7.webp",
     colors: {
       primary: "from-blue-600",
       secondary: "to-silver-500",
       accent: "blue"
     },
     conference: "Mountain West"
+  },
+  {
+    name: "Archbishop Riordan High School",
+    shortName: "Archbishop Riordan",
+    mascot: "Crusaders",
+    logo: "/IMG_1546.webp",
+    colors: {
+      primary: "from-purple-600",
+      secondary: "to-gold-500",
+      accent: "purple"
+    },
+    conference: "High School"
+  },
+  {
+    name: "Lakeridge High School",
+    shortName: "Lakeridge",
+    mascot: "Pacers",
+    logo: "/IMG_3969.webp",
+    colors: {
+      primary: "from-blue-600",
+      secondary: "to-white",
+      accent: "blue"
+    },
+    conference: "High School"
+  },
+  {
+    name: "Tampa Bay Buccaneers",
+    shortName: "Buccaneers",
+    mascot: "Buccaneers",
+    logo: "/Screenshot_2024-07-23_at_10.51.11_PM.webp",
+    colors: {
+      primary: "from-red-600",
+      secondary: "to-white"
+    },
+    conference: "NFL"
+  },
+  {
+    name: "Los Angeles Chargers",
+    shortName: "Chargers",
+    mascot: "Chargers",
+    logo: "/Screenshot_2024-02-08_at_9.00.49_PM.webp",
+    colors: {
+      primary: "from-blue-600",
+      secondary: "to-yellow-500"
+    },
+    conference: "NFL"
+  },
+  {
+    name: "Kansas City Chiefs",
+    shortName: "Chiefs",
+    mascot: "Chiefs",
+    logo: "/IMG_7169.webp",
+    colors: {
+      primary: "from-red-600",
+      secondary: "to-yellow-500"
+    },
+    conference: "NFL"
+  },
+  {
+    name: "Carolina Panthers",
+    shortName: "Panthers",
+    mascot: "Panthers",
+    logo: "/IMG_7169.webp",
+    colors: {
+      primary: "from-blue-600",
+      secondary: "to-black"
+    },
+    conference: "NFL"
   }
 ];
 
