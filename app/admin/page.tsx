@@ -12,7 +12,7 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
   const [error, setError] = useState('');
   const [attempts, setAttempts] = useState(0);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Allow dev bypass for testing

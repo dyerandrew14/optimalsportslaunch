@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { kv } from '@vercel/kv';
 import { AdminUser, hashPassword, verifyPassword } from '@/lib/auth';
 
