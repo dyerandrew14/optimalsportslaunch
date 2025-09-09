@@ -1,7 +1,7 @@
 import { type Athlete } from './athletes';
 
 // Use same-origin by default; allow override via NEXT_PUBLIC_API_BASE
-const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || '').trim();
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || '').trim() || (typeof window !== 'undefined' ? '' : 'http://localhost:3000');
 
 // Athlete API functions
 export async function fetchAthletes(): Promise<Athlete[]> {

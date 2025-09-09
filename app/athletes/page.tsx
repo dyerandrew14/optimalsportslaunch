@@ -20,7 +20,7 @@ export default function AthletesPage() {
   // Load from KV so Admin edits are live
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const loadAthletes = async () => {
       try {
         const res = await fetch("/api/athletes", { cache: "no-store" });
         const data = res.ok ? await res.json() : athletes;
@@ -31,8 +31,17 @@ export default function AthletesPage() {
       } catch {
         // keep defaults
       }
-    })();
-    return () => { cancelled = true; };
+    };
+    
+    loadAthletes();
+    
+    // Refresh every 30 seconds to catch admin changes
+    const interval = setInterval(loadAthletes, 30000);
+    
+    return () => { 
+      cancelled = true; 
+      clearInterval(interval);
+    };
   }, []);
 
   // Apply filters
@@ -109,14 +118,22 @@ export default function AthletesPage() {
               <div className="text-sm text-gray-600">
                 Showing {filteredAthletes.length} of {allAthletes.length} athletes
               </div>
-              {(searchTerm || selectedLeague) && (
+              <div className="flex gap-2">
                 <button
-                  onClick={clearFilters}
-                  className="text-sm text-red-600 hover:text-red-700 font-medium"
+                  onClick={() => window.location.reload()}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  Clear all filters
+                  Refresh
                 </button>
-              )}
+                {(searchTerm || selectedLeague) && (
+                  <button
+                    onClick={clearFilters}
+                    className="text-sm text-red-600 hover:text-red-700 font-medium"
+                  >
+                    Clear all filters
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

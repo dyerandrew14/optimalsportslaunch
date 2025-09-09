@@ -680,10 +680,14 @@ export default function AdminDashboard() {
         slug: generateSlug(athleteData.name)
       };
       
+      console.log('Creating athlete:', newAthlete);
       const createdAthlete = await apiCreateAthlete(newAthlete);
+      console.log('Created athlete response:', createdAthlete);
+      
       if (createdAthlete) {
         setAthletes([...athletes, createdAthlete]);
         setShowAddModal(false);
+        alert('Athlete created successfully!');
       } else {
         alert('Failed to create athlete. Please try again.');
       }
