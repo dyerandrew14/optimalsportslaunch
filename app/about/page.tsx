@@ -2,43 +2,24 @@ import Link from "next/link";
 import Image from "next/image";
 import FounderCard from "@/components/FounderCard";
 
-export default function AboutPage() {
-  const teamMembers = [
-    {
-      name: "Christopher Gil",
-      title: "Founder & Chief Executive Officer",
-      image: "/founders/christopher.webp",
-      bio: "Christopher is the Founder and CEO of Optimal Sports Management. He is originally from Los Angeles, California. He brings three years of sports management experience working for several Los Angeles based professional sports teams and two sports management firms, prior to graduating from USC in Fall 2020 with a degree in Sports Media. While at USC, he was a member of the Sports Business Association. Christopher is also a proud graduate of Loyola Marymount University, having attained his Master's of Science in Business Management from the Hilton Center for Business in May of 2023. Christopher became an NFLPA Certified Contract Advisor in 2023.",
-      credentials: ["USC Sports Media Graduate", "LMU MS Business Management", "NFLPA Certified Contract Advisor"]
-    },
-    {
-      name: "Frank Yip",
-      title: "Co-Founder and Director of Football Operations",
-      image: "/founders/frankyip.webp",
-      bio: "Frank Yip is a proud graduate of the Marshall School of Business at the University of Southern California and the School of Law at Santa Clara University. He is also a certified financial planner from the Denver School of Financial Planning and the University of Southern California. He currently serves as the Founder and CEO of Coaches Athletic Advisory Services (CAAS). Frank brings a wealth of experience in the sports industry, having worked primarily in the collegiate and professional football industry.",
-      credentials: ["USC Marshall School of Business", "Santa Clara University School of Law", "Certified Financial Planner"]
-    },
-    {
-      name: "Jon Kingdon",
-      title: "Director of Scouting",
-      image: "/founders/jonkingdom.webp",
-      bio: "Jon Kingdon dedicated 33 years to the legendary Al Davis and the Oakland Raiders, beginning as an intern in 1978 and serving as Director of College Scouting until his departure in 2012. A trusted advisor to Davis, Kingdon played a key role in player evaluations, though they occasionally differed on draft selections. He co-authored Al Davis: Behind the Raider Shield with Bruce Kebric, offering an insider's perspective on the Raiders' iconic leader.",
-      credentials: ["33 Years with Oakland Raiders", "Oberlin College Graduate", "Co-author of Al Davis Biography"]
-    },
-    {
-      name: "Steve Briscoe",
-      title: "Director of Youth Football",
-      image: "/founders/stevebriscoe.webp",
-      bio: "Coach Steve Briscoe is the Co-Founder and President of Next Level Sports & Academics. He has been coaching and mentoring student athletes for 8+ years. He has coached on many levels from Little League Youth to Elite High School and National 7v7 teams. Coach Briscoe is currently the Passing Coordinator/ College Relations Coordinator for Mount Diablo High School, located in Northern California.",
-      credentials: ["8+ Years Coaching Experience", "Next Level Sports & Academics", "Mount Diablo High School"]
-    },
-    {
-      name: "Damian Ochoa",
-      title: "Chief Operating Officer",
-      image: "/founders/damianochoa.webp",
-      bio: "Damian Ochoa is a proud graduate of Chapman University where he attained his Bachelor's degree in Political Science and a minor in Entrepreneurship. He is currently attending the University of San Francisco and is attaining his Master's of Science in Sports Management. Prior to joining Optimal Sports Management, Damian worked for Steinberg Sports & Entertainment as an Account Executive, where he collaborated with agents to facilitate collegiate NIL deals.",
-      credentials: ["Chapman University Graduate", "USF MS Sports Management", "Steinberg Sports & Entertainment"]
-    }
+type Executive = {
+  id: string;
+  name: string;
+  title: string;
+  image: string;
+  bio?: string;
+  credentials?: string[];
+};
+
+export default async function AboutPage() {
+  // Load executives from KV via API so Admin edits are live
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || ''}/api/executives`, { cache: 'no-store' });
+  const teamMembers: Executive[] = res.ok ? await res.json() : [
+    { id: 'christopher', name: 'Christopher Gil', title: 'Founder & Chief Executive Officer', image: '/founders/christopher.webp' },
+    { id: 'damian', name: 'Damian Ochoa', title: 'Chief Operating Officer', image: '/founders/damianochoa.webp' },
+    { id: 'frank', name: 'Frank Yip', title: 'Co-Founder and Director of Football Operations', image: '/founders/frankyip.webp' },
+    { id: 'jon', name: 'Jon Kingdon', title: 'Director of Scouting', image: '/founders/jonkingdom.webp' },
+    { id: 'steve', name: 'Steve Briscoe', title: 'Director of Youth Football', image: '/founders/stevebriscoe.webp' },
   ];
 
   const faqs = [
@@ -170,29 +151,33 @@ export default function AboutPage() {
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">Meet the experienced professionals dedicated to your success</p>
           </div>
 
-          {/* CEO & COO on top row, rest below */}
+          {/* CEO & COO on top row, rest below (title-based so admin edits still sort correctly) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {teamMembers.filter(m => ["Christopher Gil", "Damian Ochoa"].includes(m.name)).map((member, index) => (
+            {teamMembers
+              .filter(m => /Chief\s+Executive\s+Officer/i.test(m.title) || /Chief\s+Operating\s+Officer/i.test(m.title))
+              .map((member, index) => (
               <FounderCard
                 key={`lead-${index}`}
                 name={member.name}
                 title={member.title}
                 imageSrc={member.image}
-                bio={member.bio}
-                credentials={member.credentials}
-                imageClassName={member.name === "Damian Ochoa" ? "object-[50%_35%]" : undefined}
+                bio={member.bio || ''}
+                credentials={member.credentials || []}
+                imageClassName={/Damian\s+Ochoa/i.test(member.name) ? "object-[50%_35%]" : undefined}
               />
             ))}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teamMembers.filter(m => !["Christopher Gil", "Damian Ochoa"].includes(m.name)).map((member, index) => (
+            {teamMembers
+              .filter(m => !(/Chief\s+Executive\s+Officer/i.test(m.title) || /Chief\s+Operating\s+Officer/i.test(m.title)))
+              .map((member, index) => (
               <FounderCard
                 key={`rest-${index}`}
                 name={member.name}
                 title={member.title}
                 imageSrc={member.image}
-                bio={member.bio}
-                credentials={member.credentials}
+                bio={member.bio || ''}
+                credentials={member.credentials || []}
               />
             ))}
           </div>

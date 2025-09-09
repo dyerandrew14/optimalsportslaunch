@@ -1,20 +1,41 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { athletes } from "@/lib/athletes";
+import { kv } from "@vercel/kv";
 import { getSchoolByName } from "@/lib/schools";
 import { AthleteShop } from "@/components/AthleteShop";
 
 type Params = { slug: string };
 
-export function generateStaticParams() {
-  return athletes
-    .filter(a => a.name.trim().toLowerCase() !== "to be announced")
-    .map((a) => ({ slug: a.slug }));
+export async function generateStaticParams() {
+  // Try KV-backed slugs so Admin-added athletes pre-render if present
+  try {
+    const all = (await kv.get<typeof athletes>("athletes:all")) || athletes;
+    return all
+      .filter(a => a.name.trim().toLowerCase() !== "to be announced")
+      .map((a) => ({ slug: a.slug }));
+  } catch {
+    return athletes
+      .filter(a => a.name.trim().toLowerCase() !== "to be announced")
+      .map((a) => ({ slug: a.slug }));
+  }
 }
 
-export default function AthleteProfile({ params }: { params: Params }) {
+export default async function AthleteProfile({ params }: { params: Params }) {
   const { slug } = params;
-  const athlete = athletes.find((a) => a.slug === slug && a.name.trim().toLowerCase() !== "to be announced");
+  // Prefer KV so Admin edits are live, fall back to static list
+  let athlete = null as (typeof athletes)[number] | null;
+  try {
+    athlete = await kv.get<typeof athletes[number]>(`athlete:${slug}`);
+  } catch {}
+  if (!athlete) {
+    try {
+      const all = (await kv.get<typeof athletes>("athletes:all")) || athletes;
+      athlete = all.find(a => a.slug === slug && a.name.trim().toLowerCase() !== "to be announced") || null;
+    } catch {
+      athlete = athletes.find(a => a.slug === slug && a.name.trim().toLowerCase() !== "to be announced") || null;
+    }
+  }
   if (!athlete) return notFound();
 
   const schoolInfo = getSchoolByName(athlete.school);

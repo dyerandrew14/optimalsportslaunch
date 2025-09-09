@@ -46,16 +46,21 @@ export default async function ProductDetail({ params }: { params: { id: string }
 
   const images = product.images && product.images.length > 0 ? product.images : (product.imageUrl ? [product.imageUrl] : []);
   const checkoutUrl = product.externalUrl || process.env.NEXT_PUBLIC_SHOPIFY_STORE_URL || '/catalog';
+
+  // Resolve athlete from slug first, then best-effort by name
+  const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   const assignedAthlete = product.athleteSlug
     ? athletes.find(a => a.slug === product.athleteSlug)
-    : undefined;
+    : (product.athleteName
+        ? athletes.find(a => normalize(a.name) === normalize(product.athleteName))
+        : undefined);
   const athleteAvatar = assignedAthlete?.image || '/IMG_3743.webp';
 
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950">
       <section className="py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-7">
             <div className="aspect-square rounded-2xl overflow-hidden border border-gray-200 dark:border-neutral-700 bg-black">
               {images[0] && (<img src={images[0]} alt={product.name} className="w-full h-full object-cover" />)}
             </div>
@@ -69,47 +74,53 @@ export default async function ProductDetail({ params }: { params: { id: string }
               </div>
             )}
           </div>
-          <div className="lg:col-span-6">
-            <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white">{product.name}</h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-300">{[product.athleteName, product.school].filter(Boolean).join(' • ')}</p>
-            <div className="mt-4 text-2xl font-bold text-red-600 dark:text-red-400">${product.price.toFixed(2)}</div>
-            {product.sizes && product.sizes.length > 0 && (
-              <div className="mt-6">
-                <div className="text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">Select Size</div>
-                <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((s) => (
-                    <button key={s} className="px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100 hover:border-red-500 hover:text-red-600 transition-colors" type="button">{s}</button>
-                  ))}
-                </div>
+          <div className="lg:col-span-5">
+            <div className="lg:sticky lg:top-24 space-y-6">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white">{product.name}</h1>
+                <p className="mt-2 text-gray-600 dark:text-gray-300">{[product.athleteName, product.school].filter(Boolean).join(' • ')}</p>
+                <div className="mt-4 text-2xl font-bold text-red-600 dark:text-red-400">${product.price.toFixed(2)}</div>
               </div>
-            )}
-            <a href={checkoutUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center mt-6 px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold shadow-lg hover:from-emerald-600 hover:to-green-700 transition-transform hover:scale-[1.02]">
-              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                <path d="M7 4l2-2h6l2 2h3v18H4V4h3zm5 4a4 4 0 100 8 4 4 0 000-8z" />
-              </svg>
-              Checkout on Shopify
-            </a>
 
-            {assignedAthlete && (
-              <div className="mt-8">
-                <div className="rounded-2xl p-[1px] bg-gradient-to-r from-red-600/60 to-red-400/60">
-                  <div className="rounded-2xl p-4 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-red-500/40 flex-shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={athleteAvatar} alt={assignedAthlete.name} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs uppercase tracking-wide text-gray-500">Player</div>
-                      <div className="font-semibold text-gray-900 dark:text-white truncate">{assignedAthlete.name}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400 truncate">{assignedAthlete.school} • {assignedAthlete.position}</div>
-                    </div>
-                    <Link href={`/athletes/${assignedAthlete.slug}`} className="px-3 py-2 rounded-lg border border-gray-200 dark:border-neutral-700 text-sm font-medium text-gray-800 dark:text-gray-200 hover:border-red-500 hover:text-red-600 transition-colors">
-                      View athlete
-                    </Link>
+              {product.sizes && product.sizes.length > 0 && (
+                <div>
+                  <div className="text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">Select Size</div>
+                  <div className="flex flex-wrap gap-2">
+                    {product.sizes.map((s) => (
+                      <button key={s} className="px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100 hover:border-red-500 hover:text-red-600 transition-colors" type="button">{s}</button>
+                    ))}
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+
+              <a href={checkoutUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-full lg:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold shadow-lg hover:from-emerald-600 hover:to-green-700 transition-transform hover:scale-[1.02]">
+                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                  <path d="M7 4l2-2h6l2 2h3v18H4V4h3zm5 4a4 4 0 100 8 4 4 0 000-8z" />
+                </svg>
+                Checkout on Shopify
+              </a>
+
+              {assignedAthlete && (
+                <div>
+                  <div className="rounded-2xl p-[1px] bg-gradient-to-r from-red-600/60 to-red-400/60">
+                    <div className="rounded-2xl p-4 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-red-500/40 flex-shrink-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={athleteAvatar} alt={assignedAthlete.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs uppercase tracking-wide text-gray-500">Player</div>
+                        <div className="font-semibold text-gray-900 dark:text-white truncate">{assignedAthlete.name}</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400 truncate">{assignedAthlete.school} • {assignedAthlete.position}</div>
+                      </div>
+                      <Link href={`/athletes/${assignedAthlete.slug}`} className="px-3 py-2 rounded-lg border border-gray-200 dark:border-neutral-700 text-sm font-medium text-gray-800 dark:text-gray-200 hover:border-red-500 hover:text-red-600 transition-colors">
+                        View athlete
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

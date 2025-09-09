@@ -2,24 +2,42 @@
 
 import Link from "next/link";
 import { athletes } from "@/lib/athletes";
+import { kv } from "@vercel/kv";
 import { getSchoolByName } from "@/lib/schools";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function AthletesPage() {
   const searchParams = useSearchParams();
-  // Ensure placeholders like "To Be Announced" never render
-  const playersOnly = athletes.filter(a => a.name.trim().toLowerCase() !== "to be announced");
-  const [filteredAthletes, setFilteredAthletes] = useState(playersOnly);
+  const [allAthletes, setAllAthletes] = useState(athletes.filter(a => a.name.trim().toLowerCase() !== "to be announced"));
+  const [filteredAthletes, setFilteredAthletes] = useState(allAthletes);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLeague, setSelectedLeague] = useState(""); // "College" | "NFL" | ""
 
   // Helper to determine league
   const getLeague = (conference: string) => (conference === "NFL" ? "NFL" : "College");
 
+  // Load from KV so Admin edits are live
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/athletes", { cache: "no-store" });
+        const data = res.ok ? await res.json() : athletes;
+        if (!cancelled) {
+          const playersOnly = (data || athletes).filter((a: any) => `${a.name}`.trim().toLowerCase() !== "to be announced");
+          setAllAthletes(playersOnly);
+        }
+      } catch {
+        // keep defaults
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   // Apply filters
   useEffect(() => {
-    let filtered = playersOnly;
+    let filtered = allAthletes;
 
     // URL-based filtering (for search results)
     const schoolFromUrl = searchParams.get('school');
@@ -50,7 +68,7 @@ export default function AthletesPage() {
     }
 
     setFilteredAthletes(filtered);
-  }, [searchTerm, selectedLeague, searchParams]);
+  }, [searchTerm, selectedLeague, searchParams, allAthletes]);
 
   const clearFilters = () => {
     setSearchTerm("");
