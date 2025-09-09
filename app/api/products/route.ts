@@ -114,10 +114,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const input = await request.json();
-    console.log('Creating product:', input.name, 'with images:', input.images?.length || 0);
+    console.log('Creating product:', input.name);
+    
     const now = Date.now();
     const newProduct: Product = {
-      id: crypto.randomUUID(),
+      id: input.id || crypto.randomUUID(),
       name: input.name,
       price: Number(input.price),
       imageUrl: input.imageUrl,
@@ -133,24 +134,21 @@ export async function POST(request: NextRequest) {
       createdAt: now,
       updatedAt: now,
     };
-    try {
-      const all = (await kv.get<Product[]>(KEY_ALL)) || [];
-      console.log('Current products count:', all.length);
-      all.push(newProduct);
-      console.log('Updated products count:', all.length);
-      await kv.set(KEY_ALL, all);
-      await kv.set(`product:${newProduct.id}`, newProduct);
-      await kv.zadd(`products:byAthlete:${newProduct.athleteSlug}`, { score: now, member: newProduct.id });
-      await kv.zadd(`products:bySchool:${newProduct.school}`, { score: now, member: newProduct.id });
-      console.log('Successfully saved product to KV');
-    } catch (error) {
-      console.log('KV error, saving to memory:', error);
-      console.error('KV error details:', error);
-      memoryProducts = [newProduct, ...memoryProducts];
-    }
+    
+    const all = (await kv.get<Product[]>(KEY_ALL)) || [];
+    console.log('Current products count:', all.length);
+    
+    all.push(newProduct);
+    console.log('Updated products count:', all.length);
+    
+    await kv.set(KEY_ALL, all);
+    await kv.set(`product:${newProduct.id}`, newProduct);
+    
+    console.log('Successfully saved product to KV');
     return NextResponse.json(newProduct, { status: 201 });
-  } catch (e) {
-    console.error('Error creating product:', e);
+  } catch (error) {
+    console.error('Error creating product:', error);
+    console.error('Error details:', error);
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@/lib/redis';
+import crypto from 'crypto';
 
 export type Executive = {
   id: string;

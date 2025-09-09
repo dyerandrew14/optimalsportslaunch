@@ -35,25 +35,34 @@ export async function GET() {
 
 // POST /api/athletes - Create new athlete
 export async function POST(request: NextRequest) {
-  // Parse body ONCE so we can use it in both success and fallback paths
-  const body: Athlete = await request.json();
-  console.log('Creating athlete:', body.name, 'with slug:', body.slug);
   try {
+    const input = await request.json();
+    console.log('Creating athlete:', input.name);
+    
+    // Generate slug if not provided
+    const slug = input.slug || `${input.name.toLowerCase().replace(/\s+/g, '-')}-${input.number || '1'}`;
+    
+    const newAthlete: Athlete = {
+      ...input,
+      slug: slug,
+    };
+    
     const currentAthletes = (await kv.get<Athlete[]>('athletes:all')) || memoryAthletes || defaultAthletes;
     console.log('Current athletes count:', currentAthletes.length);
-    const updatedAthletes = [...currentAthletes, body];
+    
+    const updatedAthletes = [...currentAthletes, newAthlete];
     console.log('Updated athletes count:', updatedAthletes.length);
+    
     await kv.set('athletes:all', updatedAthletes);
-    await kv.set(`athlete:${body.slug}`, body);
+    await kv.set(`athlete:${newAthlete.slug}`, newAthlete);
     memoryAthletes = updatedAthletes;
+    
     console.log('Successfully saved athlete to KV');
-    return NextResponse.json(body, { status: 201 });
+    return NextResponse.json(newAthlete, { status: 201 });
   } catch (error) {
-    console.error('Error creating athlete (fallback to memory):', error);
+    console.error('Error creating athlete:', error);
     console.error('Error details:', error);
-    memoryAthletes = [...memoryAthletes, body];
-    console.log('Saved athlete to memory fallback');
-    return NextResponse.json(body, { status: 201 });
+    return NextResponse.json({ error: 'Failed to create athlete' }, { status: 500 });
   }
 }
 
