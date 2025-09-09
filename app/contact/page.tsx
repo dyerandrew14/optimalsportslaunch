@@ -18,7 +18,7 @@ export default function ContactPage() {
             </span>
           </h1>
           <p className="text-lg text-red-100 max-w-2xl mx-auto mb-6">
-            Reach out and we'll respond within 24 hours.
+            Reach out and we&apos;ll respond within 24 hours.
           </p>
           <div className="w-20 h-1 bg-gradient-to-r from-white to-red-300 mx-auto rounded-full"></div>
         </div>
