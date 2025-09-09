@@ -70,9 +70,18 @@ export default function ServicesScroller() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [progress, setProgress] = useState(0); // 0..1 across the whole section
+  const [perSlideVh, setPerSlideVh] = useState(100); // tweak height on mobile
 
   const totalSlides = slides.length;
-  const totalHeight = useMemo(() => totalSlides * 100, [totalSlides]); // in vh
+  const totalHeight = useMemo(() => totalSlides * perSlideVh, [totalSlides, perSlideVh]); // in vh
+
+  // Adjust overall section height for mobile so the whole scrollytelling block is shorter
+  useEffect(() => {
+    const update = () => setPerSlideVh(window.innerWidth < 768 ? 85 : 100);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
 
   useEffect(() => {
     let raf = 0;
@@ -114,7 +123,7 @@ export default function ServicesScroller() {
         style={{ height: `calc(${totalHeight}vh)` }}
       >
         {/* Sticky viewport that pins while the user scrolls through the slides */}
-        <div className="sticky top-0 h-screen">
+        <div className="sticky top-0 h-[85vh] md:h-screen pt-6 pb-10 md:pt-10 md:pb-16">
           <div className="h-full w-full grid grid-cols-1 lg:grid-cols-12 items-center">
             {/* Textual Content */}
             <div className="lg:col-span-7 px-6 md:px-10 max-w-3xl mx-auto lg:mx-0">
