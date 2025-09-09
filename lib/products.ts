@@ -16,9 +16,8 @@ export type Product = {
   externalUrl?: string; // optional purchase link
 };
 
-const API_BASE = process.env.NODE_ENV === 'production'
-  ? 'https://your-site.vercel.app'
-  : 'http://localhost:3000';
+// Use same-origin by default; allow override via NEXT_PUBLIC_API_BASE
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || '').trim();
 
 export async function fetchProducts(params?: { athleteSlug?: string; school?: string; name?: string; category?: string; size?: string; page?: number; limit?: number }): Promise<Product[]> {
   const qs = new URLSearchParams();
