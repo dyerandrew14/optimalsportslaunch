@@ -274,6 +274,13 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
                 placeholder="https://example.com/image.jpg or upload below"
               />
+              <a
+                href="https://cloudinary.com/console/media_library" target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-sm text-gray-800 dark:text-gray-200 hover:border-red-500"
+                title="Open Cloudinary to upload and copy a direct image URL"
+              >
+                Get image link
+              </a>
               <label className="inline-flex items-center px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-sm text-gray-800 dark:text-gray-200 cursor-pointer">
                 <input
                   type="file"

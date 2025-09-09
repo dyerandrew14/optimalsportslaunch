@@ -25,9 +25,9 @@ export default function RootLayout({
               "(() => { const clean = () => { try { document.querySelectorAll('[bis_skin_checked]').forEach(el => el.removeAttribute('bis_skin_checked')); } catch(_) {} }; clean(); const start = performance.now(); const loop = () => { if (performance.now() - start < 2000) { clean(); requestAnimationFrame(loop); } }; requestAnimationFrame(loop); })();",
           }}
         />
-        {/* Prefer a crisp PNG favicon if available */}
-        <link rel="icon" href="/favicon.png" sizes="32x32" type="image/png" />
-        <link rel="icon" href="/logo-optimal.svg" type="image/svg+xml" />
+        {/* Prefer PNG/SVG favicon with cache-buster to avoid stale icons */}
+        <link rel="icon" href="/favicon.png?v=2" sizes="32x32" type="image/png" />
+        <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
       </head>
       <body className="font-sans bg-white text-gray-900 dark:bg-black dark:text-white" suppressHydrationWarning>
         <ThemeProvider>

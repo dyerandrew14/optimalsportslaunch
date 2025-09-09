@@ -1,4 +1,3 @@
-import { fetchProducts } from '@/lib/products';
 import { athletes } from '@/lib/athletes';
 import SafeImage from '@/components/SafeImage';
 import CatalogExplorer from '@/components/CatalogExplorer';
@@ -8,7 +7,6 @@ import CatalogExplorer from '@/components/CatalogExplorer';
 export default async function CatalogPage({ searchParams }: { searchParams?: { school?: string; athlete?: string } }) {
   const school = searchParams?.school || '';
   const athleteSlug = searchParams?.athlete || '';
-  const products = await fetchProducts({ school: school || undefined, athleteSlug: athleteSlug || undefined });
 
   const schools = Array.from(new Set(athletes.map(a => a.school))).sort();
   const athleteMap = new Map(athletes.map(a => [a.slug, a.name]));
