@@ -8,29 +8,29 @@ import { type Product, fetchProducts as fetchAllProducts, createProduct as apiCr
 // Password protection component
 function AdminLogin({ onLogin }: { onLogin: () => void }) {
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [attempts, setAttempts] = useState(0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Simple password check - in production, this should be more secure
-    if (password === '115294') {
+    // Allow dev bypass for testing
+    if (process.env.NEXT_PUBLIC_DEV_BYPASS === 'true') {
+      try { await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'login', dev: true }) }); } catch {}
       onLogin();
-      setError('');
-    } else {
-      setError('Invalid password. Access denied.');
-      setAttempts(prev => prev + 1);
-      setPassword('');
-      
-      // Lock out after 3 failed attempts for 30 seconds
-      if (attempts >= 2) {
-        setError('Too many failed attempts. Please wait 30 seconds.');
-        setTimeout(() => {
-          setAttempts(0);
-          setError('');
-        }, 30000);
-      }
+      return;
+    }
+    try {
+      const res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'login', email, password }) });
+      if (res.ok) { onLogin(); setError(''); return; }
+    } catch {}
+    setError('Invalid credentials.');
+    setAttempts(prev => prev + 1);
+    setPassword('');
+    if (attempts >= 2) {
+      setError('Too many failed attempts. Please wait 30 seconds.');
+      setTimeout(() => { setAttempts(0); setError(''); }, 30000);
     }
   };
 
@@ -52,19 +52,15 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-neutral-700 text-gray-900 dark:text-white text-base transition-all duration-200"
-              placeholder="Enter admin password"
-              disabled={attempts >= 3}
-              required
-            />
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Email</label>
+              <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-neutral-700 text-gray-900 dark:text-white text-base transition-all duration-200" placeholder="you@example.com" required />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Password</label>
+              <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-neutral-700 text-gray-900 dark:text-white text-base transition-all duration-200" placeholder="Enter admin password" disabled={attempts>=3} required />
+            </div>
           </div>
 
           {error && (
@@ -80,6 +76,18 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
           >
             {attempts >= 3 ? 'Access Locked' : 'Access Admin'}
           </button>
+
+          <div className="mt-4 flex items-center justify-between">
+            <button type="button" className="text-sm text-red-600 hover:text-red-700" onClick={async()=>{
+              const emailPrompt = email || prompt('Enter your email for reset link') || '';
+              if (!emailPrompt) return;
+              await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'forgot', email: emailPrompt }) });
+              alert('If the email exists, a reset link has been sent.');
+            }}>Forgot password?</button>
+            {process.env.NEXT_PUBLIC_DEV_BYPASS === 'true' && (
+              <button type="button" className="text-sm text-gray-600 hover:text-gray-800" onClick={async()=>{ await handleSubmit(new Event('submit') as any); }}>Dev</button>
+            )}
+          </div>
         </form>
 
         <div className="mt-6 text-center">
