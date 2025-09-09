@@ -8,6 +8,14 @@ export const metadata: Metadata = {
   title: "Optimal Sports Management - College Athlete Marketing & Management",
   description:
     "Professional sports management and marketing services for college athletes.",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' }
+    ],
+    shortcut: '/favicon.svg',
+    apple: '/logo-optimal.svg',
+  },
 };
 
 export default function RootLayout({
