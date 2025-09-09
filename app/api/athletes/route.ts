@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import { athletes as defaultAthletes, type Athlete } from '@/lib/athletes';
 
+// In-memory fallback to keep Admin usable if KV has an issue
+let memoryAthletes: Athlete[] = [...defaultAthletes];
+
 // GET /api/athletes - Get all athletes
 export async function GET() {
   try {
@@ -11,6 +14,7 @@ export async function GET() {
     // If no athletes in KV, use default athletes and save them
     if (!storedAthletes) {
       await kv.set('athletes:all', defaultAthletes);
+      memoryAthletes = [...defaultAthletes];
       return NextResponse.json(defaultAthletes);
     }
     
@@ -18,57 +22,42 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching athletes:', error);
     // Fallback to default athletes if KV fails
-    return NextResponse.json(defaultAthletes);
+    return NextResponse.json(memoryAthletes.length ? memoryAthletes : defaultAthletes);
   }
 }
 
 // POST /api/athletes - Create new athlete
 export async function POST(request: NextRequest) {
+  // Parse body ONCE so we can use it in both success and fallback paths
+  const body: Athlete = await request.json();
   try {
-    const newAthlete: Athlete = await request.json();
-    
-    // Get current athletes
-    const currentAthletes = await kv.get<Athlete[]>('athletes:all') || defaultAthletes;
-    
-    // Add new athlete
-    const updatedAthletes = [...currentAthletes, newAthlete];
-    
-    // Save to KV
+    const currentAthletes = (await kv.get<Athlete[]>('athletes:all')) || memoryAthletes || defaultAthletes;
+    const updatedAthletes = [...currentAthletes, body];
     await kv.set('athletes:all', updatedAthletes);
-    
-    // Also save individual athlete for faster lookups
-    await kv.set(`athlete:${newAthlete.slug}`, newAthlete);
-    
-    return NextResponse.json(newAthlete, { status: 201 });
+    await kv.set(`athlete:${body.slug}`, body);
+    memoryAthletes = updatedAthletes;
+    return NextResponse.json(body, { status: 201 });
   } catch (error) {
-    console.error('Error creating athlete:', error);
-    return NextResponse.json(
-      { error: 'Failed to create athlete' },
-      { status: 500 }
-    );
+    console.error('Error creating athlete (fallback to memory):', error);
+    memoryAthletes = [...memoryAthletes, body];
+    return NextResponse.json(body, { status: 201 });
   }
 }
 
 // PUT /api/athletes - Update all athletes (for bulk operations)
 export async function PUT(request: NextRequest) {
+  const list: Athlete[] = await request.json();
   try {
-    const athletes: Athlete[] = await request.json();
-    
-    // Save updated athletes list
-    await kv.set('athletes:all', athletes);
-    
-    // Update individual athlete records
-    for (const athlete of athletes) {
+    await kv.set('athletes:all', list);
+    for (const athlete of list) {
       await kv.set(`athlete:${athlete.slug}`, athlete);
     }
-    
-    return NextResponse.json(athletes);
+    memoryAthletes = list;
+    return NextResponse.json(list);
   } catch (error) {
-    console.error('Error updating athletes:', error);
-    return NextResponse.json(
-      { error: 'Failed to update athletes' },
-      { status: 500 }
-    );
+    console.error('Error updating athletes (fallback to memory):', error);
+    memoryAthletes = list;
+    return NextResponse.json(list);
   }
 }
 
