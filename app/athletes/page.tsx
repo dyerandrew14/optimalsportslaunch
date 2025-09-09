@@ -136,10 +136,12 @@ export default function AthletesPage() {
                   <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md border-t border-white/20 p-6">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-12 h-12 rounded-full overflow-hidden bg-white/20 backdrop-blur-sm border-2 border-white/30 flex-shrink-0">
-                        <img 
-                          src={athlete.image} 
-                          alt={athlete.name} 
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={athlete.image}
+                          alt={athlete.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/IMG_3743.webp'; }}
                         />
                       </div>
                       <div className="flex-1">

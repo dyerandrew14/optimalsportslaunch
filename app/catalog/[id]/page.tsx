@@ -1,16 +1,47 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import type { Product } from '@/lib/products';
 import { athletes } from '@/lib/athletes';
+import { kv } from '@vercel/kv';
 
-async function getProduct(id: string): Promise<Product | null> {
-  const base = process.env.NEXT_PUBLIC_API_BASE || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000');
-  const res = await fetch(`${base}/api/products/${id}`, { cache: 'no-store' });
-  if (!res.ok) return null;
-  return res.json();
+async function getProductServer(id: string): Promise<Product | null> {
+  // Try individual record first
+  try {
+    const byId = await kv.get<Product>(`product:${id}`);
+    if (byId) return byId;
+  } catch {}
+  // Fallback to list
+  try {
+    const all = (await kv.get<Product[]>('products:all')) || [];
+    const found = all.find(p => p.id === id) || null;
+    if (found) return found;
+  } catch {}
+  // Final fallback: seeded items (keeps detail pages working if KV empty)
+  const seeded: Record<string, Product> = {
+    'man-tee': {
+      id: 'man-tee', name: 'Optimal Man Tee', price: 49,
+      imageUrl: '/catalog/mens-classic-tee-black-front-6616e04f63957_540x.webp',
+      images: ['/catalog/mens-classic-tee-black-front-6616e04f63957_540x.webp','/catalog/mens-classic-tee-black-left-6616e04f64dee_540x.webp','/catalog/mens-classic-tee-black-right-6616e04f6534e_540x.webp','/catalog/mens-classic-tee-black-back-62b588dcdd3e6_540x.webp'],
+      athleteSlug: '', athleteName: '', school: '', categories: ['Tees'], sizes: ['S','M','L','XL'], active: true, createdAt: Date.now(), updatedAt: Date.now()
+    },
+    'man-hoodie': {
+      id: 'man-hoodie', name: 'Optimal Man Hoodie', price: 79,
+      imageUrl: '/catalog/unisex-premium-hoodie-black-front-62b584b06d8bc_540x.webp',
+      images: ['/catalog/unisex-premium-hoodie-black-front-62b584b06d8bc_540x.webp'],
+      athleteSlug: '', athleteName: '', school: '', categories: ['Hoodies'], sizes: ['S','M','L','XL'], active: true, createdAt: Date.now(), updatedAt: Date.now()
+    },
+    'flag-tee': {
+      id: 'flag-tee', name: 'Optimal Flag Tee', price: 49,
+      imageUrl: '/catalog/mens-classic-tee-black-front-62b588dcdd26d_540x.webp',
+      images: ['/catalog/mens-classic-tee-black-front-62b588dcdd26d_540x.webp'],
+      athleteSlug: '', athleteName: '', school: '', categories: ['Tees'], sizes: ['S','M','L','XL'], active: true, createdAt: Date.now(), updatedAt: Date.now()
+    }
+  };
+  return seeded[id] || null;
 }
 
 export default async function ProductDetail({ params }: { params: { id: string } }) {
-  const product = await getProduct(params.id);
+  const product = await getProductServer(params.id);
   if (!product) return notFound();
 
   const images = product.images && product.images.length > 0 ? product.images : (product.imageUrl ? [product.imageUrl] : []);
@@ -18,6 +49,7 @@ export default async function ProductDetail({ params }: { params: { id: string }
   const assignedAthlete = product.athleteSlug
     ? athletes.find(a => a.slug === product.athleteSlug)
     : undefined;
+  const athleteAvatar = assignedAthlete?.image || '/IMG_3743.webp';
 
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950">
@@ -59,14 +91,22 @@ export default async function ProductDetail({ params }: { params: { id: string }
             </a>
 
             {assignedAthlete && (
-              <div className="mt-8 p-4 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex items-center gap-4">
-                <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200">
-                  <img src={assignedAthlete.image} alt={assignedAthlete.name} className="w-full h-full object-cover" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500">Player</div>
-                  <div className="font-semibold text-gray-900 dark:text-white">{assignedAthlete.name}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">{assignedAthlete.school} • {assignedAthlete.position}</div>
+              <div className="mt-8">
+                <div className="rounded-2xl p-[1px] bg-gradient-to-r from-red-600/60 to-red-400/60">
+                  <div className="rounded-2xl p-4 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-red-500/40 flex-shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={athleteAvatar} alt={assignedAthlete.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs uppercase tracking-wide text-gray-500">Player</div>
+                      <div className="font-semibold text-gray-900 dark:text-white truncate">{assignedAthlete.name}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 truncate">{assignedAthlete.school} • {assignedAthlete.position}</div>
+                    </div>
+                    <Link href={`/athletes/${assignedAthlete.slug}`} className="px-3 py-2 rounded-lg border border-gray-200 dark:border-neutral-700 text-sm font-medium text-gray-800 dark:text-gray-200 hover:border-red-500 hover:text-red-600 transition-colors">
+                      View athlete
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}
