@@ -695,16 +695,18 @@ export default function AdminDashboard() {
   const handleAddAthlete = async (athleteData: Omit<Athlete, 'slug'>) => {
     setLoading(true);
     try {
+      const slug = generateSlug(athleteData.name);
       const newAthlete: Athlete = {
         ...athleteData,
-        slug: generateSlug(athleteData.name)
+        slug: slug
       };
       
-      console.log('Creating athlete:', newAthlete);
+      console.log('Creating athlete with slug:', slug, 'Full athlete:', newAthlete);
       const createdAthlete = await apiCreateAthlete(newAthlete);
       console.log('Created athlete response:', createdAthlete);
       
       if (createdAthlete) {
+        console.log('Adding athlete to local state:', createdAthlete);
         setAthletes([...athletes, createdAthlete]);
         setShowAddModal(false);
         alert('Athlete created successfully!');
@@ -889,8 +891,14 @@ export default function AdminDashboard() {
 
         {/* Athletes Table */}
         <div className="bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Athletes Management</h3>
+            <button
+              onClick={loadAthletes}
+              className="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium"
+            >
+              Refresh
+            </button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -993,7 +1001,7 @@ export default function AdminDashboard() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{p.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{p.athleteName}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{p.school}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${'{'}p.price.toFixed(2){'}'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${p.price.toFixed(2)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{p.active ? 'Yes' : 'No'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center gap-2">

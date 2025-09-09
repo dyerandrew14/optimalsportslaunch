@@ -9,28 +9,35 @@ export async function GET(
 ) {
   try {
     const { slug } = params;
+    console.log('API: Looking for athlete with slug:', slug);
     
     // Try to get from individual record first (faster)
     let athlete: Athlete | null = await kv.get<Athlete>(`athlete:${slug}`);
+    console.log('API: Individual athlete from KV:', athlete ? athlete.name : 'not found');
     
     if (!athlete) {
       // Fallback: search in full athletes list
       const allAthletes = await kv.get<Athlete[]>('athletes:all') || defaultAthletes;
+      console.log('API: All athletes count:', allAthletes.length);
       athlete = allAthletes.find(a => a.slug === slug) ?? null;
+      console.log('API: Found in all athletes:', athlete ? athlete.name : 'not found');
       
       // If found, cache it for future requests
       if (athlete) {
         await kv.set(`athlete:${slug}`, athlete);
+        console.log('API: Cached athlete for future requests');
       }
     }
     
     if (!athlete) {
+      console.log('API: Athlete not found, returning 404');
       return NextResponse.json(
         { error: 'Athlete not found' },
         { status: 404 }
       );
     }
     
+    console.log('API: Returning athlete:', athlete.name);
     return NextResponse.json(athlete);
   } catch (error) {
     console.error('Error fetching athlete:', error);

@@ -72,8 +72,8 @@ export default function ServicesPage() {
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="w-8 h-1 bg-red-600/80 dark:bg-red-500/80 mx-auto mb-2 rounded-full" />
-                <div className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white/90 mb-1">{stat.number}</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400 tracking-wide uppercase">{stat.label}</div>
+                <div className="text-2xl md:text-3xl font-extrabold text-white mb-1">{stat.number}</div>
+                <div className="text-xs text-white/80 tracking-wide uppercase">{stat.label}</div>
               </div>
             ))}
           </div>

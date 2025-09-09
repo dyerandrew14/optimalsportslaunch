@@ -8,17 +8,10 @@ import { AthleteShop } from "@/components/AthleteShop";
 type Params = { slug: string };
 
 export async function generateStaticParams() {
-  // Try KV-backed slugs so Admin-added athletes pre-render if present
-  try {
-    const all = (await kv.get<typeof athletes>("athletes:all")) || athletes;
-    return all
-      .filter(a => a.name.trim().toLowerCase() !== "to be announced")
-      .map((a) => ({ slug: a.slug }));
-  } catch {
-    return athletes
-      .filter(a => a.name.trim().toLowerCase() !== "to be announced")
-      .map((a) => ({ slug: a.slug }));
-  }
+  // Only pre-render the default athletes, let admin-added ones be dynamic
+  return athletes
+    .filter(a => a.name.trim().toLowerCase() !== "to be announced")
+    .map((a) => ({ slug: a.slug }));
 }
 
 export default async function AthleteProfile({ params }: { params: Params }) {

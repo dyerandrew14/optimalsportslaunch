@@ -40,7 +40,37 @@ export default function Footer() {
               </a>
             </div>
           </div>
-          <div className="text-center md:text-left">
+          
+          {/* Mobile: Side by side Main and Services with divider */}
+          <div className="md:hidden flex justify-center gap-8">
+            <div className="text-center">
+              <div className="font-semibold mb-3 text-gray-900 dark:text-white">Main</div>
+              <ul className="space-y-2 text-gray-400 text-sm">
+                <li><a href="/athletes" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Athletes</a></li>
+                <li><a href="/services" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Services</a></li>
+                <li><a href="/catalog" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Shop</a></li>
+                <li><a href="/about" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">About</a></li>
+                <li><a href="/contact" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Contact</a></li>
+              </ul>
+            </div>
+            
+            {/* Vertical divider line */}
+            <div className="w-px bg-gray-300 dark:bg-gray-600 h-32"></div>
+            
+            <div className="text-center">
+              <div className="font-semibold mb-3 text-gray-900 dark:text-white">Services</div>
+              <ul className="space-y-2 text-gray-400 text-sm">
+                <li><a href="/services#nil" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">NIL Representation</a></li>
+                <li><a href="/services#contract" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Contract Negotiation</a></li>
+                <li><a href="/services#marketing" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Marketing & Branding</a></li>
+                <li><a href="/services#merchandise" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Merchandise</a></li>
+                <li><a href="/services#career" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Career Planning</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          {/* Desktop: Separate columns */}
+          <div className="hidden md:block text-center md:text-left">
             <div className="font-semibold mb-3 text-gray-900 dark:text-white">Main</div>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li><a href="/athletes" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Athletes</a></li>
@@ -50,7 +80,7 @@ export default function Footer() {
               <li><a href="/contact" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Contact</a></li>
             </ul>
           </div>
-          <div className="text-center md:text-left">
+          <div className="hidden md:block text-center md:text-left">
             <div className="font-semibold mb-3 text-gray-900 dark:text-white">Services</div>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li><a href="/services#nil" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">NIL Representation</a></li>

@@ -65,7 +65,7 @@ export default function HomePage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-            <Link href="/athletes" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold px-8 py-4 rounded-xl text-center transition-all duration-300 transform hover:scale-105">
+            <Link href="/athletes" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold px-4 py-3 sm:px-8 sm:py-4 rounded-xl text-center transition-all duration-300 transform hover:scale-105">
               View Athletes
             </Link>
           </div>

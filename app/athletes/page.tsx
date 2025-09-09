@@ -9,10 +9,11 @@ import { useState, useEffect } from "react";
 
 export default function AthletesPage() {
   const searchParams = useSearchParams();
-  const [allAthletes, setAllAthletes] = useState(athletes.filter(a => a.name.trim().toLowerCase() !== "to be announced"));
-  const [filteredAthletes, setFilteredAthletes] = useState(allAthletes);
+  const [allAthletes, setAllAthletes] = useState<any[]>([]);
+  const [filteredAthletes, setFilteredAthletes] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLeague, setSelectedLeague] = useState(""); // "College" | "NFL" | ""
+  const [loading, setLoading] = useState(true);
 
   // Helper to determine league
   const getLeague = (conference: string) => (conference === "NFL" ? "NFL" : "College");
@@ -22,14 +23,21 @@ export default function AthletesPage() {
     let cancelled = false;
     const loadAthletes = async () => {
       try {
+        setLoading(true);
         const res = await fetch("/api/athletes", { cache: "no-store" });
         const data = res.ok ? await res.json() : athletes;
         if (!cancelled) {
           const playersOnly = (data || athletes).filter((a: any) => `${a.name}`.trim().toLowerCase() !== "to be announced");
           setAllAthletes(playersOnly);
+          setLoading(false);
         }
       } catch {
-        // keep defaults
+        // fallback to defaults
+        if (!cancelled) {
+          const playersOnly = athletes.filter((a: any) => `${a.name}`.trim().toLowerCase() !== "to be announced");
+          setAllAthletes(playersOnly);
+          setLoading(false);
+        }
       }
     };
     
@@ -83,6 +91,24 @@ export default function AthletesPage() {
     setSearchTerm("");
     setSelectedLeague("");
   };
+
+  if (loading) {
+    return (
+      <main className="pb-16">
+        <section className="text-white py-16" style={{background: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)"}}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Our Athletes</h1>
+            <p className="max-w-3xl text-gray-100">Loading athletes...</p>
+          </div>
+        </section>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="pb-16">

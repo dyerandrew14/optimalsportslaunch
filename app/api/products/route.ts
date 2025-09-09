@@ -30,6 +30,13 @@ export async function GET(request: NextRequest) {
   if (all.length === 0 && memoryProducts.length > 0) {
     console.log('Using memory products as fallback:', memoryProducts.length);
     all = memoryProducts;
+    // Try to save memory products back to KV
+    try {
+      await kv.set(KEY_ALL, memoryProducts);
+      console.log('Saved memory products back to KV');
+    } catch (e) {
+      console.log('Failed to save memory products to KV:', e);
+    }
   }
   if (all.length === 0) {
     const now = Date.now();
