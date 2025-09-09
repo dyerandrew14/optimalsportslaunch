@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(body, { status: 201 });
   } catch (error) {
     console.error('Error creating athlete (fallback to memory):', error);
+    console.error('Error details:', error);
     memoryAthletes = [...memoryAthletes, body];
     console.log('Saved athlete to memory fallback');
     return NextResponse.json(body, { status: 201 });

@@ -3,6 +3,7 @@ import { kv } from '@/lib/redis';
 import { Product } from '@/lib/products';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 const KEY_ALL = 'products:all';
 let memoryProducts: Product[] = [];
@@ -134,7 +135,9 @@ export async function POST(request: NextRequest) {
     };
     try {
       const all = (await kv.get<Product[]>(KEY_ALL)) || [];
+      console.log('Current products count:', all.length);
       all.push(newProduct);
+      console.log('Updated products count:', all.length);
       await kv.set(KEY_ALL, all);
       await kv.set(`product:${newProduct.id}`, newProduct);
       await kv.zadd(`products:byAthlete:${newProduct.athleteSlug}`, { score: now, member: newProduct.id });
@@ -142,6 +145,7 @@ export async function POST(request: NextRequest) {
       console.log('Successfully saved product to KV');
     } catch (error) {
       console.log('KV error, saving to memory:', error);
+      console.error('KV error details:', error);
       memoryProducts = [newProduct, ...memoryProducts];
     }
     return NextResponse.json(newProduct, { status: 201 });
