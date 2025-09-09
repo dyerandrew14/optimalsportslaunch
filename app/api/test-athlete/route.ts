@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@/lib/redis';
+import { type Athlete } from '@/lib/athletes';
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
     console.log('Test athlete data:', JSON.stringify(testAthlete, null, 2));
     
     // Try to save to Redis exactly like executives do
-    const all = (await kv.get('athletes:all')) || [];
+    const all = (await kv.get<Athlete[]>('athletes:all')) || [];
     console.log('Current athletes count:', all.length);
     
     all.push(testAthlete);
