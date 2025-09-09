@@ -107,7 +107,7 @@ export default function AthletesPage() {
             </div>
             <div className="flex justify-between items-center">
               <div className="text-sm text-gray-600">
-                Showing {filteredAthletes.length} of {playersOnly.length} athletes
+                Showing {filteredAthletes.length} of {allAthletes.length} athletes
               </div>
               {(searchTerm || selectedLeague) && (
                 <button
