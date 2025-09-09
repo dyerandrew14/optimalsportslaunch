@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import FounderCard from "@/components/FounderCard";
+import { kv } from "@vercel/kv";
 
 type Executive = {
   id: string;
@@ -12,15 +13,20 @@ type Executive = {
 };
 
 export default async function AboutPage() {
-  // Load executives from KV via API so Admin edits are live
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || ''}/api/executives`, { cache: 'no-store' });
-  const teamMembers: Executive[] = res.ok ? await res.json() : [
-    { id: 'christopher', name: 'Christopher Gil', title: 'Founder & Chief Executive Officer', image: '/founders/christopher.webp' },
-    { id: 'damian', name: 'Damian Ochoa', title: 'Chief Operating Officer', image: '/founders/damianochoa.webp' },
-    { id: 'frank', name: 'Frank Yip', title: 'Co-Founder and Director of Football Operations', image: '/founders/frankyip.webp' },
-    { id: 'jon', name: 'Jon Kingdon', title: 'Director of Scouting', image: '/founders/jonkingdom.webp' },
-    { id: 'steve', name: 'Steve Briscoe', title: 'Director of Youth Football', image: '/founders/stevebriscoe.webp' },
-  ];
+  // Load executives directly from KV (no HTTP) and gracefully fallback to static list
+  let teamMembers: Executive[] = [];
+  try {
+    teamMembers = (await kv.get<Executive[]>("executives:all")) || [];
+  } catch {}
+  if (teamMembers.length === 0) {
+    teamMembers = [
+      { id: 'christopher', name: 'Christopher Gil', title: 'Founder & Chief Executive Officer', image: '/founders/christopher.webp' },
+      { id: 'damian', name: 'Damian Ochoa', title: 'Chief Operating Officer', image: '/founders/damianochoa.webp' },
+      { id: 'frank', name: 'Frank Yip', title: 'Co-Founder and Director of Football Operations', image: '/founders/frankyip.webp' },
+      { id: 'jon', name: 'Jon Kingdon', title: 'Director of Scouting', image: '/founders/jonkingdom.webp' },
+      { id: 'steve', name: 'Steve Briscoe', title: 'Director of Youth Football', image: '/founders/stevebriscoe.webp' },
+    ];
+  }
 
   const faqs = [
     {

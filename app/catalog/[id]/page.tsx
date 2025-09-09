@@ -16,6 +16,15 @@ async function getProductServer(id: string): Promise<Product | null> {
     const found = all.find(p => p.id === id) || null;
     if (found) return found;
   } catch {}
+  // Final fallback: query list API (works even when KV unavailable due to in-memory fallback there)
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || ''}/api/products`, { cache: 'no-store' });
+    if (res.ok) {
+      const list = await res.json() as Product[];
+      const found = list.find(p => p.id === id) || null;
+      if (found) return found;
+    }
+  } catch {}
   // Final fallback: seeded items (keeps detail pages working if KV empty)
   const seeded: Record<string, Product> = {
     'man-tee': {
@@ -49,12 +58,29 @@ export default async function ProductDetail({ params }: { params: { id: string }
 
   // Resolve athlete from slug first, then best-effort by name
   const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-  const assignedAthlete = product.athleteSlug
+  let assignedAthlete = product.athleteSlug
     ? athletes.find(a => a.slug === product.athleteSlug)
     : (product.athleteName
         ? athletes.find(a => normalize(a.name) === normalize(product.athleteName))
         : undefined);
-  const athleteAvatar = assignedAthlete?.image || '/IMG_3743.webp';
+  // If not found in static list, try KV/API for dynamic athletes
+  if (!assignedAthlete && product.athleteSlug) {
+    try {
+      const kvAth = await kv.get<any>(`athlete:${product.athleteSlug}`);
+      if (kvAth) assignedAthlete = kvAth as any;
+    } catch {}
+    if (!assignedAthlete) {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || ''}/api/athletes`, { cache: 'no-store' });
+        if (res.ok) {
+          const list = await res.json() as any[];
+          assignedAthlete = list.find(a => a.slug === product.athleteSlug);
+        }
+      } catch {}
+    }
+  }
+  const derivedFromName = (name: string | undefined) => name ? `/players/${name.toLowerCase().replace(/[^a-z0-9]+/g, '_')}.webp` : '/IMG_3743.webp';
+  const athleteAvatar = assignedAthlete?.image || derivedFromName(product.athleteName) || '/IMG_3743.webp';
 
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950">
@@ -84,42 +110,44 @@ export default async function ProductDetail({ params }: { params: { id: string }
 
               {product.sizes && product.sizes.length > 0 && (
                 <div>
-                  <div className="text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">Select Size</div>
+                  <div className="text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">Sizes available</div>
                   <div className="flex flex-wrap gap-2">
                     {product.sizes.map((s) => (
-                      <button key={s} className="px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100 hover:border-red-500 hover:text-red-600 transition-colors" type="button">{s}</button>
+                      <span key={s} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100">
+                        {s}
+                      </span>
                     ))}
                   </div>
                 </div>
               )}
 
-              <a href={checkoutUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-full lg:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold shadow-lg hover:from-emerald-600 hover:to-green-700 transition-transform hover:scale-[1.02]">
-                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                  <path d="M7 4l2-2h6l2 2h3v18H4V4h3zm5 4a4 4 0 100 8 4 4 0 000-8z" />
-                </svg>
+              <a href={checkoutUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center w-full lg:w-auto px-7 py-3 rounded-xl bg-[#95BF47] text-white font-bold shadow-lg hover:bg-[#84aa3f] transition-transform hover:scale-[1.02]">
+                <img src="/shopify.svg" alt="Shopify" className="w-5 h-5 mr-2" />
                 Checkout on Shopify
               </a>
 
-              {assignedAthlete && (
-                <div>
-                  <div className="rounded-2xl p-[1px] bg-gradient-to-r from-red-600/60 to-red-400/60">
-                    <div className="rounded-2xl p-4 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-red-500/40 flex-shrink-0">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={athleteAvatar} alt={assignedAthlete.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-xs uppercase tracking-wide text-gray-500">Player</div>
-                        <div className="font-semibold text-gray-900 dark:text-white truncate">{assignedAthlete.name}</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 truncate">{assignedAthlete.school} • {assignedAthlete.position}</div>
-                      </div>
+              <div>
+                <div className="rounded-2xl p-[1px] bg-gradient-to-r from-red-600/60 to-red-400/60">
+                  <div className="rounded-2xl p-4 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-red-500/40 flex-shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={athleteAvatar} alt={assignedAthlete?.name || product.athleteName || 'Player'} className="w-full h-full object-cover" onError={(e)=>{(e.currentTarget as HTMLImageElement).src='/IMG_3743.webp';}} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs uppercase tracking-wide text-gray-500">Player</div>
+                      <div className="font-semibold text-gray-900 dark:text-white truncate">{assignedAthlete?.name || product.athleteName || 'Unassigned'}</div>
+                      {(assignedAthlete?.school || assignedAthlete?.position || product.school) && (
+                        <div className="text-sm text-gray-600 dark:text-gray-400 truncate">{assignedAthlete?.school || product.school} {assignedAthlete?.position ? `• ${assignedAthlete.position}` : ''}</div>
+                      )}
+                    </div>
+                    {assignedAthlete?.slug && (
                       <Link href={`/athletes/${assignedAthlete.slug}`} className="px-3 py-2 rounded-lg border border-gray-200 dark:border-neutral-700 text-sm font-medium text-gray-800 dark:text-gray-200 hover:border-red-500 hover:text-red-600 transition-colors">
                         View athlete
                       </Link>
-                    </div>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

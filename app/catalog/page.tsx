@@ -1,12 +1,12 @@
-import { athletes } from '@/lib/athletes';
+"use client";
+
 import SafeImage from '@/components/SafeImage';
 import CatalogExplorer from '@/components/CatalogExplorer';
+import { athletes } from '@/lib/athletes';
 
 // Static image paths for catalog visuals
 
-export default async function CatalogPage({ searchParams }: { searchParams?: { school?: string; athlete?: string } }) {
-  const school = searchParams?.school || '';
-  const athleteSlug = searchParams?.athlete || '';
+export default function CatalogPage() {
 
   const schools = Array.from(new Set(athletes.map(a => a.school))).sort();
   const athleteMap = new Map(athletes.map(a => [a.slug, a.name]));
