@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { athletes } from "@/lib/athletes";
-import { kv } from "@vercel/kv";
+import { kv } from "@/lib/redis";
 import { getSchoolByName } from "@/lib/schools";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";

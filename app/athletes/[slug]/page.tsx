@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { athletes } from "@/lib/athletes";
-import { kv } from "@vercel/kv";
+import { kv } from "@/lib/redis";
 import { getSchoolByName } from "@/lib/schools";
 import { AthleteShop } from "@/components/AthleteShop";
 

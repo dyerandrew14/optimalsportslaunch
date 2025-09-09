@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { kv } from '@/lib/redis';
 import { athletes as defaultAthletes, type Athlete } from '@/lib/athletes';
 
 // GET /api/athletes/[slug] - Get specific athlete

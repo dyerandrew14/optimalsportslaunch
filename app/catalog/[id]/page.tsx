@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Product } from '@/lib/products';
 import { athletes } from '@/lib/athletes';
-import { kv } from '@vercel/kv';
+import { kv } from '@/lib/redis';
 import Image from 'next/image';
 export const dynamic = 'force-dynamic';
 

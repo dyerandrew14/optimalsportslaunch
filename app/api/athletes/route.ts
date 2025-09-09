@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { kv } from '@/lib/redis';
 import { athletes as defaultAthletes, type Athlete } from '@/lib/athletes';
 
 // In-memory fallback to keep Admin usable if KV has an issue

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import FounderCard from "@/components/FounderCard";
-import { kv } from "@vercel/kv";
+import { kv } from "@/lib/redis";
 
 type Executive = {
   id: string;

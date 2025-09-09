@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { kv } from '@/lib/redis';
 import { Product } from '@/lib/products';
 
 const KEY_ALL = 'products:all';

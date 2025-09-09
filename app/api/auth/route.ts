@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { kv } from '@vercel/kv';
+import { kv } from '@/lib/redis';
 import { AdminUser, hashPassword, verifyPassword } from '@/lib/auth';
 
 const USERS_KEY = 'admin:users';
