@@ -33,24 +33,19 @@ export async function GET() {
   }
 }
 
-// POST /api/athletes - Create new athlete
+// POST /api/athletes - Create new athlete (EXACT COPY OF WORKING EXECUTIVES)
 export async function POST(request: NextRequest) {
   try {
     const input = await request.json();
     console.log('Creating athlete:', input.name);
-    console.log('Input data:', JSON.stringify(input, null, 2));
     
-    // Generate slug if not provided
-    const slug = input.slug || `${input.name.toLowerCase().replace(/\s+/g, '-')}-${input.number || '1'}`;
-    
-    // Ensure all required fields have defaults
     const newAthlete: Athlete = {
-      slug: slug,
-      name: input.name || '',
-      position: input.position || '',
-      school: input.school || '',
-      conference: input.conference || '',
-      classYear: input.classYear || '',
+      slug: input.slug || crypto.randomUUID(),
+      name: input.name,
+      position: input.position,
+      school: input.school,
+      conference: input.conference,
+      classYear: input.classYear,
       number: input.number || '',
       bio: input.bio || '',
       image: input.image || '/default-athlete.jpg',
@@ -66,10 +61,7 @@ export async function POST(request: NextRequest) {
       },
       merchandise: input.merchandise || [],
       hasMerchandise: input.hasMerchandise || false,
-      ...input // Spread any additional fields
     };
-    
-    console.log('Processed athlete data:', JSON.stringify(newAthlete, null, 2));
     
     const all = (await kv.get<Athlete[]>('athletes:all')) || [];
     all.push(newAthlete);
@@ -79,7 +71,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newAthlete, { status: 201 });
   } catch (e) {
     console.error('Error creating athlete:', e);
-    console.error('Error details:', e instanceof Error ? e.message : 'Unknown error');
     return NextResponse.json({ error: 'Failed to create athlete' }, { status: 500 });
   }
 }
