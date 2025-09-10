@@ -106,6 +106,13 @@ export async function GET(request: NextRequest) {
     if (size && !(p.sizes || []).some(s => s.toLowerCase() === size)) return false;
     return p.active !== false;
   });
+  
+  console.log('Products API Debug:');
+  console.log('- Total products in Redis:', all.length);
+  console.log('- After filtering:', filtered.length);
+  console.log('- Page:', page, 'Limit:', limit);
+  console.log('- Start index:', Math.max((page - 1) * limit, 0));
+  console.log('- Products being returned:', filtered.slice(Math.max((page - 1) * limit, 0), Math.max((page - 1) * limit, 0) + limit).length);
   const start = Math.max((page - 1) * limit, 0);
   const paged = filtered.slice(start, start + limit);
   return NextResponse.json(paged);
