@@ -36,7 +36,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-700 to-black h-[60vh] flex items-center">
+      <section className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-700 to-black h-[75vh] flex items-center">
         {/* Video Background */}
         <VideoBackground />
         

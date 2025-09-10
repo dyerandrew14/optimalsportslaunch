@@ -626,10 +626,11 @@ export default function AdminDashboard() {
   const loadAthletes = async () => {
     setLoading(true);
     try {
-      const fetchedAthletes = await fetchAthletes();
-      if (fetchedAthletes.length > 0) {
-        setAthletes(fetchedAthletes);
-      }
+      // Use direct fetch like executives section
+      const res = await fetch('/api/athletes', { cache: 'no-store' });
+      const fetchedAthletes = res.ok ? await res.json() : [];
+      console.log('Loaded athletes:', fetchedAthletes.length);
+      setAthletes(fetchedAthletes);
     } catch (error) {
       console.error('Error loading athletes:', error);
     } finally {
@@ -639,7 +640,9 @@ export default function AdminDashboard() {
 
   const loadProducts = async () => {
     try {
-      const fetched = await fetchAllProducts();
+      // Use direct fetch like executives section
+      const res = await fetch('/api/products', { cache: 'no-store' });
+      const fetched = res.ok ? await res.json() : [];
       console.log('Loaded products:', fetched.length);
       setProducts(fetched);
     } catch (e) {
@@ -703,15 +706,28 @@ export default function AdminDashboard() {
       };
       
       console.log('Creating athlete with slug:', slug, 'Full athlete:', newAthlete);
-      const createdAthlete = await apiCreateAthlete(newAthlete);
-      console.log('Created athlete response:', createdAthlete);
       
-      if (createdAthlete) {
-        console.log('Adding athlete to local state:', createdAthlete);
+      // Use direct fetch like executives section
+      const response = await fetch('/api/athletes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newAthlete),
+      });
+      
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      
+      if (response.ok) {
+        const createdAthlete = await response.json();
+        console.log('Created athlete response:', createdAthlete);
         setAthletes([...athletes, createdAthlete]);
         setShowAddModal(false);
         alert('Athlete created successfully!');
       } else {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
         alert('Failed to create athlete. Please try again.');
       }
     } catch (error) {
@@ -1103,11 +1119,23 @@ export default function AdminDashboard() {
                   if (updated) setProducts(products.map(p => p.id === id ? updated : p));
                 } else {
                   console.log('Creating product:', rest.name, 'with images:', rest.images?.length || 0);
-                  const created = await apiCreateProduct({ ...rest } as any);
-                  if (created) {
+                  
+                  // Use direct fetch like executives section
+                  const response = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(rest),
+                  });
+                  
+                  if (response.ok) {
+                    const created = await response.json();
                     setProducts([created, ...products]);
                     alert('Product created successfully!');
                   } else {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
                     alert('Failed to create product. Please try again.');
                   }
                 }
