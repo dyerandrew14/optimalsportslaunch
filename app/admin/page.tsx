@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { athletes as initialAthletes, type Athlete, type MerchandiseItem } from "../../lib/athletes";
 import { fetchAthletes, createAthlete as apiCreateAthlete, updateAthlete as apiUpdateAthlete, deleteAthlete as apiDeleteAthlete } from "../../lib/api";
-import { type Product, fetchProducts as fetchAllProducts, createProduct as apiCreateProduct, updateProduct as apiUpdateProduct, deleteProduct as apiDeleteProduct } from "../../lib/products";
+import { type Product } from "../../lib/products";
+import { fetchProducts as fetchAllProducts, apiCreateProduct, apiUpdateProduct, apiDeleteProduct } from "../../lib/api";
 
 // Password protection component
 function AdminLogin({ onLogin }: { onLogin: () => void }) {
