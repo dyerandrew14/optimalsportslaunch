@@ -132,3 +132,90 @@ export async function updateAllAthletes(athletes: Athlete[]): Promise<Athlete[] 
   }
 }
 
+// Product API functions
+export async function fetchProducts(): Promise<any[]> {
+  try {
+    const response = await fetch(`${API_BASE}/api/products`, {
+      cache: 'no-store',
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+}
+
+export async function apiCreateProduct(product: any): Promise<any | null> {
+  try {
+    console.log('Frontend: Creating product with data:', JSON.stringify(product, null, 2));
+    console.log('Frontend: API_BASE is:', API_BASE);
+
+    const response = await fetch(`${API_BASE}/api/products`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(product),
+    });
+
+    console.log('Frontend: Response status:', response.status);
+    console.log('Frontend: Response ok:', response.ok);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Frontend: Error response body:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log('Frontend: Success response:', result);
+    return result;
+  } catch (error) {
+    console.error('Frontend: Error creating product:', error);
+    return null;
+  }
+}
+
+export async function apiUpdateProduct(id: string, product: any): Promise<any | null> {
+  try {
+    const response = await fetch(`${API_BASE}/api/products`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id, ...product }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating product:', error);
+    return null;
+  }
+}
+
+export async function apiDeleteProduct(id: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE}/api/products`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+    });
+    
+    return response.ok;
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    return false;
+  }
+}
+
