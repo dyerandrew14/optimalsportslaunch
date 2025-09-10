@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get('category')?.toLowerCase() || undefined;
   const size = searchParams.get('size')?.toLowerCase() || undefined;
   const page = Number(searchParams.get('page') || '1');
-  const limit = Number(searchParams.get('limit') || '8');
+  const limit = Number(searchParams.get('limit') || '50'); // Increased default limit
 
   let all: Product[] = [];
   try {
