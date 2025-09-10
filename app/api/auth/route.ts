@@ -11,23 +11,9 @@ export async function POST(req: NextRequest) {
   const { action } = body || {};
 
   if (action === 'login') {
-    const { email, password, dev } = body;
-    // Dev bypass for easy testing
-    if (dev && process.env.DEV_BYPASS === 'true') {
-      return NextResponse.json({ ok: true, dev: true });
-    }
-    if (process.env.MASTER_ADMIN_PASSWORD && password === process.env.MASTER_ADMIN_PASSWORD) {
-      return NextResponse.json({ ok: true, master: true });
-    }
-    const users: AdminUser[] = (await kv.get<AdminUser[]>(USERS_KEY)) || [];
-    const user = users.find(u => u.email.toLowerCase() === String(email || '').toLowerCase());
-    if (!user || !user.passwordHash || !user.salt) {
-      return NextResponse.json({ ok: false, error: 'Invalid credentials' }, { status: 401 });
-    }
-    if (!verifyPassword(password, user.salt, user.passwordHash)) {
-      return NextResponse.json({ ok: false, error: 'Invalid credentials' }, { status: 401 });
-    }
-    return NextResponse.json({ ok: true });
+    // TEMPORARILY DISABLE AUTH - ALWAYS ALLOW LOGIN
+    console.log('Auth bypassed - allowing all logins');
+    return NextResponse.json({ ok: true, bypassed: true });
   }
 
   if (action === 'forgot') {
