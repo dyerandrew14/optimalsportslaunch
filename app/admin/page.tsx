@@ -937,7 +937,10 @@ export default function AdminDashboard() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleEditAthlete(athlete)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditAthlete(athlete);
+                          }}
                           className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -945,7 +948,10 @@ export default function AdminDashboard() {
                           </svg>
                         </button>
                         <button
-                          onClick={() => handleDeleteAthlete(athlete.slug)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteAthlete(athlete.slug);
+                          }}
                           className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

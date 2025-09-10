@@ -1,44 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@/lib/redis';
-import { athletes as defaultAthletes, type Athlete } from '@/lib/athletes';
+import crypto from 'crypto';
+import { type Athlete } from '@/lib/athletes';
 
-// In-memory fallback to keep Admin usable if KV has an issue
-let memoryAthletes: Athlete[] = [...defaultAthletes];
+const KEY_ALL = 'athletes:all';
 
-// GET /api/athletes - Get all athletes
 export async function GET() {
+  let all: Athlete[] = [];
   try {
-    // Try to get athletes from KV store
-    const storedAthletes = await kv.get<Athlete[]>('athletes:all');
-    console.log('KV stored athletes:', storedAthletes ? storedAthletes.length : 'null');
-    
-    // If no athletes in KV, use memory or default athletes and save them
-    if (!storedAthletes || storedAthletes.length === 0) {
-      console.log('No athletes in KV, using memory or defaults');
-      const athletesToUse = memoryAthletes.length > 0 ? memoryAthletes : defaultAthletes;
-      await kv.set('athletes:all', athletesToUse);
-      memoryAthletes = [...athletesToUse];
-      return NextResponse.json(athletesToUse);
-    }
-    
-    console.log('Returning stored athletes from KV:', storedAthletes.length);
-    return NextResponse.json(storedAthletes);
+    all = (await kv.get<Athlete[]>(KEY_ALL)) || [];
+    console.log('Athletes from KV:', all.length);
   } catch (error) {
-    console.error('Error fetching athletes:', error);
-    console.log('Falling back to memory/default athletes. Memory count:', memoryAthletes.length);
-    // Fallback to default athletes if KV fails
-    const fallback = memoryAthletes.length ? memoryAthletes : defaultAthletes;
-    console.log('Using fallback athletes count:', fallback.length);
-    return NextResponse.json(fallback);
+    console.log('KV error for athletes:', error);
+    all = [];
   }
+  if (all.length === 0) {
+    // Seed with default athletes if KV is unavailable
+    all = [
+      {
+        slug: 'jonah-coleman',
+        name: 'Jonah Coleman',
+        position: 'Running Back',
+        school: 'University of Washington',
+        conference: 'Big Ten',
+        classYear: 'Junior',
+        number: '0',
+        bio: 'Dynamic running back with explosive speed',
+        image: '/players/jonah-coleman.svg',
+        colors: { from: '#4B2E83', to: '#B7A57A' },
+        stats: {
+          passingYards: 0,
+          rushingYards: 1200,
+          receivingYards: 150,
+          touchdowns: 12,
+          interceptions: 0,
+          tackles: 0,
+          sacks: 0
+        },
+        merchandise: [],
+        hasMerchandise: false
+      }
+    ];
+    try { await kv.set(KEY_ALL, all); } catch {}
+  }
+  return NextResponse.json(all);
 }
 
-// POST /api/athletes - Create new athlete (EXACT COPY OF WORKING EXECUTIVES)
 export async function POST(request: NextRequest) {
   try {
-    const input = await request.json();
+    const input = (await request.json()) as Omit<Athlete, 'slug'> & { slug?: string };
     console.log('Creating athlete:', input.name);
-    
     const newAthlete: Athlete = {
       slug: input.slug || crypto.randomUUID(),
       name: input.name,
@@ -62,10 +73,9 @@ export async function POST(request: NextRequest) {
       merchandise: input.merchandise || [],
       hasMerchandise: input.hasMerchandise || false,
     };
-    
-    const all = (await kv.get<Athlete[]>('athletes:all')) || [];
+    const all = (await kv.get<Athlete[]>(KEY_ALL)) || [];
     all.push(newAthlete);
-    await kv.set('athletes:all', all);
+    await kv.set(KEY_ALL, all);
     await kv.set(`athlete:${newAthlete.slug}`, newAthlete);
     console.log('Successfully saved athlete to KV');
     return NextResponse.json(newAthlete, { status: 201 });
@@ -75,20 +85,15 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT /api/athletes - Update all athletes (for bulk operations)
 export async function PUT(request: NextRequest) {
-  const list: Athlete[] = await request.json();
   try {
-    await kv.set('athletes:all', list);
-    for (const athlete of list) {
+    const athletes = (await request.json()) as Athlete[];
+    await kv.set(KEY_ALL, athletes);
+    for (const athlete of athletes) {
       await kv.set(`athlete:${athlete.slug}`, athlete);
     }
-    memoryAthletes = list;
-    return NextResponse.json(list);
-  } catch (error) {
-    console.error('Error updating athletes (fallback to memory):', error);
-    memoryAthletes = list;
-    return NextResponse.json(list);
+    return NextResponse.json(athletes);
+  } catch (e) {
+    return NextResponse.json({ error: 'Failed to save athletes' }, { status: 500 });
   }
 }
-
