@@ -12,7 +12,7 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || '');
-  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || '');
+  const [selectedColor, setSelectedColor] = useState('');
   const [showCheckout, setShowCheckout] = useState(false);
 
   // Find the associated athlete
@@ -112,8 +112,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   </div>
                 )}
 
-                {/* Color Selection */}
-                {product.colors && product.colors.length > 0 && (
+                {/* Color Selection - Disabled until colors are added to Product type */}
+                {/* {product.colors && product.colors.length > 0 && (
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Colors Available</h3>
                     <div className="flex flex-wrap gap-2">
@@ -132,7 +132,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       ))}
                     </div>
                   </div>
-                )}
+                )} */}
 
                 {/* Checkout Button */}
                 <button
@@ -209,7 +209,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             name: product.name,
             price: product.price,
             sizes: product.sizes || [],
-            colors: product.colors || [],
+            colors: [], // Disabled until colors are added to Product type
           }}
           selectedSize={selectedSize}
           selectedColor={selectedColor}
