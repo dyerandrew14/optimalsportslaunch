@@ -207,7 +207,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           product={{
             id: product.id,
             name: product.name,
-            price: product.price,
+            price: product.price.toString(),
             sizes: product.sizes || [],
             colors: [], // Disabled until colors are added to Product type
           }}
