@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@/lib/redis';
 import crypto from 'crypto';
-import { type Athlete } from '@/lib/athletes';
+import { type Athlete, athletes as defaultAthletes } from '@/lib/athletes';
 
 const KEY_ALL = 'athletes:all';
 
@@ -15,32 +15,8 @@ export async function GET() {
     all = [];
   }
   if (all.length === 0) {
-    // Seed with default athletes if KV is unavailable
-    all = [
-      {
-        slug: 'jonah-coleman',
-        name: 'Jonah Coleman',
-        position: 'Running Back',
-        school: 'University of Washington',
-        conference: 'Big Ten',
-        classYear: 'Junior',
-        number: '0',
-        bio: 'Dynamic running back with explosive speed',
-        image: '/players/jonah-coleman.svg',
-        colors: { from: '#4B2E83', to: '#B7A57A' },
-        stats: {
-          passingYards: 0,
-          rushingYards: 1200,
-          receivingYards: 150,
-          touchdowns: 12,
-          interceptions: 0,
-          tackles: 0,
-          sacks: 0
-        },
-        merchandise: [],
-        hasMerchandise: false
-      }
-    ];
+    // Seed with all default athletes if KV is unavailable
+    all = defaultAthletes;
     try { await kv.set(KEY_ALL, all); } catch {}
   }
   return NextResponse.json(all);
