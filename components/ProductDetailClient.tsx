@@ -86,7 +86,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   </div>
                   
                   <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
-                    {product.description}
+                    Premium athletic wear designed for champions. Show your support with style and comfort.
                   </p>
                 </div>
 
@@ -177,7 +177,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     <span className="text-gray-500 group-open:rotate-180 transition-transform">⌄</span>
                   </summary>
                   <div className="px-5 pb-5 text-gray-700 dark:text-gray-300">
-                    <p>{product.description}</p>
+                    <p>Premium athletic wear designed for champions. Show your support with style and comfort.</p>
                     {product.categories && (
                       <div className="mt-4">
                         <strong>Categories:</strong> {product.categories.join(', ')}
