@@ -6,7 +6,7 @@ export default function ServicesPage() {
     {
       title: "NFL Contract Representation",
       description: "Expert contract negotiation and salary optimization to ensure you receive the compensation you deserve. We handle performance bonuses, guaranteed money, and complex contract structures.",
-      image: "/players/zachary_card.webp",
+      image: "/newphotos/contractmanagment.jpeg",
       imageAlt: "Professional athlete contract representation",
       gradient: "from-red-600 via-red-700 to-black",
       features: ["Contract Negotiation", "Salary Optimization", "Performance Bonuses", "Guaranteed Money"],
@@ -16,7 +16,7 @@ export default function ServicesPage() {
     {
       title: "NIL Representation & Marketing",
       description: "Strategic brand development and endorsement deals that maximize your market value. We create comprehensive marketing strategies that scale with your career.",
-      image: "/players/madden_faraimo.webp",
+      image: "/newphotos/innovationmarketing.jpeg",
       imageAlt: "NIL marketing and brand partnerships for athletes",
       gradient: "from-blue-600 via-purple-600 to-red-600",
       features: ["Brand Strategy", "Market Research", "Endorsement Deals", "Social Media Growth"],
@@ -24,9 +24,29 @@ export default function ServicesPage() {
       badge: "NIL EXPERTS"
     },
     {
+      title: "Nationwide Representation",
+      description: "Comprehensive coverage across all major markets and regions. We ensure you have representation and support wherever your career takes you.",
+      image: "/newphotos/nationwide.jpeg",
+      imageAlt: "Nationwide athlete representation and support",
+      gradient: "from-purple-600 via-blue-600 to-cyan-600",
+      features: ["Multi-Market Coverage", "Regional Support", "Market Analysis", "Local Partnerships"],
+      stats: "50+ markets covered",
+      badge: "COAST TO COAST"
+    },
+    {
+      title: "Draft Representation",
+      description: "Expert guidance through the NFL Draft process. From combine preparation to team interviews, we position you for maximum draft value.",
+      image: "/newphotos/draftrepresentation.jpeg",
+      imageAlt: "NFL Draft preparation and representation",
+      gradient: "from-orange-600 via-red-600 to-purple-600",
+      features: ["Combine Prep", "Team Interviews", "Draft Strategy", "Media Training"],
+      stats: "100+ draft picks",
+      badge: "DRAFT EXPERTS"
+    },
+    {
       title: "Client Relations & Support",
       description: "Comprehensive personal and professional support to handle your everyday needs. From charity management to family logistics, we ensure you can focus on your game.",
-      image: "/players/maliki_crawford.webp",
+      image: "/newphotos/clientrelationssupport.jpeg",
       imageAlt: "Comprehensive athlete support and client relations",
       gradient: "from-green-600 via-teal-600 to-blue-600",
       features: ["Charity Management", "Family Logistics", "Travel Coordination", "Personal Assistance"],
@@ -34,14 +54,24 @@ export default function ServicesPage() {
       badge: "FULL SERVICE"
     },
     {
-      title: "Wealth Management & Career Planning",
-      description: "Long-term financial planning and career transition support. We help you build lasting wealth and prepare for life after sports.",
-      image: "/players/jonah_coleman.webp",
-      imageAlt: "Athlete wealth management and career planning",
-      gradient: "from-yellow-600 via-orange-600 to-red-600",
-      features: ["Financial Planning", "Investment Strategy", "Career Transition", "Legacy Building"],
-      stats: "$50M+ managed assets",
-      badge: "WEALTH BUILDERS"
+      title: "Transfer Portal",
+      description: "Expert guidance through the transfer portal process. We help you navigate eligibility, find the best fit, and maximize your opportunities for a fresh start.",
+      image: "/newphotos/innovationmarketing.jpeg",
+      imageAlt: "College football transfer portal guidance",
+      gradient: "from-indigo-600 via-purple-600 to-pink-600",
+      features: ["Portal Strategy", "Eligibility Guidance", "Fit Assessment", "Timeline Management"],
+      stats: "200+ transfers guided",
+      badge: "PORTAL EXPERTS"
+    },
+    {
+      title: "Collective Negotiation",
+      description: "Advanced negotiation strategies for collective bargaining and group representation. We leverage collective power to secure better terms for all athletes.",
+      image: "/newphotos/contractmanagment.jpeg",
+      imageAlt: "Collective bargaining and group negotiation",
+      gradient: "from-emerald-600 via-teal-600 to-cyan-600",
+      features: ["Group Strategy", "Bargaining Power", "Unified Terms", "Advocacy"],
+      stats: "15+ collective deals",
+      badge: "COLLECTIVE POWER"
     }
   ];
 
