@@ -19,7 +19,7 @@ export default function ServicesPage() {
       image: "/newphotos/innovationmarketing.jpeg",
       imageAlt: "NIL marketing and brand partnerships for athletes",
       gradient: "from-blue-600 via-purple-600 to-red-600",
-      features: ["Brand Strategy", "Market Research", "Endorsement Deals", "Social Media Growth"],
+      features: ["Brand Strategy", "Market Research", "Endorsement Deals", "Social Media Growth", "Transfer Portal", "Collective Negotiation"],
       stats: "200+ brand partnerships",
       badge: "NIL EXPERTS"
     },
@@ -52,26 +52,6 @@ export default function ServicesPage() {
       features: ["Charity Management", "Family Logistics", "Travel Coordination", "Personal Assistance"],
       stats: "24/7 support available",
       badge: "FULL SERVICE"
-    },
-    {
-      title: "Transfer Portal",
-      description: "Expert guidance through the transfer portal process. We help you navigate eligibility, find the best fit, and maximize your opportunities for a fresh start.",
-      image: "/newphotos/innovationmarketing.jpeg",
-      imageAlt: "College football transfer portal guidance",
-      gradient: "from-indigo-600 via-purple-600 to-pink-600",
-      features: ["Portal Strategy", "Eligibility Guidance", "Fit Assessment", "Timeline Management"],
-      stats: "200+ transfers guided",
-      badge: "PORTAL EXPERTS"
-    },
-    {
-      title: "Collective Negotiation",
-      description: "Advanced negotiation strategies for collective bargaining and group representation. We leverage collective power to secure better terms for all athletes.",
-      image: "/newphotos/contractmanagment.jpeg",
-      imageAlt: "Collective bargaining and group negotiation",
-      gradient: "from-emerald-600 via-teal-600 to-cyan-600",
-      features: ["Group Strategy", "Bargaining Power", "Unified Terms", "Advocacy"],
-      stats: "15+ collective deals",
-      badge: "COLLECTIVE POWER"
     }
   ];
 
