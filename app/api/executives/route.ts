@@ -16,7 +16,7 @@ const KEY_ALL = 'executives:all';
 export async function GET() {
   let all: Executive[] = [];
   try {
-    all = (await kv.get<Executive[]>(KEY_ALL)) || [];
+    all = (await kv.get(KEY_ALL)) || [];
     console.log('Executives from KV:', all.length);
   } catch (error) {
     console.log('KV error for executives:', error);
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       bio: input.bio || '',
       credentials: input.credentials || [],
     };
-    const all = (await kv.get<Executive[]>(KEY_ALL)) || [];
+    const all = (await kv.get(KEY_ALL)) || [];
     all.push(newExec);
     await kv.set(KEY_ALL, all);
     await kv.set(`executive:${newExec.id}`, newExec);

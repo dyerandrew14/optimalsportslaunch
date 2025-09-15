@@ -1116,7 +1116,12 @@ export default function AdminDashboard() {
                 const { id, ...rest } = editingProduct;
                 if (id) {
                   const updated = await apiUpdateProduct(id, { ...rest });
-                  if (updated) setProducts(products.map(p => p.id === id ? updated : p));
+                  if (updated) {
+                    setProducts(products.map(p => p.id === id ? updated : p));
+                    alert('Product updated successfully!');
+                  } else {
+                    alert('Failed to update product. Please try again.');
+                  }
                 } else {
                   console.log('Creating product:', rest.name, 'with images:', rest.images?.length || 0);
                   

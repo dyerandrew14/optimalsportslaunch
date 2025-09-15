@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
   let all: Product[] = [];
   try {
-    all = (await kv.get<Product[]>(KEY_ALL)) || [];
+    all = (await kv.get(KEY_ALL)) || [];
     console.log('Products from KV:', all.length);
   } catch (error) {
     console.log('KV error, using memory products:', error);
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
       updatedAt: now,
     };
     
-    const all = (await kv.get<Product[]>(KEY_ALL)) || [];
+    const all = (await kv.get(KEY_ALL)) || [];
     all.push(newProduct);
     await kv.set(KEY_ALL, all);
     await kv.set(`product:${newProduct.id}`, newProduct);

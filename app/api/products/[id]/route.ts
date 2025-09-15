@@ -7,14 +7,14 @@ const KEY_ALL = 'products:all';
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
   try {
-    const product = await kv.get<Product>(`product:${id}`);
+    const product = await kv.get(`product:${id}`);
     if (product) return NextResponse.json(product);
   } catch {}
 
   // Fallback: search in all products if individual record missing (or KV not available)
   try {
-    const all = (await kv.get<Product[]>(KEY_ALL)) || [];
-    const found = all.find(p => p.id === id);
+    const all = (await kv.get(KEY_ALL)) || [];
+    const found = all.find((p: any) => p.id === id);
     if (found) return NextResponse.json(found);
   } catch {}
 
@@ -46,8 +46,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
   const input = await request.json();
-  const all = (await kv.get<Product[]>(KEY_ALL)) || [];
-  const idx = all.findIndex(p => p.id === id);
+  const all = (await kv.get(KEY_ALL)) || [];
+  const idx = all.findIndex((p: any) => p.id === id);
   if (idx === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   const updated: Product = {
     ...all[idx],
@@ -66,8 +66,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
-  const all = (await kv.get<Product[]>(KEY_ALL)) || [];
-  const next = all.filter(p => p.id !== id);
+  const all = (await kv.get(KEY_ALL)) || [];
+  const next = all.filter((p: any) => p.id !== id);
   if (next.length === all.length) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   await kv.set(KEY_ALL, next);
   await kv.del(`product:${id}`);

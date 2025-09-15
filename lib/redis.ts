@@ -1,83 +1,14 @@
 import { Redis } from '@upstash/redis';
 
-// Debug environment variables
-console.log('Redis URL:', process.env.redis_KV_REST_API_URL ? 'Found' : 'Missing');
-console.log('Redis Token:', process.env.redis_KV_REST_API_TOKEN ? 'Found' : 'Missing');
-
-// Simple persistent storage for local development using browser localStorage
-const localStorage = new Map();
-
-// Try to load from browser localStorage if available
-if (typeof window !== 'undefined') {
-  try {
-    const stored = window.localStorage.getItem('optimal-sports-products');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      for (const [key, value] of parsed) {
-        localStorage.set(key, value);
-      }
-      console.log('Loaded products from browser localStorage');
-    }
-  } catch (e) {
-    console.log('Could not load from localStorage:', e);
-  }
-}
-
 // Create Redis client or fallback to local storage
-let redis: {
-  get<T = any>(key: string): Promise<T | null>;
-  set(key: string, value: any): Promise<string>;
-  del(key: string): Promise<number>;
-  keys(pattern: string): Promise<string[]>;
-  lrange(key: string, start: number, end: number): Promise<any[]>;
-  rpush(key: string, ...values: any[]): Promise<number>;
-  hset(key: string, field: string, value: any): Promise<number>;
-  hset(key: string, obj: Record<string, any>): Promise<number>;
-  hget<T = any>(key: string, field: string): Promise<T | null>;
-  hdel(key: string, field: string): Promise<number>;
-};
+let redis: any;
 
 if (process.env.redis_KV_REST_API_URL && process.env.redis_KV_REST_API_TOKEN) {
   try {
-    const redisClient = new Redis({
+    redis = new Redis({
       url: process.env.redis_KV_REST_API_URL,
       token: process.env.redis_KV_REST_API_TOKEN,
     });
-    // Wrap the Redis client to match our interface
-    redis = {
-      async get<T = any>(key: string): Promise<T | null> {
-        return await redisClient.get(key);
-      },
-      async set(key: string, value: any): Promise<string> {
-        return await redisClient.set(key, value);
-      },
-      async del(key: string): Promise<number> {
-        return await redisClient.del(key);
-      },
-      async keys(pattern: string): Promise<string[]> {
-        return await redisClient.keys(pattern);
-      },
-      async lrange(key: string, start: number, end: number): Promise<any[]> {
-        return await redisClient.lrange(key, start, end);
-      },
-      async rpush(key: string, ...values: any[]): Promise<number> {
-        return await redisClient.rpush(key, ...values);
-      },
-      async hset(key: string, fieldOrObj: string | Record<string, any>, value?: any): Promise<number> {
-        if (typeof fieldOrObj === 'string' && value !== undefined) {
-          return await redisClient.hset(key, { [fieldOrObj]: value });
-        } else if (typeof fieldOrObj === 'object') {
-          return await redisClient.hset(key, fieldOrObj);
-        }
-        throw new Error('Invalid hset parameters');
-      },
-      async hget<T = any>(key: string, field: string): Promise<T | null> {
-        return await redisClient.hget(key, field);
-      },
-      async hdel(key: string, field: string): Promise<number> {
-        return await redisClient.hdel(key, field);
-      }
-    };
     console.log('Connected to Redis');
   } catch (error) {
     console.log('Redis connection failed, using local storage');
@@ -103,7 +34,7 @@ function createLocalStorage() {
   };
 
   return {
-    async get<T = any>(key: string): Promise<T | null> {
+    async get(key: string) {
       return localStorage.get(key) || null;
     },
     async set(key: string, value: any) {
@@ -119,7 +50,7 @@ function createLocalStorage() {
     async keys(pattern: string) {
       const allKeys = Array.from(localStorage.keys());
       if (pattern === '*') return allKeys;
-      return allKeys.filter(key => key.includes(pattern.replace('*', '')));
+      return allKeys.filter((key: any) => typeof key === 'string' && key.includes(pattern.replace('*', '')));
     },
     async lrange(key: string, start: number, end: number) {
       const value = localStorage.get(key);

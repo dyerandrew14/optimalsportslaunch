@@ -8,7 +8,7 @@ const KEY_ALL = 'athletes:all';
 export async function GET() {
   let all: Athlete[] = [];
   try {
-    all = (await kv.get<Athlete[]>(KEY_ALL)) || [];
+    all = (await kv.get(KEY_ALL)) || [];
     console.log('Athletes from KV:', all.length);
   } catch (error) {
     console.log('KV error for athletes:', error);
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     };
     
     try {
-      const all = (await kv.get<Athlete[]>(KEY_ALL)) || [];
+      const all = (await kv.get(KEY_ALL)) || [];
       all.push(newAthlete);
       await kv.set(KEY_ALL, all);
       await kv.set(`athlete:${newAthlete.slug}`, newAthlete);

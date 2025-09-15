@@ -16,7 +16,7 @@ export default async function AboutPage() {
   // Load executives directly from KV (no HTTP) and gracefully fallback to static list
   let teamMembers: Executive[] = [];
   try {
-    teamMembers = (await kv.get<Executive[]>("executives:all")) || [];
+    teamMembers = (await kv.get("executives:all")) || [];
   } catch {}
   if (teamMembers.length === 0) {
     teamMembers = [

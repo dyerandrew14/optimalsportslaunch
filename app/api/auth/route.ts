@@ -45,11 +45,11 @@ export async function POST(req: NextRequest) {
 
   if (action === 'reset') {
     const { token, password } = body;
-    const data = await kv.hget<string>(TOKENS_KEY, token);
+    const data = await kv.hget(TOKENS_KEY, token);
     if (!data) return NextResponse.json({ ok: false, error: 'Invalid token' }, { status: 400 });
     const { email, expiresAt } = JSON.parse(data);
     if (Date.now() > Number(expiresAt)) return NextResponse.json({ ok: false, error: 'Expired token' }, { status: 400 });
-    const users: AdminUser[] = (await kv.get<AdminUser[]>(USERS_KEY)) || [];
+    const users: AdminUser[] = (await kv.get(USERS_KEY)) || [];
     let user = users.find(u => u.email.toLowerCase() === String(email || '').toLowerCase());
     const ph = hashPassword(password);
     if (user) {

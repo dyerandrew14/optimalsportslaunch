@@ -20,12 +20,12 @@ export default async function AthleteProfile({ params }: { params: Params }) {
   // Prefer KV so Admin edits are live, fall back to static list
   let athlete = null as (typeof athletes)[number] | null;
   try {
-    athlete = await kv.get<typeof athletes[number]>(`athlete:${slug}`);
+    athlete = await kv.get(`athlete:${slug}`);
   } catch {}
   if (!athlete) {
     try {
-      const all = (await kv.get<typeof athletes>("athletes:all")) || athletes;
-      athlete = all.find(a => a.slug === slug && a.name.trim().toLowerCase() !== "to be announced") || null;
+      const all = (await kv.get("athletes:all")) || athletes;
+      athlete = all.find((a: any) => a.slug === slug && a.name.trim().toLowerCase() !== "to be announced") || null;
     } catch {
       athlete = athletes.find(a => a.slug === slug && a.name.trim().toLowerCase() !== "to be announced") || null;
     }

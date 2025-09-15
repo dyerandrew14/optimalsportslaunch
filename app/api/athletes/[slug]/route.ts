@@ -12,14 +12,14 @@ export async function GET(
     console.log('API: Looking for athlete with slug:', slug);
     
     // Try to get from individual record first (faster)
-    let athlete: Athlete | null = await kv.get<Athlete>(`athlete:${slug}`);
+    let athlete: Athlete | null = await kv.get(`athlete:${slug}`);
     console.log('API: Individual athlete from KV:', athlete ? athlete.name : 'not found');
     
     if (!athlete) {
       // Fallback: search in full athletes list
-      const allAthletes = await kv.get<Athlete[]>('athletes:all') || defaultAthletes;
+      const allAthletes = await kv.get('athletes:all') || defaultAthletes;
       console.log('API: All athletes count:', allAthletes.length);
-      athlete = allAthletes.find(a => a.slug === slug) ?? null;
+      athlete = allAthletes.find((a: any) => a.slug === slug) ?? null;
       console.log('API: Found in all athletes:', athlete ? athlete.name : 'not found');
       
       // If found, cache it for future requests
@@ -65,10 +65,10 @@ export async function PUT(
     const updatedAthlete: Athlete = await request.json();
     
     // Get current athletes list
-    const currentAthletes = await kv.get<Athlete[]>('athletes:all') || defaultAthletes;
+    const currentAthletes = await kv.get('athletes:all') || defaultAthletes;
     
     // Find and update the athlete
-    const athleteIndex = currentAthletes.findIndex(a => a.slug === slug);
+    const athleteIndex = currentAthletes.findIndex((a: any) => a.slug === slug);
     
     if (athleteIndex === -1) {
       return NextResponse.json(
@@ -105,10 +105,10 @@ export async function DELETE(
     const { slug } = params;
     
     // Get current athletes list
-    const currentAthletes = await kv.get<Athlete[]>('athletes:all') || defaultAthletes;
+    const currentAthletes = await kv.get('athletes:all') || defaultAthletes;
     
     // Filter out the athlete to delete
-    const updatedAthletes = currentAthletes.filter(a => a.slug !== slug);
+    const updatedAthletes = currentAthletes.filter((a: any) => a.slug !== slug);
     
     if (updatedAthletes.length === currentAthletes.length) {
       return NextResponse.json(

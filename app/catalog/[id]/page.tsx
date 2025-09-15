@@ -7,13 +7,13 @@ export const dynamic = 'force-dynamic';
 async function getProductServer(id: string): Promise<Product | null> {
   // Try individual record first
   try {
-    const byId = await kv.get<Product>(`product:${id}`);
+    const byId = await kv.get(`product:${id}`);
     if (byId) return byId;
   } catch {}
   // Fallback to list
   try {
-    const all = (await kv.get<Product[]>('products:all')) || [];
-    const found = all.find(p => p.id === id) || null;
+    const all = (await kv.get('products:all')) || [];
+    const found = all.find((p: any) => p.id === id) || null;
     if (found) return found;
   } catch {}
   // Final fallback: query list API (works even when KV unavailable due to in-memory fallback there)
