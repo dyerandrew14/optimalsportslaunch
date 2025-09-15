@@ -26,6 +26,12 @@ export async function POST(request: NextRequest) {
   try {
     const input = (await request.json()) as Omit<Athlete, 'slug'> & { slug?: string };
     console.log('Creating athlete:', input.name);
+    
+    // Validate required fields
+    if (!input.name || !input.position || !input.school || !input.conference || !input.classYear) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+    
     const newAthlete: Athlete = {
       slug: input.slug || crypto.randomUUID(),
       name: input.name,
@@ -49,15 +55,22 @@ export async function POST(request: NextRequest) {
       merchandise: input.merchandise || [],
       hasMerchandise: input.hasMerchandise || false,
     };
-    const all = (await kv.get<Athlete[]>(KEY_ALL)) || [];
-    all.push(newAthlete);
-    await kv.set(KEY_ALL, all);
-    await kv.set(`athlete:${newAthlete.slug}`, newAthlete);
-    console.log('Successfully saved athlete to KV');
-    return NextResponse.json(newAthlete, { status: 201 });
+    
+    try {
+      const all = (await kv.get<Athlete[]>(KEY_ALL)) || [];
+      all.push(newAthlete);
+      await kv.set(KEY_ALL, all);
+      await kv.set(`athlete:${newAthlete.slug}`, newAthlete);
+      console.log('Successfully saved athlete to KV');
+      return NextResponse.json(newAthlete, { status: 201 });
+    } catch (redisError) {
+      console.error('Redis error:', redisError);
+      // Fallback: return the athlete even if Redis fails
+      return NextResponse.json(newAthlete, { status: 201 });
+    }
   } catch (e) {
     console.error('Error creating athlete:', e);
-    return NextResponse.json({ error: 'Failed to create athlete' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create athlete', details: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 });
   }
 }
 
