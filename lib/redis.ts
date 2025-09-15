@@ -57,7 +57,7 @@ function createLocalStorage() {
   };
 
   return {
-    async get(key: string) {
+    async get<T = any>(key: string): Promise<T | null> {
       return localStorage.get(key) || null;
     },
     async set(key: string, value: any) {
