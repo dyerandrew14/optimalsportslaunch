@@ -38,7 +38,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-5xl font-black mb-3">{product.name}</h1>
             <p className="text-gray-100/90 max-w-2xl mx-auto">
-              {product.description}
+              Premium athletic wear designed for champions. Show your support with style.
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-red-400 to-red-600 mx-auto mt-6 rounded-full"></div>
           </div>
