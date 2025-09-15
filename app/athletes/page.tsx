@@ -202,7 +202,7 @@ export default function AthletesPage() {
                           src={athlete.image}
                           alt={athlete.name}
                           className="w-full h-full object-cover"
-                          onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/IMG_3743.webp'; }}
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/default-athlete.jpg'; }}
                         />
                       </div>
                       <div className="flex-1">
