@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     console.log('Creating athlete:', input.name);
     
     // Validate required fields
-    if (!input.name || !input.position || !input.school || !input.conference || !input.classYear) {
+    if (!input.name || !input.position || !input.school) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
     
