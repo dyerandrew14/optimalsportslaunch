@@ -30,98 +30,17 @@ export default function CatalogExplorer() {
         if (query.trim()) params.set('name', query.trim());
         if (selectedSize) params.set('size', selectedSize);
         if (selectedCategory) params.set('category', selectedCategory);
-        const res = await fetch(`/api/products?${params.toString()}`, { cache: "no-store" });
+        const apiUrl = typeof window !== 'undefined' ? '/api/products' : `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000'}/api/products`;
+        const res = await fetch(`${apiUrl}?${params.toString()}`, { cache: "no-store" });
         const data: Product[] = res.ok ? await res.json() : [];
         if (!cancelled) {
+          console.log('Products API response:', { ok: res.ok, status: res.status, dataLength: data.length });
           if (data && data.length > 0) {
             setProducts(data);
+            console.log('Using real products from database:', data.length);
           } else {
-            // Use 2–3 featured products with multiple images from /public/catalog, rest are mocks
-            const buster = `?v=${Date.now()}`;
-            // Get a list of catalog files via a lightweight endpoint (or infer common names)
-            const catalogFiles = await fetch('/api/catalog-files').then(r => r.ok ? r.json() : []).catch(() => []);
-            const imgs: string[] = Array.isArray(catalogFiles) && catalogFiles.length > 0
-              ? catalogFiles.map((p: string) => `${p}${buster}`)
-              : [
-                  '/catalog/mens-classic-tee-black-front-*.webp',
-                  '/catalog/mens-classic-tee-black-back-*.webp',
-                  '/catalog/unisex-premium-hoodie-black-front-*.webp'
-                ];
-
-            const now = Date.now();
-            const featured: Product[] = [
-              {
-                id: 'featured-1',
-                name: 'Optimal Tee',
-                price: 49.0,
-                imageUrl: imgs[0] || '/IMG_3743.webp',
-                sizes: ['S','M','L','XL'],
-                categories: ['Tees'],
-                athleteSlug: 'jonah-coleman',
-                athleteName: 'Jonah Coleman',
-                school: 'Arizona',
-                active: true,
-                createdAt: now,
-                updatedAt: now,
-                externalUrl: '#',
-              },
-              {
-                id: 'featured-2',
-                name: 'Optimal Hoodie',
-                price: 79.0,
-                imageUrl: imgs[1] || '/IMG_3899.webp',
-                sizes: ['S','M','L','XL'],
-                categories: ['Hoodies'],
-                athleteSlug: 'christian-pierce',
-                athleteName: 'Christian Pierce',
-                school: 'USC',
-                active: true,
-                createdAt: now,
-                updatedAt: now,
-                externalUrl: '#',
-              },
-              {
-                id: 'featured-3',
-                name: 'Optimal Tee (Alt)',
-                price: 49.0,
-                imageUrl: imgs[2] || '/IMG_3903.webp',
-                sizes: ['S','M','L','XL'],
-                categories: ['Tees'],
-                athleteSlug: 'rico-flores-jr',
-                athleteName: 'Rico Flores Jr.',
-                school: 'Arizona',
-                active: true,
-                createdAt: now,
-                updatedAt: now,
-                externalUrl: '#',
-              },
-            ];
-
-            setProducts(featured);
-
-            // Attach simple galleries (multiple photos per listing) using remaining images
-            const galleries: Record<string, string[]> = {
-              'featured-1': imgs.slice(0, 3),
-              'featured-2': imgs.slice(3, 6),
-              'featured-3': imgs.slice(6, 9),
-            };
-            setGalleryMap(galleries);
-
-            // Add a few mock filler items that DO NOT use your photos
-            const mocks: Product[] = Array.from({ length: 6 }).map((_, i) => ({
-              id: `mock-${i+1}`,
-              name: `Mock Item ${i+1}`,
-              price: 39 + i * 10,
-              imageUrl: undefined,
-              athleteSlug: 'mock',
-              athleteName: 'Mock Player',
-              school: 'Mock U',
-              active: true,
-              createdAt: now,
-              updatedAt: now,
-              externalUrl: '#',
-            }));
-            setProducts((curr) => [...curr, ...mocks]);
+            console.log('No products from database, showing empty state');
+            setProducts([]);
           }
         }
       } catch (e) {
@@ -238,6 +157,13 @@ export default function CatalogExplorer() {
 
         {loading ? (
           <div className="text-gray-600 dark:text-gray-300">Loading...</div>
+        ) : clientFiltered.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-500 dark:text-gray-400 mb-4">No products found</div>
+            <div className="text-sm text-gray-400 dark:text-gray-500">
+              Try adjusting your filters or add some products in the admin panel
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col gap-8">
             {groupKeys.map((key) => (

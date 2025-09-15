@@ -43,109 +43,17 @@ export default async function AboutPage() {
     <main className="min-h-screen bg-white dark:bg-neutral-950">
       {/* Mission Section */}
       <section className="py-20 bg-white dark:bg-neutral-950">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                Our Mission
-              </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
-                Optimal Sports Management is dedicated to enhancing the lives of our clients, 
-                both on and off-the field, by giving them the necessary resources to not only 
-                achieve their goals, but to also create a meaningful impact within their 
-                communities through their athletic career and beyond.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <div className="bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-full">
-                  <span className="text-red-700 dark:text-red-300 font-medium">NIL Representation</span>
-                </div>
-                <div className="bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-full">
-                  <span className="text-red-700 dark:text-red-300 font-medium">Community Impact</span>
-                </div>
-                <div className="bg-green-50 dark:bg-green-900/20 px-4 py-2 rounded-full">
-                  <span className="text-green-700 dark:text-green-300 font-medium">Career Development</span>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <div className="bg-gradient-to-br from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl p-8">
-                <div className="text-6xl mb-4">🏆</div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  Founded in July 2021
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  At the beginning of the NIL era, our USC-educated executives brought 
-                  real-world experience in Business Administration and Sports Media to 
-                  revolutionize athlete representation.
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            Our Mission
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+            Optimal Sports Management is dedicated to enhancing the lives of our clients, 
+            both on and off-the field, by giving them the necessary resources to achieve 
+            their goals and create meaningful impact within their communities.
+          </p>
         </div>
       </section>
-
-      {/* Story Section */}
-      <section className="py-20 bg-gray-50 dark:bg-neutral-900">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Our Story
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto">
-              From the dawn of NIL to becoming a leading sports management agency
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-lg">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                  The NIL Frontier
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  The new NIL frontier is certainly a game changer and as a high school/collegiate 
-                  athlete, you are certainly in the right place to take advantage of it. With that 
-                  being said, it is imperative you find the right NIL advisors to walk you and your 
-                  family through the process and to avoid jeopardizing collegiate eligibility.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-lg">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                  Experienced Advisors
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  This is why we have experienced advisors who have been involved within the sports 
-                  industry for the past 30 years. These advisors include former athletes, coaches, 
-                  and college athletic administrators.
-                </p>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8">
-                <div className="text-6xl mb-4">🎯</div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  Driven By Our Athletes&apos; Vision
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-6">
-                  Optimal Sports Management was built upon our athletes&apos; vision of not only being 
-                  the best players they can be on the field, but also the most notable figures 
-                  off-the field through innovative marketing campaigns.
-                </p>
-                <Link 
-                  href="/athletes" 
-                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-                >
-                  View Our Athletes
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      
 
       {/* Team Section */}
       <section className="py-20 bg-gray-50 dark:bg-neutral-900">
