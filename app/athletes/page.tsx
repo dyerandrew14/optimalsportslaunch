@@ -43,12 +43,8 @@ export default function AthletesPage() {
     
     loadAthletes();
     
-    // Refresh every 30 seconds to catch admin changes
-    const interval = setInterval(loadAthletes, 30000);
-    
     return () => { 
       cancelled = true; 
-      clearInterval(interval);
     };
   }, []);
 
