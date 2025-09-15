@@ -92,7 +92,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, onC
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Order Placed Successfully!</h3>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Your order has been sent to Printful for processing. You'll receive a confirmation email shortly.
+              Your order has been sent to Printful for processing. You&apos;ll receive a confirmation email shortly.
             </p>
             <button
               onClick={onClose}
