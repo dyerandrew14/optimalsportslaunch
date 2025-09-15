@@ -29,19 +29,19 @@ async function getProductServer(id: string): Promise<Product | null> {
   // Seed data fallback for development
   const seeded: Record<string, Product> = {
     'man-tee': {
-      id: 'man-tee', name: 'Optimal Man Tee', price: '49',
+      id: 'man-tee', name: 'Optimal Man Tee', price: 49,
       imageUrl: '/catalog/mens-classic-tee-black-front-6616e04f63957_540x.webp',
       images: ['/catalog/mens-classic-tee-black-front-6616e04f63957_540x.webp','/catalog/mens-classic-tee-black-left-6616e04f64dee_540x.webp','/catalog/mens-classic-tee-black-right-6616e04f6534e_540x.webp','/catalog/mens-classic-tee-black-back-62b588dcdd3e6_540x.webp'],
       athleteSlug: '', athleteName: '', school: '', categories: ['Tees'], sizes: ['S','M','L','XL'], active: true, createdAt: Date.now(), updatedAt: Date.now()
     },
     'man-hoodie': {
-      id: 'man-hoodie', name: 'Optimal Man Hoodie', price: '79',
+      id: 'man-hoodie', name: 'Optimal Man Hoodie', price: 79,
       imageUrl: '/catalog/unisex-premium-hoodie-black-front-62b584b06d8bc_540x.webp',
       images: ['/catalog/unisex-premium-hoodie-black-front-62b584b06d8bc_540x.webp'],
       athleteSlug: '', athleteName: '', school: '', categories: ['Hoodies'], sizes: ['S','M','L','XL'], active: true, createdAt: Date.now(), updatedAt: Date.now()
     },
     'flag-tee': {
-      id: 'flag-tee', name: 'Optimal Flag Tee', price: '49',
+      id: 'flag-tee', name: 'Optimal Flag Tee', price: 49,
       imageUrl: '/catalog/mens-classic-tee-black-front-62b588dcdd26d_540x.webp',
       images: ['/catalog/mens-classic-tee-black-front-62b588dcdd26d_540x.webp'],
       athleteSlug: '', athleteName: '', school: '', categories: ['Tees'], sizes: ['S','M','L','XL'], active: true, createdAt: Date.now(), updatedAt: Date.now()
