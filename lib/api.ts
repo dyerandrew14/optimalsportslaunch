@@ -183,19 +183,29 @@ export async function apiCreateProduct(product: any): Promise<any | null> {
 
 export async function apiUpdateProduct(id: string, product: any): Promise<any | null> {
   try {
-    const response = await fetch(`${API_BASE}/api/products`, {
+    console.log('Frontend: Updating product with ID:', id);
+    console.log('Frontend: Product data:', JSON.stringify(product, null, 2));
+    
+    const response = await fetch(`${API_BASE}/api/products/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id, ...product }),
+      body: JSON.stringify(product),
     });
     
+    console.log('Frontend: Update response status:', response.status);
+    console.log('Frontend: Update response ok:', response.ok);
+    
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Frontend: Error response body:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
     }
     
-    return await response.json();
+    const result = await response.json();
+    console.log('Frontend: Update success response:', result);
+    return result;
   } catch (error) {
     console.error('Error updating product:', error);
     return null;
@@ -204,12 +214,8 @@ export async function apiUpdateProduct(id: string, product: any): Promise<any | 
 
 export async function apiDeleteProduct(id: string): Promise<boolean> {
   try {
-    const response = await fetch(`${API_BASE}/api/products`, {
+    const response = await fetch(`${API_BASE}/api/products/${id}`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id }),
     });
     
     return response.ok;
