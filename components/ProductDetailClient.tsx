@@ -23,8 +23,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     : null;
 
   const handleCheckout = () => {
-    if (!selectedSize || !selectedColor) {
-      alert('Please select a size and color before checkout');
+    if (!selectedSize) {
+      alert('Please select a size before checkout');
       return;
     }
     setShowCheckout(true);

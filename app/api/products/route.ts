@@ -39,6 +39,12 @@ export async function GET(request: NextRequest) {
       console.log('Failed to save memory products to KV:', e);
     }
   }
+  
+  // Always ensure memory products are in sync with KV
+  if (all.length > memoryProducts.length) {
+    memoryProducts = all;
+    console.log('Synced memory products with KV:', memoryProducts.length);
+  }
   if (all.length === 0) {
     const now = Date.now();
     // Seed exactly three products based on the current catalog
@@ -153,10 +159,15 @@ export async function POST(request: NextRequest) {
       await kv.set(KEY_ALL, all);
       await kv.set(`product:${newProduct.id}`, newProduct);
       console.log('Successfully saved product to KV');
+      
+      // Also update memory products for immediate local access
+      memoryProducts.push(newProduct);
+      console.log('Updated memory products:', memoryProducts.length);
     } catch (redisError) {
       console.error('Redis error:', redisError);
-      // Fallback: return the product even if Redis fails
-      console.log('Returning product despite Redis failure');
+      // Fallback: add to memory products and return the product
+      memoryProducts.push(newProduct);
+      console.log('Added to memory products as fallback:', memoryProducts.length);
     }
     return NextResponse.json(newProduct, { status: 201 });
   } catch (e) {
