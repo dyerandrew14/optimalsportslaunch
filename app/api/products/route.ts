@@ -23,10 +23,23 @@ export async function GET(request: NextRequest) {
     all = (await kv.get(KEY_ALL)) || [];
     console.log('Products from KV:', all.length);
     
-    // If we got products from KV, update memory products
+    // Merge KV products with memory products (avoid duplicates)
     if (all.length > 0) {
+      const kvIds = new Set(all.map(p => p.id));
+      const newMemoryProducts = memoryProducts.filter(p => !kvIds.has(p.id));
+      all = [...all, ...newMemoryProducts];
+      console.log('Merged KV and memory products:', all.length);
+      
+      // Update memory products to include all products
       memoryProducts = all;
-      console.log('Updated memory products from KV:', memoryProducts.length);
+      
+      // Save merged products back to KV
+      try {
+        await kv.set(KEY_ALL, all);
+        console.log('Saved merged products to KV');
+      } catch (e) {
+        console.log('Failed to save merged products to KV:', e);
+      }
     }
   } catch (error) {
     console.log('KV error, using memory products:', error);
