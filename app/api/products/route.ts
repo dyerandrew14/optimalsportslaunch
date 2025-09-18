@@ -130,11 +130,21 @@ export async function POST(request: NextRequest) {
     
     // Get existing products and add new one
     const all = (await kv.get(KEY_ALL)) || [];
+    console.log('Before adding new product - existing count:', all.length);
+    console.log('Existing product IDs:', all.map((p: any) => p.id));
+    
     all.push(newProduct);
+    console.log('After adding new product - total count:', all.length);
+    console.log('All product IDs now:', all.map((p: any) => p.id));
     
     // Save back to Redis
     await kv.set(KEY_ALL, all);
     await kv.set(`product:${newProduct.id}`, newProduct);
+    
+    // Verify it was saved
+    const verify = await kv.get(KEY_ALL) || [];
+    console.log('Verification - products in Redis after save:', verify.length);
+    console.log('Verification - product IDs in Redis:', verify.map((p: any) => p.id));
     
     console.log('Successfully saved product to Redis. Total products:', all.length);
     return NextResponse.json(newProduct, { status: 201 });
