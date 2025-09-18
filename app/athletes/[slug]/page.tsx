@@ -34,8 +34,7 @@ export default async function AthleteProfile({ params }: { params: Params }) {
   // Final fallback: try the API route
   if (!athlete) {
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
-      const response = await fetch(`${baseUrl}/api/athletes/${slug}`, { 
+      const response = await fetch(`/api/athletes/${slug}`, { 
         cache: 'no-store',
         headers: {
           'Content-Type': 'application/json',

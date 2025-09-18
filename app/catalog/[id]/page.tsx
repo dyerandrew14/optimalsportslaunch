@@ -18,7 +18,7 @@ async function getProductServer(id: string): Promise<Product | null> {
   } catch {}
   // Final fallback: query list API (works even when KV unavailable due to in-memory fallback there)
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || ''}/api/products`, { cache: 'no-store' });
+    const res = await fetch('/api/products', { cache: 'no-store' });
     if (res.ok) {
       const list = await res.json() as Product[];
       const found = list.find(p => p.id === id) || null;

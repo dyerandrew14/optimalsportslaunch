@@ -30,7 +30,7 @@ export default function CatalogExplorer() {
         if (query.trim()) params.set('name', query.trim());
         if (selectedSize) params.set('size', selectedSize);
         if (selectedCategory) params.set('category', selectedCategory);
-        const apiUrl = typeof window !== 'undefined' ? '/api/products' : `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000'}/api/products`;
+        const apiUrl = '/api/products';
         const res = await fetch(`${apiUrl}?${params.toString()}`, { cache: "no-store" });
         const data: Product[] = res.ok ? await res.json() : [];
         if (!cancelled) {
