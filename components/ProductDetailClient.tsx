@@ -11,7 +11,7 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || '');
+  const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [showCheckout, setShowCheckout] = useState(false);
@@ -129,7 +129,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   </p>
                 </div>
 
-                {/* Size Selection */}
+                {/* Size Selection - Updated to use dropdown and quantity input */}
                 {product.sizes && product.sizes.length > 0 && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Select Size & Quantity</h3>
