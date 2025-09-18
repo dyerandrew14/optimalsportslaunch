@@ -12,7 +12,7 @@ async function initializeAdminUser() {
     const users: AdminUser[] = (await kv.get(USERS_KEY)) || [];
     if (users.length === 0) {
       const { hashPassword } = await import('@/lib/auth');
-      const ph = hashPassword('115294'); // Default password
+      const ph = hashPassword('Vesper0812'); // Default password
       const adminUser: AdminUser = {
         email: 'christopergill@optimalsports.net',
         passwordHash: ph.hash,

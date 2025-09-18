@@ -65,7 +65,7 @@ git push origin main
 
 1. **Test Admin Panel**:
    - Go to `yoursite.com` → Click footer copyright
-   - Login with password: `115294`
+   - Login with password: `Vesper0812`
    - Add a test athlete
    - Verify it appears on main site
 
