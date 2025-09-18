@@ -11,7 +11,7 @@ if (process.env.redis_KV_REST_API_URL && process.env.redis_KV_REST_API_TOKEN) {
     });
     console.log('Connected to Redis');
   } catch (error) {
-    console.log('Redis connection failed, using local storage');
+    console.log('Redis connection failed, using local storage:', error);
     redis = createLocalStorage();
   }
 } else {
@@ -20,53 +20,40 @@ if (process.env.redis_KV_REST_API_URL && process.env.redis_KV_REST_API_TOKEN) {
 }
 
 function createLocalStorage() {
-  // Function to save to browser localStorage
-  const saveToBrowser = () => {
-    if (typeof window !== 'undefined') {
-      try {
-        const data = Array.from(localStorage.entries());
-        window.localStorage.setItem('optimal-sports-products', JSON.stringify(data));
-        console.log('Saved products to browser localStorage');
-      } catch (e) {
-        console.log('Could not save to localStorage:', e);
-      }
-    }
-  };
-
+  // In-memory storage for server-side fallback
+  const memoryStore = new Map<string, any>();
+  
   return {
     async get(key: string) {
-      return localStorage.get(key) || null;
+      return memoryStore.get(key) || null;
     },
     async set(key: string, value: any) {
-      localStorage.set(key, value);
-      saveToBrowser();
+      memoryStore.set(key, value);
       return 'OK';
     },
     async del(key: string) {
-      localStorage.delete(key);
-      saveToBrowser();
+      memoryStore.delete(key);
       return 1;
     },
     async keys(pattern: string) {
-      const allKeys = Array.from(localStorage.keys());
+      const allKeys = Array.from(memoryStore.keys());
       if (pattern === '*') return allKeys;
       return allKeys.filter((key: any) => typeof key === 'string' && key.includes(pattern.replace('*', '')));
     },
     async lrange(key: string, start: number, end: number) {
-      const value = localStorage.get(key);
+      const value = memoryStore.get(key);
       if (!Array.isArray(value)) return [];
       return value.slice(start, end === -1 ? undefined : end + 1);
     },
     async rpush(key: string, ...values: any[]) {
-      const existing = localStorage.get(key) || [];
+      const existing = memoryStore.get(key) || [];
       const newArray = [...existing, ...values];
-      localStorage.set(key, newArray);
-      saveToBrowser();
+      memoryStore.set(key, newArray);
       return newArray.length;
     },
     async hset(key: string, fieldOrObj: string | Record<string, any>, value?: any): Promise<number> {
       const hashKey = `hash:${key}`;
-      let hashData = localStorage.get(hashKey) || {};
+      let hashData = memoryStore.get(hashKey) || {};
       
       if (typeof fieldOrObj === 'string' && value !== undefined) {
         hashData[fieldOrObj] = value;
@@ -74,22 +61,20 @@ function createLocalStorage() {
         hashData = { ...hashData, ...fieldOrObj };
       }
       
-      localStorage.set(hashKey, hashData);
-      saveToBrowser();
+      memoryStore.set(hashKey, hashData);
       return Object.keys(hashData).length;
     },
     async hget<T = any>(key: string, field: string): Promise<T | null> {
       const hashKey = `hash:${key}`;
-      const hashData = localStorage.get(hashKey) || {};
+      const hashData = memoryStore.get(hashKey) || {};
       return hashData[field] || null;
     },
     async hdel(key: string, field: string): Promise<number> {
       const hashKey = `hash:${key}`;
-      const hashData = localStorage.get(hashKey) || {};
+      const hashData = memoryStore.get(hashKey) || {};
       if (field in hashData) {
         delete hashData[field];
-        localStorage.set(hashKey, hashData);
-        saveToBrowser();
+        memoryStore.set(hashKey, hashData);
         return 1;
       }
       return 0;

@@ -183,6 +183,10 @@ export async function apiCreateProduct(product: any): Promise<any | null> {
 
 export async function apiUpdateProduct(id: string, product: any): Promise<any | null> {
   try {
+    console.log('Frontend: Updating product with data:', JSON.stringify(product, null, 2));
+    console.log('Frontend: API_BASE is:', API_BASE);
+    console.log('Frontend: Product ID:', id);
+
     const response = await fetch(`${API_BASE}/api/products/${id}`, {
       method: 'PUT',
       headers: {
@@ -191,13 +195,20 @@ export async function apiUpdateProduct(id: string, product: any): Promise<any | 
       body: JSON.stringify(product),
     });
     
+    console.log('Frontend: Response status:', response.status);
+    console.log('Frontend: Response ok:', response.ok);
+    
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Frontend: Error response body:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
     }
     
-    return await response.json();
+    const result = await response.json();
+    console.log('Frontend: Success response:', result);
+    return result;
   } catch (error) {
-    console.error('Error updating product:', error);
+    console.error('Frontend: Error updating product:', error);
     return null;
   }
 }

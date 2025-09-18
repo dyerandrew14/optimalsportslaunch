@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPrintfulAPI, createPrintfulOrder } from '@/lib/printful';
+import { printful, formatCartForPrintful } from '@/lib/printful';
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,27 +40,30 @@ export async function POST(request: NextRequest) {
       email: customerInfo.email
     });
 
+    // Format items for Printful
+    const items = [{
+      id: product.id,
+      name: product.name,
+      price: parseFloat(product.price),
+      quantity: quantity,
+      variantId: 1, // Default variant ID - you may need to map this based on size/color
+      size: selectedSize,
+      color: selectedColor
+    }];
+
     // Create Printful order
-    const printfulOrder = createPrintfulOrder(
-      product,
-      selectedSize,
-      selectedColor,
-      quantity,
-      customerInfo,
-      retailPrice
-    );
+    const printfulOrder = formatCartForPrintful(items, customerInfo);
 
     // Send to Printful
-    const printfulAPI = getPrintfulAPI();
-    const printfulResponse = await printfulAPI.createOrder(printfulOrder);
+    const printfulResponse = await printful.createOrder(printfulOrder);
 
     console.log('Printful order created:', printfulResponse);
 
     // Return success response
     return NextResponse.json({
       success: true,
-      orderId: printfulResponse.result.id,
-      externalId: printfulOrder.external_id,
+      orderId: printfulResponse.id,
+      externalId: printfulResponse.external_id,
       message: 'Order successfully placed with Printful'
     });
 
@@ -100,8 +103,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const printfulAPI = getPrintfulAPI();
-    const shippingRates = await printfulAPI.calculateShipping(
+    const shippingRates = await printful.getShippingRates(
       {
         name: 'Customer',
         address1: '123 Main St',
@@ -120,7 +122,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      shippingRates: shippingRates.result
+      shippingRates: shippingRates
     });
 
   } catch (error) {

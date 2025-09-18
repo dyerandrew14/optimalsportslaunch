@@ -6,14 +6,62 @@ import { AdminUser, hashPassword, verifyPassword } from '@/lib/auth';
 const USERS_KEY = 'admin:users';
 const TOKENS_KEY = 'admin:resetTokens';
 
+// Initialize admin user if none exist
+async function initializeAdminUser() {
+  try {
+    const users: AdminUser[] = (await kv.get(USERS_KEY)) || [];
+    if (users.length === 0) {
+      const { hashPassword } = await import('@/lib/auth');
+      const ph = hashPassword('115294'); // Default password
+      const adminUser: AdminUser = {
+        email: 'christopergill@optimalsports.net',
+        passwordHash: ph.hash,
+        salt: ph.salt,
+        role: 'admin'
+      };
+      users.push(adminUser);
+      await kv.set(USERS_KEY, users);
+      console.log('Initialized admin user for christopergill@optimalsports.net');
+    }
+  } catch (error) {
+    console.error('Failed to initialize admin user:', error);
+  }
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const { action } = body || {};
 
   if (action === 'login') {
-    // TEMPORARILY DISABLE AUTH - ALWAYS ALLOW LOGIN
-    console.log('Auth bypassed - allowing all logins');
-    return NextResponse.json({ ok: true, bypassed: true });
+    const { email, password, dev } = body;
+    
+    // Allow dev bypass if enabled
+    if (dev && process.env.NEXT_PUBLIC_DEV_BYPASS === 'true') {
+      console.log('Dev bypass enabled - allowing login');
+      return NextResponse.json({ ok: true, bypassed: true });
+    }
+    
+    // Proper email authentication
+    if (!email || !password) {
+      return NextResponse.json({ ok: false, error: 'Email and password required' }, { status: 400 });
+    }
+    
+    try {
+      // Initialize admin user if none exist
+      await initializeAdminUser();
+      
+      const users: AdminUser[] = (await kv.get(USERS_KEY)) || [];
+      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      
+      if (!user || !user.passwordHash || !user.salt || !verifyPassword(password || '', user.passwordHash, user.salt)) {
+        return NextResponse.json({ ok: false, error: 'Invalid credentials' }, { status: 401 });
+      }
+      
+      return NextResponse.json({ ok: true });
+    } catch (error) {
+      console.error('Login error:', error);
+      return NextResponse.json({ ok: false, error: 'Login failed' }, { status: 500 });
+    }
   }
 
   if (action === 'forgot') {

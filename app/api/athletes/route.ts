@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       classYear: input.classYear,
       number: input.number || '',
       bio: input.bio || '',
-      image: input.image || '/default-athlete.jpg',
+      image: input.image || '/players/jonah_coleman.webp',
       colors: input.colors || { from: '#ff0000', to: '#0000ff' },
       stats: input.stats || {
         passingYards: 0,
