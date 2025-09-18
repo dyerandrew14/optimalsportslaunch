@@ -32,6 +32,7 @@ export default function CatalogExplorer() {
         if (selectedSize) params.set('size', selectedSize);
         if (selectedCategory) params.set('category', selectedCategory);
         const apiUrl = '/api/products';
+        console.log('🔍 Fetching products from:', `${apiUrl}?${params.toString()}&_t=${Date.now()}`);
         const res = await fetch(`${apiUrl}?${params.toString()}&_t=${Date.now()}`, { 
           cache: "no-store",
           headers: {
@@ -42,12 +43,18 @@ export default function CatalogExplorer() {
         });
         const data: Product[] = res.ok ? await res.json() : [];
         if (!cancelled) {
-          console.log('Products API response:', { ok: res.ok, status: res.status, dataLength: data.length });
+          console.log('📦 Products API response:', { 
+            ok: res.ok, 
+            status: res.status, 
+            dataLength: data.length,
+            url: res.url,
+            products: data.map(p => ({ id: p.id, name: p.name, active: p.active }))
+          });
           if (data && data.length > 0) {
             setProducts(data);
-            console.log('Using real products from database:', data.length);
+            console.log('✅ Using real products from database:', data.length);
           } else {
-            console.log('No products from database, showing empty state');
+            console.log('❌ No products from database, showing empty state');
             setProducts([]);
           }
         }
