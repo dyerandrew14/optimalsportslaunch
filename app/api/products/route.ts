@@ -22,6 +22,12 @@ export async function GET(request: NextRequest) {
   try {
     all = (await kv.get(KEY_ALL)) || [];
     console.log('Products from KV:', all.length);
+    
+    // If we got products from KV, update memory products
+    if (all.length > 0) {
+      memoryProducts = all;
+      console.log('Updated memory products from KV:', memoryProducts.length);
+    }
   } catch (error) {
     console.log('KV error, using memory products:', error);
     all = memoryProducts;
@@ -40,11 +46,7 @@ export async function GET(request: NextRequest) {
     }
   }
   
-  // Always ensure memory products are in sync with KV
-  if (all.length > memoryProducts.length) {
-    memoryProducts = all;
-    console.log('Synced memory products with KV:', memoryProducts.length);
-  }
+  // Only seed if we have absolutely no products anywhere
   if (all.length === 0) {
     const now = Date.now();
     // Seed exactly three products based on the current catalog
@@ -181,7 +183,25 @@ export async function PUT(request: NextRequest) {
   // Optional bulk replace
   const products: Product[] = await request.json();
   await kv.set(KEY_ALL, products);
+  memoryProducts = products; // Update memory products too
   return NextResponse.json(products);
+}
+
+// Debug endpoint to check what's in Redis
+export async function DELETE(request: NextRequest) {
+  try {
+    const all = await kv.get(KEY_ALL) || [];
+    console.log('DEBUG: Products in Redis:', all.length);
+    console.log('DEBUG: Memory products:', memoryProducts.length);
+    return NextResponse.json({ 
+      redisCount: all.length, 
+      memoryCount: memoryProducts.length,
+      redisProducts: all.map(p => ({ id: p.id, name: p.name, active: p.active })),
+      memoryProducts: memoryProducts.map(p => ({ id: p.id, name: p.name, active: p.active }))
+    });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
 
 
