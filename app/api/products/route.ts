@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
   try {
     const input = await request.json();
     console.log('Creating product:', input.name);
+    console.log('Input data:', JSON.stringify(input, null, 2));
     
     const now = Date.now();
     const newProduct: Product = {
@@ -150,7 +151,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newProduct, { status: 201 });
   } catch (e) {
     console.error('Error creating product:', e);
-    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
+    console.error('Error stack:', e instanceof Error ? e.stack : 'No stack trace');
+    console.error('Error details:', e instanceof Error ? e.message : 'Unknown error');
+    return NextResponse.json({ 
+      error: 'Failed to create product', 
+      details: e instanceof Error ? e.message : 'Unknown error',
+      stack: e instanceof Error ? e.stack : undefined
+    }, { status: 500 });
   }
 }
 
