@@ -196,11 +196,11 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ 
       redisCount: all.length, 
       memoryCount: memoryProducts.length,
-      redisProducts: all.map(p => ({ id: p.id, name: p.name, active: p.active })),
-      memoryProducts: memoryProducts.map(p => ({ id: p.id, name: p.name, active: p.active }))
+      redisProducts: all.map((p: any) => ({ id: p.id, name: p.name, active: p.active })),
+      memoryProducts: memoryProducts.map((p: any) => ({ id: p.id, name: p.name, active: p.active }))
     });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
 
