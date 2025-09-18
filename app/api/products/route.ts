@@ -6,7 +6,7 @@ import path from 'path';
 import crypto from 'crypto';
 
 const KEY_ALL = 'products:all';
-let memoryProducts: Product[] = [];
+let memoryProducts: Product[] = []; // Updated for serverless persistence
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
