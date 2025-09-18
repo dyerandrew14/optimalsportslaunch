@@ -51,18 +51,52 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               {/* Product Images */}
               <div className="space-y-6">
                 {product.images && product.images.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-4">
-                    {product.images.map((image, index) => (
-                      <div key={index} className="relative aspect-square rounded-2xl overflow-hidden">
-                        <Image
-                          src={image}
-                          alt={`${product.name} - Image ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
+                  <div className="relative">
+                    {/* Main Image Display */}
+                    <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-800">
+                      <Image
+                        src={product.images[0]}
+                        alt={`${product.name} - Main Image`}
+                        fill
+                        className="object-cover main-product-image"
+                        unoptimized
+                      />
+                    </div>
+                    
+                    {/* Thumbnail Navigation */}
+                    {product.images.length > 1 && (
+                      <div className="mt-4">
+                        <div className="flex gap-2 overflow-x-auto pb-2">
+                          {product.images.map((image, index) => (
+                            <button
+                              key={index}
+                              className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600 hover:border-red-500 transition-colors"
+                              onClick={() => {
+                                // Simple image switching - could be enhanced with state management
+                                const mainImg = document.querySelector('.main-product-image') as HTMLImageElement;
+                                if (mainImg) {
+                                  mainImg.src = image;
+                                }
+                              }}
+                            >
+                              <Image
+                                src={image}
+                                alt={`${product.name} - Thumbnail ${index + 1}`}
+                                width={80}
+                                height={80}
+                                className="object-cover w-full h-full"
+                                unoptimized
+                              />
+                            </button>
+                          ))}
+                        </div>
+                        <div className="text-center mt-2">
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                            {product.images.length} image{product.images.length > 1 ? 's' : ''} available
+                          </span>
+                        </div>
                       </div>
-                    ))}
+                    )}
                   </div>
                 ) : (
                   <div className="aspect-square bg-gray-200 dark:bg-gray-800 rounded-2xl flex items-center justify-center">
@@ -94,20 +128,37 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 {product.sizes && product.sizes.length > 0 && (
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Sizes Available</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {product.sizes.map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => setSelectedSize(size)}
-                          className={`px-4 py-2 rounded-lg border transition-colors ${
-                            selectedSize === size
-                              ? 'border-red-600 bg-red-600 text-white'
-                              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:border-red-600'
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      ))}
+                    <div className="grid grid-cols-2 gap-3">
+                      {product.sizes.map((size) => {
+                        const inventory = product.inventoryBySize?.[size] || 0;
+                        const isSoldOut = inventory === 0;
+                        return (
+                          <div key={size} className="flex items-center justify-between p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
+                            <span className="text-gray-900 dark:text-white font-medium">{size}</span>
+                            <div className="flex items-center gap-2">
+                              {isSoldOut ? (
+                                <span className="text-red-500 text-sm font-semibold">Sold Out</span>
+                              ) : (
+                                <>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    max={inventory}
+                                    defaultValue={inventory}
+                                    className="w-16 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    onChange={(e) => {
+                                      const newInventory = parseInt(e.target.value) || 0;
+                                      // Update inventory in real-time (this would need to be saved to backend)
+                                      console.log(`Updated ${size} inventory to ${newInventory}`);
+                                    }}
+                                  />
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">available</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
