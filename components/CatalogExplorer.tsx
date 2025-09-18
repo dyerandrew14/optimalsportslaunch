@@ -15,6 +15,7 @@ export default function CatalogExplorer() {
   const [page, setPage] = useState<number>(1);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [refreshKey, setRefreshKey] = useState<number>(0);
   const SIZE_STOPS = ["XS", "S", "M", "L", "XL", "2XL"];
   const CATEGORY_OPTIONS = ["Tees", "Hoodies", "Hats", "Accessories"];
   const [sizeIndex, setSizeIndex] = useState<number>(2); // default to M
@@ -31,7 +32,14 @@ export default function CatalogExplorer() {
         if (selectedSize) params.set('size', selectedSize);
         if (selectedCategory) params.set('category', selectedCategory);
         const apiUrl = '/api/products';
-        const res = await fetch(`${apiUrl}?${params.toString()}&_t=${Date.now()}`, { cache: "no-store" });
+        const res = await fetch(`${apiUrl}?${params.toString()}&_t=${Date.now()}`, { 
+          cache: "no-store",
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
         const data: Product[] = res.ok ? await res.json() : [];
         if (!cancelled) {
           console.log('Products API response:', { ok: res.ok, status: res.status, dataLength: data.length });
@@ -53,7 +61,7 @@ export default function CatalogExplorer() {
     return () => {
       cancelled = true;
     };
-  }, [page, query, selectedSize, selectedCategory]);
+  }, [page, query, selectedSize, selectedCategory, refreshKey]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -148,6 +156,14 @@ export default function CatalogExplorer() {
           <div className="flex items-center justify-between mb-4">
             <div className="text-sm text-gray-500 dark:text-gray-400">Showing 8 per page</div>
             <div className="inline-flex items-center gap-2">
+              <button 
+                className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-800" 
+                onClick={() => setRefreshKey(k => k + 1)} 
+                type="button"
+                title="Refresh products"
+              >
+                🔄 Refresh
+              </button>
               <button className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-200" onClick={() => setPage(p => Math.max(1, p-1))} type="button">Prev</button>
               <span className="text-gray-700 dark:text-gray-300 text-sm">Page {page}</span>
               <button className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-200" onClick={() => setPage(p => p+1)} type="button">Next</button>
