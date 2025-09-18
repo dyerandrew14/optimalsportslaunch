@@ -130,6 +130,9 @@ export async function GET(request: NextRequest) {
   
   console.log('Products API Debug:');
   console.log('- Total products in Redis:', all.length);
+  console.log('- Memory products count:', memoryProducts.length);
+  console.log('- Product IDs in Redis:', all.map((p: any) => p.id));
+  console.log('- Product IDs in Memory:', memoryProducts.map((p: any) => p.id));
   console.log('- After filtering:', filtered.length);
   console.log('- Page:', page, 'Limit:', limit);
   console.log('- Start index:', Math.max((page - 1) * limit, 0));
@@ -206,11 +209,14 @@ export async function DELETE(request: NextRequest) {
     const all = await kv.get(KEY_ALL) || [];
     console.log('DEBUG: Products in Redis:', all.length);
     console.log('DEBUG: Memory products:', memoryProducts.length);
+    console.log('DEBUG: Redis products:', all.map((p: any) => ({ id: p.id, name: p.name, createdAt: new Date(p.createdAt).toISOString() })));
+    console.log('DEBUG: Memory products:', memoryProducts.map((p: any) => ({ id: p.id, name: p.name, createdAt: new Date(p.createdAt).toISOString() })));
     return NextResponse.json({ 
       redisCount: all.length, 
       memoryCount: memoryProducts.length,
-      redisProducts: all.map((p: any) => ({ id: p.id, name: p.name, active: p.active })),
-      memoryProducts: memoryProducts.map((p: any) => ({ id: p.id, name: p.name, active: p.active }))
+      redisProducts: all.map((p: any) => ({ id: p.id, name: p.name, active: p.active, createdAt: new Date(p.createdAt).toISOString() })),
+      memoryProducts: memoryProducts.map((p: any) => ({ id: p.id, name: p.name, active: p.active, createdAt: new Date(p.createdAt).toISOString() })),
+      timestamp: new Date().toISOString()
     });
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
