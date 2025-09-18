@@ -23,40 +23,26 @@ export async function GET(request: NextRequest) {
     all = (await kv.get(KEY_ALL)) || [];
     console.log('Products from KV:', all.length);
     
-    // Merge KV products with memory products (avoid duplicates)
+    // Always use Redis as the source of truth
     if (all.length > 0) {
-      const kvIds = new Set(all.map(p => p.id));
-      const newMemoryProducts = memoryProducts.filter(p => !kvIds.has(p.id));
-      all = [...all, ...newMemoryProducts];
-      console.log('Merged KV and memory products:', all.length);
-      
-      // Update memory products to include all products
-      memoryProducts = all;
-      
-      // Save merged products back to KV
-      try {
-        await kv.set(KEY_ALL, all);
-        console.log('Saved merged products to KV');
-      } catch (e) {
-        console.log('Failed to save merged products to KV:', e);
+      console.log('Using products from Redis:', all.length);
+      memoryProducts = all; // Sync memory with Redis
+    } else {
+      // If Redis is empty, try to use memory products and save them to Redis
+      if (memoryProducts.length > 0) {
+        console.log('Redis empty, using memory products:', memoryProducts.length);
+        all = memoryProducts;
+        try {
+          await kv.set(KEY_ALL, memoryProducts);
+          console.log('Saved memory products to Redis');
+        } catch (e) {
+          console.log('Failed to save memory products to Redis:', e);
+        }
       }
     }
   } catch (error) {
     console.log('KV error, using memory products:', error);
     all = memoryProducts;
-  }
-  
-  // If KV is empty but we have memory products, use memory products
-  if (all.length === 0 && memoryProducts.length > 0) {
-    console.log('Using memory products as fallback:', memoryProducts.length);
-    all = memoryProducts;
-    // Try to save memory products back to KV
-    try {
-      await kv.set(KEY_ALL, memoryProducts);
-      console.log('Saved memory products back to KV');
-    } catch (e) {
-      console.log('Failed to save memory products to KV:', e);
-    }
   }
   
   // Only seed if we have absolutely no products anywhere
@@ -178,9 +164,9 @@ export async function POST(request: NextRequest) {
       await kv.set(`product:${newProduct.id}`, newProduct);
       console.log('Successfully saved product to KV');
       
-      // Also update memory products for immediate local access
-      memoryProducts.push(newProduct);
-      console.log('Updated memory products:', memoryProducts.length);
+      // Update memory products to match Redis
+      memoryProducts = all;
+      console.log('Updated memory products to match Redis:', memoryProducts.length);
     } catch (redisError) {
       console.error('Redis error:', redisError);
       // Fallback: add to memory products and return the product
