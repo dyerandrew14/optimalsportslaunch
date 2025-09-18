@@ -6,7 +6,6 @@ import path from 'path';
 import crypto from 'crypto';
 
 const KEY_ALL = 'products:all';
-let memoryProducts: Product[] = []; // Updated for serverless persistence
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -16,39 +15,20 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get('category')?.toLowerCase() || undefined;
   const size = searchParams.get('size')?.toLowerCase() || undefined;
   const page = Number(searchParams.get('page') || '1');
-  const limit = Number(searchParams.get('limit') || '50'); // Increased default limit
+  const limit = Number(searchParams.get('limit') || '50');
 
   let all: Product[] = [];
   try {
     all = (await kv.get(KEY_ALL)) || [];
     console.log('Products from KV:', all.length);
-    
-    // Always use Redis as the source of truth
-    if (all.length > 0) {
-      console.log('Using products from Redis:', all.length);
-      memoryProducts = all; // Sync memory with Redis
-    } else {
-      // If Redis is empty, try to use memory products and save them to Redis
-      if (memoryProducts.length > 0) {
-        console.log('Redis empty, using memory products:', memoryProducts.length);
-        all = memoryProducts;
-        try {
-          await kv.set(KEY_ALL, memoryProducts);
-          console.log('Saved memory products to Redis');
-        } catch (e) {
-          console.log('Failed to save memory products to Redis:', e);
-        }
-      }
-    }
   } catch (error) {
-    console.log('KV error, using memory products:', error);
-    all = memoryProducts;
+    console.log('KV error for products:', error);
+    all = [];
   }
   
-  // Only seed if we have absolutely no products anywhere
   if (all.length === 0) {
+    // Seed with default products if KV is unavailable
     const now = Date.now();
-    // Seed exactly three products based on the current catalog
     all = [
       {
         id: 'man-tee',
@@ -99,9 +79,8 @@ export async function GET(request: NextRequest) {
         updatedAt: now,
       } as Product,
     ];
-    memoryProducts = all;
-    try {
-      await kv.set(KEY_ALL, all);
+    try { 
+      await kv.set(KEY_ALL, all); 
       for (const p of all) await kv.set(`product:${p.id}`, p);
     } catch {}
   }
@@ -116,12 +95,9 @@ export async function GET(request: NextRequest) {
   
   console.log('Products API Debug:');
   console.log('- Total products in Redis:', all.length);
-  console.log('- Memory products count:', memoryProducts.length);
-  console.log('- Product IDs in Redis:', all.map((p: any) => p.id));
-  console.log('- Product IDs in Memory:', memoryProducts.map((p: any) => p.id));
+  console.log('- Product IDs:', all.map((p: any) => p.id));
   console.log('- After filtering:', filtered.length);
   console.log('- Page:', page, 'Limit:', limit);
-  console.log('- Start index:', Math.max((page - 1) * limit, 0));
   console.log('- Products being returned:', filtered.slice(Math.max((page - 1) * limit, 0), Math.max((page - 1) * limit, 0) + limit).length);
   const start = Math.max((page - 1) * limit, 0);
   const paged = filtered.slice(start, start + limit);
@@ -132,7 +108,6 @@ export async function POST(request: NextRequest) {
   try {
     const input = await request.json();
     console.log('Creating product:', input.name);
-    console.log('Redis connection status:', typeof kv);
     
     const now = Date.now();
     const newProduct: Product = {
@@ -153,31 +128,19 @@ export async function POST(request: NextRequest) {
       updatedAt: now,
     };
     
-    try {
-      console.log('Attempting to get existing products...');
-      const all = (await kv.get(KEY_ALL)) || [];
-      console.log('Existing products count:', all.length);
-      
-      all.push(newProduct);
-      console.log('Attempting to save products to KV...');
-      await kv.set(KEY_ALL, all);
-      await kv.set(`product:${newProduct.id}`, newProduct);
-      console.log('Successfully saved product to KV');
-      
-      // Update memory products to match Redis
-      memoryProducts = all;
-      console.log('Updated memory products to match Redis:', memoryProducts.length);
-    } catch (redisError) {
-      console.error('Redis error:', redisError);
-      // Fallback: add to memory products and return the product
-      memoryProducts.push(newProduct);
-      console.log('Added to memory products as fallback:', memoryProducts.length);
-    }
+    // Get existing products and add new one
+    const all = (await kv.get(KEY_ALL)) || [];
+    all.push(newProduct);
+    
+    // Save back to Redis
+    await kv.set(KEY_ALL, all);
+    await kv.set(`product:${newProduct.id}`, newProduct);
+    
+    console.log('Successfully saved product to Redis. Total products:', all.length);
     return NextResponse.json(newProduct, { status: 201 });
   } catch (e) {
     console.error('Error creating product:', e);
-    console.error('Error details:', e instanceof Error ? e.message : 'Unknown error');
-    return NextResponse.json({ error: 'Failed to create product', details: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
   }
 }
 
@@ -185,7 +148,6 @@ export async function PUT(request: NextRequest) {
   // Optional bulk replace
   const products: Product[] = await request.json();
   await kv.set(KEY_ALL, products);
-  memoryProducts = products; // Update memory products too
   return NextResponse.json(products);
 }
 
@@ -194,14 +156,10 @@ export async function DELETE(request: NextRequest) {
   try {
     const all = await kv.get(KEY_ALL) || [];
     console.log('DEBUG: Products in Redis:', all.length);
-    console.log('DEBUG: Memory products:', memoryProducts.length);
     console.log('DEBUG: Redis products:', all.map((p: any) => ({ id: p.id, name: p.name, createdAt: new Date(p.createdAt).toISOString() })));
-    console.log('DEBUG: Memory products:', memoryProducts.map((p: any) => ({ id: p.id, name: p.name, createdAt: new Date(p.createdAt).toISOString() })));
     return NextResponse.json({ 
-      redisCount: all.length, 
-      memoryCount: memoryProducts.length,
+      redisCount: all.length,
       redisProducts: all.map((p: any) => ({ id: p.id, name: p.name, active: p.active, createdAt: new Date(p.createdAt).toISOString() })),
-      memoryProducts: memoryProducts.map((p: any) => ({ id: p.id, name: p.name, active: p.active, createdAt: new Date(p.createdAt).toISOString() })),
       timestamp: new Date().toISOString()
     });
   } catch (error) {
