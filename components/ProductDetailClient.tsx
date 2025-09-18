@@ -13,6 +13,7 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || '');
   const [selectedColor, setSelectedColor] = useState('');
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [showCheckout, setShowCheckout] = useState(false);
 
   // Find the associated athlete
@@ -25,6 +26,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const handleCheckout = () => {
     if (!selectedSize) {
       alert('Please select a size before checkout');
+      return;
+    }
+    if (selectedQuantity < 1) {
+      alert('Please select a valid quantity');
       return;
     }
     setShowCheckout(true);
@@ -126,40 +131,59 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
                 {/* Size Selection */}
                 {product.sizes && product.sizes.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Sizes Available</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {product.sizes.map((size) => {
-                        const inventory = product.inventoryBySize?.[size] || 0;
-                        const isSoldOut = inventory === 0;
-                        return (
-                          <div key={size} className="flex items-center justify-between p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
-                            <span className="text-gray-900 dark:text-white font-medium">{size}</span>
-                            <div className="flex items-center gap-2">
-                              {isSoldOut ? (
-                                <span className="text-red-500 text-sm font-semibold">Sold Out</span>
-                              ) : (
-                                <>
-                                  <input
-                                    type="number"
-                                    min="0"
-                                    max={inventory}
-                                    defaultValue={inventory}
-                                    className="w-16 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                    onChange={(e) => {
-                                      const newInventory = parseInt(e.target.value) || 0;
-                                      // Update inventory in real-time (this would need to be saved to backend)
-                                      console.log(`Updated ${size} inventory to ${newInventory}`);
-                                    }}
-                                  />
-                                  <span className="text-xs text-gray-500 dark:text-gray-400">available</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Select Size & Quantity</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Size Selection */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Size *
+                        </label>
+                        <select
+                          value={selectedSize}
+                          onChange={(e) => setSelectedSize(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                          required
+                        >
+                          <option value="">Select a size</option>
+                          {product.sizes.map((size) => {
+                            const inventory = product.inventoryBySize?.[size] || 0;
+                            const isSoldOut = inventory === 0;
+                            return (
+                              <option key={size} value={size} disabled={isSoldOut}>
+                                {size} {isSoldOut ? '(Sold Out)' : ''}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+
+                      {/* Quantity Selection */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Quantity *
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={selectedQuantity}
+                          onChange={(e) => setSelectedQuantity(parseInt(e.target.value) || 1)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                          required
+                        />
+                      </div>
                     </div>
+
+                    {selectedSize && (
+                      <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          Selected: <span className="font-semibold">{selectedSize}</span> • 
+                          Quantity: <span className="font-semibold">{selectedQuantity}</span>
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -264,6 +288,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           }}
           selectedSize={selectedSize}
           selectedColor={selectedColor}
+          selectedQuantity={selectedQuantity}
           onClose={() => setShowCheckout(false)}
         />
       )}

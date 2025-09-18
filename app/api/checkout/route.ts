@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       retailPrice 
     } = body;
 
-    if (!product || !selectedSize || !selectedColor || !quantity || !customerInfo) {
+    if (!product || !selectedSize || !quantity || !customerInfo) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
