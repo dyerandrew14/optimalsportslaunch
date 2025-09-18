@@ -118,8 +118,8 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
             <div className="flex items-center gap-4">
               {/* Logo */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">OS</span>
+                <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">OS</span>
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-gray-900 dark:text-white">Optimal Sports</h1>
@@ -191,7 +191,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
                 value={customerInfo.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
               />
             </div>
 
@@ -205,7 +205,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
                 value={customerInfo.email}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
               />
             </div>
 
@@ -219,7 +219,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
                 value={customerInfo.address1}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
               />
             </div>
 
@@ -232,7 +232,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
                 name="address2"
                 value={customerInfo.address2}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
               />
             </div>
 
@@ -247,7 +247,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
                   value={customerInfo.city}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
                 />
               </div>
 
@@ -261,7 +261,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
                   value={customerInfo.state}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
                 />
               </div>
             </div>
@@ -277,7 +277,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
                   value={customerInfo.zip}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
                 />
               </div>
 
@@ -290,7 +290,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
                   value={customerInfo.country}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
                 >
                   <option value="US">United States</option>
                   <option value="CA">Canada</option>
@@ -309,7 +309,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
                 name="phone"
                 value={customerInfo.phone}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
               />
             </div>
 
@@ -320,7 +320,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
               <select
                 value={quantity}
                 onChange={(e) => setQuantity(parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
               >
                 {[1, 2, 3, 4, 5].map(num => (
                   <option key={num} value={num}>{num}</option>

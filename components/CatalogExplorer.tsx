@@ -32,13 +32,16 @@ export default function CatalogExplorer() {
         if (selectedSize) params.set('size', selectedSize);
         if (selectedCategory) params.set('category', selectedCategory);
         const apiUrl = '/api/products';
-        console.log('🔍 Fetching products from:', `${apiUrl}?${params.toString()}&_t=${Date.now()}`);
-        const res = await fetch(`${apiUrl}?${params.toString()}&_t=${Date.now()}`, { 
+        const timestamp = Date.now();
+        console.log('🔍 Fetching products from:', `${apiUrl}?${params.toString()}&_t=${timestamp}`);
+        console.log('🔍 Cache-busting timestamp:', timestamp);
+        const res = await fetch(`${apiUrl}?${params.toString()}&_t=${timestamp}`, { 
           cache: "no-store",
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
-            'Expires': '0'
+            'Expires': '0',
+            'X-Requested-With': 'XMLHttpRequest'
           }
         });
         const data: Product[] = res.ok ? await res.json() : [];
