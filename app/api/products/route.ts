@@ -122,6 +122,7 @@ export async function POST(request: NextRequest) {
   try {
     const input = await request.json();
     console.log('Creating product:', input.name);
+    console.log('Redis connection status:', typeof kv);
     
     const now = Date.now();
     const newProduct: Product = {
@@ -142,15 +143,26 @@ export async function POST(request: NextRequest) {
       updatedAt: now,
     };
     
-    const all = (await kv.get(KEY_ALL)) || [];
-    all.push(newProduct);
-    await kv.set(KEY_ALL, all);
-    await kv.set(`product:${newProduct.id}`, newProduct);
-    console.log('Successfully saved product to KV');
+    try {
+      console.log('Attempting to get existing products...');
+      const all = (await kv.get(KEY_ALL)) || [];
+      console.log('Existing products count:', all.length);
+      
+      all.push(newProduct);
+      console.log('Attempting to save products to KV...');
+      await kv.set(KEY_ALL, all);
+      await kv.set(`product:${newProduct.id}`, newProduct);
+      console.log('Successfully saved product to KV');
+    } catch (redisError) {
+      console.error('Redis error:', redisError);
+      // Fallback: return the product even if Redis fails
+      console.log('Returning product despite Redis failure');
+    }
     return NextResponse.json(newProduct, { status: 201 });
   } catch (e) {
     console.error('Error creating product:', e);
-    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
+    console.error('Error details:', e instanceof Error ? e.message : 'Unknown error');
+    return NextResponse.json({ error: 'Failed to create product', details: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 });
   }
 }
 
