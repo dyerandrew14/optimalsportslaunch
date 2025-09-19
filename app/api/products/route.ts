@@ -26,63 +26,75 @@ export async function GET(request: NextRequest) {
     all = [];
   }
   
+  // Only seed if Redis is completely empty AND we haven't seeded before
   if (all.length === 0) {
-    // Seed with default products if KV is unavailable
-    const now = Date.now();
-    all = [
-      {
-        id: 'man-tee',
-        name: 'Optimal Man Tee',
-        price: 49,
-        imageUrl: '/catalog/mens-classic-tee-black-front-6616e04f63957_540x.webp',
-        images: ['/catalog/mens-classic-tee-black-front-6616e04f63957_540x.webp','/catalog/mens-classic-tee-black-left-6616e04f64dee_540x.webp','/catalog/mens-classic-tee-black-right-6616e04f6534e_540x.webp','/catalog/mens-classic-tee-black-back-62b588dcdd3e6_540x.webp'],
-        athleteSlug: 'jonah-coleman',
-        athleteName: 'Jonah Coleman',
-        school: 'Arizona',
-        categories: ['Tees'],
-        sizes: ['S','M','L','XL'],
-        inventoryBySize: { S: 10, M: 10, L: 10, XL: 10 },
-        active: true,
-        createdAt: now,
-        updatedAt: now,
-      } as Product,
-      {
-        id: 'man-hoodie',
-        name: 'Optimal Man Hoodie',
-        price: 79,
-        imageUrl: '/catalog/unisex-premium-hoodie-black-front-62b584b06d8bc_540x.webp',
-        images: ['/catalog/unisex-premium-hoodie-black-front-62b584b06d8bc_540x.webp'],
-        athleteSlug: 'christian-pierce',
-        athleteName: 'Christian Pierce',
-        school: 'USC',
-        categories: ['Hoodies'],
-        sizes: ['S','M','L','XL'],
-        inventoryBySize: { S: 8, M: 12, L: 10, XL: 6 },
-        active: true,
-        createdAt: now,
-        updatedAt: now,
-      } as Product,
-      {
-        id: 'flag-tee',
-        name: 'Optimal Flag Tee',
-        price: 49,
-        imageUrl: '/catalog/mens-classic-tee-black-front-62b588dcdd26d_540x.webp',
-        images: ['/catalog/mens-classic-tee-black-front-62b588dcdd26d_540x.webp'],
-        athleteSlug: 'rico-flores-jr',
-        athleteName: 'Rico Flores Jr.',
-        school: 'Arizona',
-        categories: ['Tees'],
-        sizes: ['S','M','L','XL'],
-        inventoryBySize: { S: 10, M: 10, L: 10, XL: 10 },
-        active: true,
-        createdAt: now,
-        updatedAt: now,
-      } as Product,
-    ];
-    try { 
-      await kv.set(KEY_ALL, all); 
-      for (const p of all) await kv.set(`product:${p.id}`, p);
-    } catch {}
+    // Check if we've already seeded by looking for a specific key
+    const seededKey = 'products:seeded';
+    try {
+      const alreadySeeded = await kv.get(seededKey);
+      if (!alreadySeeded) {
+        console.log('Seeding default products for the first time...');
+        const now = Date.now();
+        all = [
+          {
+            id: 'man-tee',
+            name: 'Optimal Man Tee',
+            price: 49,
+            imageUrl: '/catalog/mens-classic-tee-black-front-6616e04f63957_540x.webp',
+            images: ['/catalog/mens-classic-tee-black-front-6616e04f63957_540x.webp','/catalog/mens-classic-tee-black-left-6616e04f64dee_540x.webp','/catalog/mens-classic-tee-black-right-6616e04f6534e_540x.webp','/catalog/mens-classic-tee-black-back-62b588dcdd3e6_540x.webp'],
+            athleteSlug: 'jonah-coleman',
+            athleteName: 'Jonah Coleman',
+            school: 'Arizona',
+            categories: ['Tees'],
+            sizes: ['S','M','L','XL'],
+            inventoryBySize: { S: 10, M: 10, L: 10, XL: 10 },
+            active: true,
+            createdAt: now,
+            updatedAt: now,
+          } as Product,
+          {
+            id: 'man-hoodie',
+            name: 'Optimal Man Hoodie',
+            price: 79,
+            imageUrl: '/catalog/unisex-premium-hoodie-black-front-62b584b06d8bc_540x.webp',
+            images: ['/catalog/unisex-premium-hoodie-black-front-62b584b06d8bc_540x.webp'],
+            athleteSlug: 'christian-pierce',
+            athleteName: 'Christian Pierce',
+            school: 'USC',
+            categories: ['Hoodies'],
+            sizes: ['S','M','L','XL'],
+            inventoryBySize: { S: 8, M: 12, L: 10, XL: 6 },
+            active: true,
+            createdAt: now,
+            updatedAt: now,
+          } as Product,
+          {
+            id: 'flag-tee',
+            name: 'Optimal Flag Tee',
+            price: 49,
+            imageUrl: '/catalog/mens-classic-tee-black-front-62b588dcdd26d_540x.webp',
+            images: ['/catalog/mens-classic-tee-black-front-62b588dcdd26d_540x.webp'],
+            athleteSlug: 'rico-flores-jr',
+            athleteName: 'Rico Flores Jr.',
+            school: 'Arizona',
+            categories: ['Tees'],
+            sizes: ['S','M','L','XL'],
+            inventoryBySize: { S: 10, M: 10, L: 10, XL: 10 },
+            active: true,
+            createdAt: now,
+            updatedAt: now,
+          } as Product,
+        ];
+        await kv.set(KEY_ALL, all); 
+        for (const p of all) await kv.set(`product:${p.id}`, p);
+        await kv.set(seededKey, 'true');
+        console.log('Successfully seeded default products');
+      } else {
+        console.log('Products already seeded, skipping...');
+      }
+    } catch (seedError) {
+      console.log('Seeding error:', seedError);
+    }
   }
   const filtered = all.filter(p => {
     if (athlete && p.athleteSlug !== athlete) return false;
