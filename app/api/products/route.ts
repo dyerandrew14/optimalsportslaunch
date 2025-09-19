@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
   const size = searchParams.get('size')?.toLowerCase() || undefined;
   const page = Number(searchParams.get('page') || '1');
   const limit = Number(searchParams.get('limit') || '50');
+  const debug = searchParams.get('debug') === 'true';
 
   let all: Product[] = [];
   try {
@@ -122,6 +123,19 @@ export async function GET(request: NextRequest) {
   }
   const start = Math.max((page - 1) * limit, 0);
   const paged = filtered.slice(start, start + limit);
+  
+  if (debug) {
+    // Return debug information instead of products
+    return NextResponse.json({
+      debug: true,
+      totalProducts: all.length,
+      filteredProducts: filtered.length,
+      seededFlagExists: !!await kv.get('products:seeded'),
+      allProducts: all.map((p: any) => ({ id: p.id, name: p.name, active: p.active })),
+      timestamp: new Date().toISOString()
+    });
+  }
+  
   return NextResponse.json(paged);
 }
 
@@ -189,6 +203,7 @@ export async function PUT(request: NextRequest) {
   return NextResponse.json(products);
 }
 
+// Debug endpoint to check what's in Redis - accessible via GET /api/products?debug=true
 // Debug endpoint to check what's in Redis
 export async function DELETE(request: NextRequest) {
   try {

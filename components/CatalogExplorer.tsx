@@ -37,11 +37,13 @@ export default function CatalogExplorer() {
         console.log('🔍 Cache-busting timestamp:', timestamp);
         const res = await fetch(`${apiUrl}?${params.toString()}&_t=${timestamp}`, { 
           cache: "no-store",
+          method: 'GET',
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': '0',
-            'X-Requested-With': 'XMLHttpRequest'
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-Force-Refresh': 'true'
           }
         });
         const data: Product[] = res.ok ? await res.json() : [];
