@@ -85,6 +85,11 @@ export default function CatalogExplorer() {
           } else {
             console.log('❌ No products from database, showing empty state');
             setProducts([]);
+            // If we're on page 2+ and no products found, go back to page 1
+            if (page > 1) {
+              console.log('🔄 No products on page', page, '- going back to page 1');
+              setPage(1);
+            }
           }
         }
       } catch (e) {
@@ -202,7 +207,10 @@ export default function CatalogExplorer() {
               </button>
               <button 
                 className="px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900 text-red-800 dark:text-red-200 hover:bg-red-100 dark:hover:bg-red-800" 
-                onClick={() => setForceRefresh(k => k + 1)} 
+                onClick={() => {
+                  setForceRefresh(k => k + 1);
+                  setPage(1); // Always go to page 1 when force refreshing
+                }} 
                 type="button"
                 title="Force refresh from database"
               >
