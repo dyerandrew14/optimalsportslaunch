@@ -996,6 +996,24 @@ export default function AdminDashboard() {
               Refresh
             </button>
             <button
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/products', { method: 'PATCH' });
+                  const result = await res.json();
+                  if (res.ok) {
+                    alert(`✅ Database synced! Found ${result.productCount} products.`);
+                  } else {
+                    alert(`❌ Sync failed: ${result.error}`);
+                  }
+                } catch (error) {
+                  alert(`❌ Sync error: ${error}`);
+                }
+              }}
+              className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium"
+            >
+              🔄 Sync DB
+            </button>
+            <button
               onClick={() => setEditingProduct({ id: '', name: '', price: 0, imageUrl: '', athleteSlug: '', athleteName: '', school: '', active: true, createdAt: Date.now(), updatedAt: Date.now() })}
               className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium"
             >

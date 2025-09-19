@@ -126,11 +126,12 @@ export async function GET(request: NextRequest) {
   
   if (debug) {
     // Return debug information instead of products
+    const seededFlag = await kv.get('products:seeded');
     return NextResponse.json({
       debug: true,
       totalProducts: all.length,
       filteredProducts: filtered.length,
-      seededFlagExists: !!await kv.get('products:seeded'),
+      seededFlagExists: !!seededFlag,
       allProducts: all.map((p: any) => ({ id: p.id, name: p.name, active: p.active })),
       timestamp: new Date().toISOString()
     });
@@ -220,6 +221,45 @@ export async function DELETE(request: NextRequest) {
     });
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+  }
+}
+
+// Sync endpoint to force all instances to have the same data
+export async function PATCH(request: NextRequest) {
+  try {
+    console.log('🔄 SYNC: Forcing database sync across all instances...');
+    
+    // Get all products from the main instance
+    const all = await kv.get(KEY_ALL) || [];
+    console.log('🔄 SYNC: Found', all.length, 'products in main instance');
+    
+    // Clear the seeded flag to force re-sync
+    await kv.del('products:seeded');
+    console.log('🔄 SYNC: Cleared seeded flag');
+    
+    // Re-save all products to ensure consistency
+    await kv.set(KEY_ALL, all);
+    for (const product of all) {
+      await kv.set(`product:${product.id}`, product);
+    }
+    console.log('🔄 SYNC: Re-saved all products');
+    
+    // Set seeded flag again
+    await kv.set('products:seeded', 'true');
+    console.log('🔄 SYNC: Set seeded flag');
+    
+    return NextResponse.json({ 
+      success: true,
+      message: 'Database synced across all instances',
+      productCount: all.length,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('🔄 SYNC ERROR:', error);
+    return NextResponse.json({ 
+      error: 'Sync failed',
+      details: (error as Error).message 
+    }, { status: 500 });
   }
 }
 
