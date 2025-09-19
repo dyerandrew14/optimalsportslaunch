@@ -108,9 +108,18 @@ export async function GET(request: NextRequest) {
   console.log('Products API Debug:');
   console.log('- Total products in Redis:', all.length);
   console.log('- Product IDs:', all.map((p: any) => p.id));
+  console.log('- Product names:', all.map((p: any) => p.name));
   console.log('- After filtering:', filtered.length);
   console.log('- Page:', page, 'Limit:', limit);
   console.log('- Products being returned:', filtered.slice(Math.max((page - 1) * limit, 0), Math.max((page - 1) * limit, 0) + limit).length);
+  
+  // Debug: Check if seeded flag exists
+  try {
+    const seededFlag = await kv.get('products:seeded');
+    console.log('- Seeded flag exists:', !!seededFlag);
+  } catch (e) {
+    console.log('- Could not check seeded flag:', e);
+  }
   const start = Math.max((page - 1) * limit, 0);
   const paged = filtered.slice(start, start + limit);
   return NextResponse.json(paged);
@@ -184,10 +193,13 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const all = await kv.get(KEY_ALL) || [];
+    const seededFlag = await kv.get('products:seeded');
     console.log('DEBUG: Products in Redis:', all.length);
+    console.log('DEBUG: Seeded flag exists:', !!seededFlag);
     console.log('DEBUG: Redis products:', all.map((p: any) => ({ id: p.id, name: p.name, createdAt: new Date(p.createdAt).toISOString() })));
     return NextResponse.json({ 
       redisCount: all.length,
+      seededFlagExists: !!seededFlag,
       redisProducts: all.map((p: any) => ({ id: p.id, name: p.name, active: p.active, createdAt: new Date(p.createdAt).toISOString() })),
       timestamp: new Date().toISOString()
     });
