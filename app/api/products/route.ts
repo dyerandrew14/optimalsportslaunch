@@ -111,7 +111,10 @@ export async function GET(request: NextRequest) {
   console.log('- Total products in Redis:', all.length);
   console.log('- Product IDs:', all.map((p: any) => p.id));
   console.log('- Product names:', all.map((p: any) => p.name));
+  console.log('- Product active status:', all.map((p: any) => ({ name: p.name, active: p.active })));
+  console.log('- Size filter:', size);
   console.log('- After filtering:', filtered.length);
+  console.log('- Filtered product names:', filtered.map((p: any) => p.name));
   console.log('- Page:', page, 'Limit:', limit);
   console.log('- Products being returned:', filtered.slice(Math.max((page - 1) * limit, 0), Math.max((page - 1) * limit, 0) + limit).length);
   
