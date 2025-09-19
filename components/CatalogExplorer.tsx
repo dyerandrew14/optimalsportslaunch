@@ -38,6 +38,27 @@ export default function CatalogExplorer() {
         console.log('🔍 Fetching products from:', `${apiUrl}?${params.toString()}&_t=${timestamp}&_force=${forceTimestamp}`);
         console.log('🔍 Cache-busting timestamp:', timestamp);
         console.log('🔍 Force refresh timestamp:', forceTimestamp);
+        
+        // Try debug endpoint first to see what's actually in the database
+        const debugRes = await fetch(`${apiUrl}?debug=true&_t=${timestamp}&_force=${forceTimestamp}`, {
+          cache: "no-store",
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-Force-Refresh': 'true'
+          }
+        });
+        
+        if (debugRes.ok) {
+          const debugData = await debugRes.json();
+          console.log('🔍 DEBUG API response:', debugData);
+          console.log('🔍 Total products in database:', debugData.totalProducts);
+          console.log('🔍 Product names:', debugData.allProducts?.map((p: any) => p.name));
+        }
+        
         const res = await fetch(`${apiUrl}?${params.toString()}&_t=${timestamp}&_force=${forceTimestamp}`, { 
           cache: "no-store",
           method: 'GET',
