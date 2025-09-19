@@ -120,14 +120,16 @@ export default function CatalogExplorer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sizeIndex]);
 
-  // Apply client-side filters for mock data as well
-  const clientFiltered = useMemo(() => {
-    return filtered.filter(p => {
-      if (selectedSize && !(p.sizes || []).includes(selectedSize)) return false;
-      if (selectedCategory && !(p.categories || []).includes(selectedCategory)) return false;
-      return true;
-    });
-  }, [filtered, selectedSize, selectedCategory]);
+  // TEMPORARILY DISABLE CLIENT-SIDE FILTERING TO DEBUG
+  const clientFiltered = filtered; // Just return all products for now
+  
+  // const clientFiltered = useMemo(() => {
+  //   return filtered.filter(p => {
+  //     if (selectedSize && !(p.sizes || []).includes(selectedSize)) return false;
+  //     if (selectedCategory && !(p.categories || []).includes(selectedCategory)) return false;
+  //     return true;
+  //   });
+  // }, [filtered, selectedSize, selectedCategory]);
 
   const grouped = useMemo(() => {
     if (groupBy === "none") return { All: clientFiltered } as Record<string, Product[]>;
