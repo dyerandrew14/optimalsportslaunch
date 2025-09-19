@@ -97,15 +97,18 @@ export async function GET(request: NextRequest) {
       console.log('Seeding error:', seedError);
     }
   }
-  const filtered = all.filter(p => {
-    if (athlete && p.athleteSlug !== athlete) return false;
-    if (school && p.school !== school) return false;
-    if (name && !(`${p.name}`.toLowerCase().includes(name) || `${p.athleteName}`.toLowerCase().includes(name))) return false;
-    if (category && !(p.categories || []).some(c => c.toLowerCase() === category)) return false;
-    // Only filter by size if the product actually has sizes defined
-    if (size && (p.sizes || []).length > 0 && !(p.sizes || []).some(s => s.toLowerCase() === size)) return false;
-    return p.active !== false;
-  });
+  // TEMPORARILY DISABLE ALL FILTERING TO DEBUG
+  const filtered = all; // Just return all products for now
+  
+  // const filtered = all.filter(p => {
+  //   if (athlete && p.athleteSlug !== athlete) return false;
+  //   if (school && p.school !== school) return false;
+  //   if (name && !(`${p.name}`.toLowerCase().includes(name) || `${p.athleteName}`.toLowerCase().includes(name))) return false;
+  //   if (category && !(p.categories || []).some(c => c.toLowerCase() === category)) return false;
+  //   // Only filter by size if the product actually has sizes defined
+  //   if (size && (p.sizes || []).length > 0 && !(p.sizes || []).some(s => s.toLowerCase() === size)) return false;
+  //   return p.active !== false;
+  // });
   
   console.log('Products API Debug:');
   console.log('- Total products in Redis:', all.length);
