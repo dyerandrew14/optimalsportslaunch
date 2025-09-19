@@ -16,6 +16,7 @@ export default function CatalogExplorer() {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [refreshKey, setRefreshKey] = useState<number>(0);
+  const [forceRefresh, setForceRefresh] = useState<number>(0);
   const SIZE_STOPS = ["XS", "S", "M", "L", "XL", "2XL"];
   const CATEGORY_OPTIONS = ["Tees", "Hoodies", "Hats", "Accessories"];
   const [sizeIndex, setSizeIndex] = useState<number>(2); // default to M
@@ -33,9 +34,11 @@ export default function CatalogExplorer() {
         if (selectedCategory) params.set('category', selectedCategory);
         const apiUrl = '/api/products';
         const timestamp = Date.now();
-        console.log('🔍 Fetching products from:', `${apiUrl}?${params.toString()}&_t=${timestamp}`);
+        const forceTimestamp = forceRefresh;
+        console.log('🔍 Fetching products from:', `${apiUrl}?${params.toString()}&_t=${timestamp}&_force=${forceTimestamp}`);
         console.log('🔍 Cache-busting timestamp:', timestamp);
-        const res = await fetch(`${apiUrl}?${params.toString()}&_t=${timestamp}`, { 
+        console.log('🔍 Force refresh timestamp:', forceTimestamp);
+        const res = await fetch(`${apiUrl}?${params.toString()}&_t=${timestamp}&_force=${forceTimestamp}`, { 
           cache: "no-store",
           method: 'GET',
           headers: {
@@ -73,7 +76,7 @@ export default function CatalogExplorer() {
     return () => {
       cancelled = true;
     };
-  }, [page, query, selectedSize, selectedCategory, refreshKey]);
+  }, [page, query, selectedSize, selectedCategory, refreshKey, forceRefresh]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -175,6 +178,14 @@ export default function CatalogExplorer() {
                 title="Refresh products"
               >
                 🔄 Refresh
+              </button>
+              <button 
+                className="px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900 text-red-800 dark:text-red-200 hover:bg-red-100 dark:hover:bg-red-800" 
+                onClick={() => setForceRefresh(k => k + 1)} 
+                type="button"
+                title="Force refresh from database"
+              >
+                ⚡ Force Refresh
               </button>
               <button className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-200" onClick={() => setPage(p => Math.max(1, p-1))} type="button">Prev</button>
               <span className="text-gray-700 dark:text-gray-300 text-sm">Page {page}</span>
