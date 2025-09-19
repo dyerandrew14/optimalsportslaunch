@@ -97,37 +97,18 @@ export async function GET(request: NextRequest) {
       console.log('Seeding error:', seedError);
     }
   }
-  // TEMPORARILY DISABLE ALL FILTERING TO DEBUG
-  const filtered = all; // Just return all products for now
+  const filtered = all.filter(p => {
+    if (athlete && p.athleteSlug !== athlete) return false;
+    if (school && p.school !== school) return false;
+    if (name && !(`${p.name}`.toLowerCase().includes(name) || `${p.athleteName}`.toLowerCase().includes(name))) return false;
+    if (category && !(p.categories || []).some(c => c.toLowerCase() === category)) return false;
+    // Only filter by size if the product actually has sizes defined AND size filter is applied
+    if (size && (p.sizes || []).length > 0 && !(p.sizes || []).some(s => s.toLowerCase() === size)) return false;
+    return p.active !== false;
+  });
   
-  // const filtered = all.filter(p => {
-  //   if (athlete && p.athleteSlug !== athlete) return false;
-  //   if (school && p.school !== school) return false;
-  //   if (name && !(`${p.name}`.toLowerCase().includes(name) || `${p.athleteName}`.toLowerCase().includes(name))) return false;
-  //   if (category && !(p.categories || []).some(c => c.toLowerCase() === category)) return false;
-  //   // Only filter by size if the product actually has sizes defined
-  //   if (size && (p.sizes || []).length > 0 && !(p.sizes || []).some(s => s.toLowerCase() === size)) return false;
-  //   return p.active !== false;
-  // });
-  
-  console.log('Products API Debug:');
-  console.log('- Total products in Redis:', all.length);
-  console.log('- Product IDs:', all.map((p: any) => p.id));
-  console.log('- Product names:', all.map((p: any) => p.name));
-  console.log('- Product active status:', all.map((p: any) => ({ name: p.name, active: p.active })));
-  console.log('- Size filter:', size);
-  console.log('- After filtering:', filtered.length);
-  console.log('- Filtered product names:', filtered.map((p: any) => p.name));
-  console.log('- Page:', page, 'Limit:', limit);
-  console.log('- Products being returned:', filtered.slice(Math.max((page - 1) * limit, 0), Math.max((page - 1) * limit, 0) + limit).length);
-  
-  // Debug: Check if seeded flag exists
-  try {
-    const seededFlag = await kv.get('products:seeded');
-    console.log('- Seeded flag exists:', !!seededFlag);
-  } catch (e) {
-    console.log('- Could not check seeded flag:', e);
-  }
+  // Clean logging for production
+  console.log(`Products API: ${all.length} total, ${filtered.length} filtered, page ${page}`);
   const start = Math.max((page - 1) * limit, 0);
   const paged = filtered.slice(start, start + limit);
   

@@ -35,29 +35,7 @@ export default function CatalogExplorer() {
         const apiUrl = '/api/products';
         const timestamp = Date.now();
         const forceTimestamp = forceRefresh;
-        console.log('🔍 Fetching products from:', `${apiUrl}?${params.toString()}&_t=${timestamp}&_force=${forceTimestamp}`);
-        console.log('🔍 Cache-busting timestamp:', timestamp);
-        console.log('🔍 Force refresh timestamp:', forceTimestamp);
         
-        // Try debug endpoint first to see what's actually in the database
-        const debugRes = await fetch(`${apiUrl}?debug=true&_t=${timestamp}&_force=${forceTimestamp}`, {
-          cache: "no-store",
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-Force-Refresh': 'true'
-          }
-        });
-        
-        if (debugRes.ok) {
-          const debugData = await debugRes.json();
-          console.log('🔍 DEBUG API response:', debugData);
-          console.log('🔍 Total products in database:', debugData.totalProducts);
-          console.log('🔍 Product names:', debugData.allProducts?.map((p: any) => p.name));
-        }
         
         const res = await fetch(`${apiUrl}?${params.toString()}&_t=${timestamp}&_force=${forceTimestamp}`, { 
           cache: "no-store",
@@ -72,22 +50,12 @@ export default function CatalogExplorer() {
         });
         const data: Product[] = res.ok ? await res.json() : [];
         if (!cancelled) {
-          console.log('📦 Products API response:', { 
-            ok: res.ok, 
-            status: res.status, 
-            dataLength: data.length,
-            url: res.url,
-            products: data.map(p => ({ id: p.id, name: p.name, active: p.active }))
-          });
           if (data && data.length > 0) {
             setProducts(data);
-            console.log('✅ Using real products from database:', data.length);
           } else {
-            console.log('❌ No products from database, showing empty state');
             setProducts([]);
             // If we're on page 2+ and no products found, go back to page 1
             if (page > 1) {
-              console.log('🔄 No products on page', page, '- going back to page 1');
               setPage(1);
             }
           }
@@ -120,16 +88,15 @@ export default function CatalogExplorer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sizeIndex]);
 
-  // TEMPORARILY DISABLE CLIENT-SIDE FILTERING TO DEBUG
-  const clientFiltered = filtered; // Just return all products for now
-  
-  // const clientFiltered = useMemo(() => {
-  //   return filtered.filter(p => {
-  //     if (selectedSize && !(p.sizes || []).includes(selectedSize)) return false;
-  //     if (selectedCategory && !(p.categories || []).includes(selectedCategory)) return false;
-  //     return true;
-  //   });
-  // }, [filtered, selectedSize, selectedCategory]);
+  // Apply client-side filters for mock data as well
+  const clientFiltered = useMemo(() => {
+    return filtered.filter(p => {
+      // Only filter by size if the product actually has sizes defined AND size filter is applied
+      if (selectedSize && (p.sizes || []).length > 0 && !(p.sizes || []).includes(selectedSize)) return false;
+      if (selectedCategory && !(p.categories || []).includes(selectedCategory)) return false;
+      return true;
+    });
+  }, [filtered, selectedSize, selectedCategory]);
 
   const grouped = useMemo(() => {
     if (groupBy === "none") return { All: clientFiltered } as Record<string, Product[]>;
@@ -206,17 +173,6 @@ export default function CatalogExplorer() {
                 title="Refresh products"
               >
                 🔄 Refresh
-              </button>
-              <button 
-                className="px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900 text-red-800 dark:text-red-200 hover:bg-red-100 dark:hover:bg-red-800" 
-                onClick={() => {
-                  setForceRefresh(k => k + 1);
-                  setPage(1); // Always go to page 1 when force refreshing
-                }} 
-                type="button"
-                title="Force refresh from database"
-              >
-                ⚡ Force Refresh
               </button>
               <button className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-200" onClick={() => setPage(p => Math.max(1, p-1))} type="button">Prev</button>
               <span className="text-gray-700 dark:text-gray-300 text-sm">Page {page}</span>
