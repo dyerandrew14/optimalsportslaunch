@@ -16,6 +16,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [showCheckout, setShowCheckout] = useState(false);
 
+  // Set default size for products without sizes
+  const effectiveSelectedSize = product.sizes && product.sizes.length > 0 
+    ? selectedSize 
+    : 'One Size'; // Default for products without size options
+
   // Find the associated athlete
   const athlete = product.athleteSlug 
     ? athletes.find(a => a.slug === product.athleteSlug)
@@ -24,7 +29,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     : null;
 
   const handleCheckout = () => {
-    if (!selectedSize) {
+    // Only require size selection if the product has sizes
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       alert('Please select a size before checkout');
       return;
     }
@@ -130,10 +136,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 </div>
 
                 {/* Size Selection - Updated to use dropdown and quantity input */}
-                {product.sizes && product.sizes.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Select Size & Quantity</h3>
-                    
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Select Size & Quantity</h3>
+                  
+                  {product.sizes && product.sizes.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Size Selection */}
                       <div>
@@ -175,17 +181,45 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                         />
                       </div>
                     </div>
-
-                    {selectedSize && (
-                      <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Selected: <span className="font-semibold">{selectedSize}</span> • 
-                          Quantity: <span className="font-semibold">{selectedQuantity}</span>
-                        </p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* No sizes available */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Size
+                        </label>
+                        <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                          One Size Fits All
+                        </div>
                       </div>
-                    )}
-                  </div>
-                )}
+
+                      {/* Quantity Selection */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Quantity *
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={selectedQuantity}
+                          onChange={(e) => setSelectedQuantity(parseInt(e.target.value) || 1)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedSize && product.sizes && product.sizes.length > 0 && (
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Selected: <span className="font-semibold">{selectedSize}</span> • 
+                        Quantity: <span className="font-semibold">{selectedQuantity}</span>
+                      </p>
+                    </div>
+                  )}
+                </div>
 
                 {/* Color Selection - Disabled until colors are added to Product type */}
                 {/* {product.colors && product.colors.length > 0 && (
@@ -286,7 +320,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             sizes: product.sizes || [],
             colors: [], // Disabled until colors are added to Product type
           }}
-          selectedSize={selectedSize}
+          selectedSize={effectiveSelectedSize}
           selectedColor={selectedColor}
           selectedQuantity={selectedQuantity}
           onClose={() => setShowCheckout(false)}

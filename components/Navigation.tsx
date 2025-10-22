@@ -197,14 +197,12 @@ export default function Navigation() {
                         </div>
                       </div>
                     ) : (
-                      // School/Team Result
+                      // School Result
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
-                          <img 
-                            src={result.logo} 
-                            alt={result.mascot} 
-                            className="w-full h-full object-cover"
-                          />
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                          <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
+                            {result.shortName.charAt(0)}
+                          </span>
                         </div>
                         <div className="flex-1">
                           <div className="font-medium text-gray-900 dark:text-white">{result.name}</div>
@@ -252,7 +250,7 @@ export default function Navigation() {
           {/* Theme Toggle */}
           <ThemeToggle />
 
-          {/* Burger Menu */}
+          {/* Mobile Menu Button */}
           <button
             onClick={toggleMobileMenu}
             className="p-2 text-gray-900 dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors"
@@ -266,37 +264,48 @@ export default function Navigation() {
 
       {/* Mobile Search Overlay */}
       {isSearchOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-black/95 backdrop-blur-sm">
-          <div className="px-4 py-4">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
+          <div className="bg-white dark:bg-gray-800 p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  placeholder="Search athletes, teams, or content..."
+                  className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+                  autoFocus
+                />
               </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Search athletes, teams, or content..."
-                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
-                autoFocus
-              />
+              <button
+                onClick={toggleSearch}
+                className="p-2 text-gray-900 dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
             
             {/* Mobile Search Results */}
             {showResults && searchResults.length > 0 && (
-              <div className="mt-4 max-h-64 overflow-y-auto">
-                {searchResults.map((result) => (
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+                {searchResults.map((result, index) => (
                   <div
                     key={result.type === 'athlete' ? result.slug : result.name}
                     onClick={() => handleResultClick(result)}
-                    className="px-3 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer rounded-lg transition-colors"
+                    className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0 transition-colors"
                   >
                     {result.type === 'athlete' ? (
                       // Athlete Result
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-600">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-600">
                           <img 
                             src={result.image} 
                             alt={result.name} 
@@ -314,14 +323,12 @@ export default function Navigation() {
                         </div>
                       </div>
                     ) : (
-                      // School/Team Result
+                      // School Result
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
-                          <img 
-                            src={result.logo} 
-                            alt={result.mascot} 
-                            className="w-full h-full object-cover"
-                          />
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                          <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
+                            {result.shortName.charAt(0)}
+                          </span>
                         </div>
                         <div className="flex-1">
                           <div className="font-medium text-gray-900 dark:text-white">{result.name}</div>
@@ -342,11 +349,23 @@ export default function Navigation() {
         </div>
       )}
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-black/95 backdrop-blur-sm">
-          <div className="px-4 py-6 space-y-4">
-            <nav className="space-y-3">
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
+          <div className="bg-white dark:bg-gray-800 p-6 h-full overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Menu</h2>
+              <button
+                onClick={toggleMobileMenu}
+                className="p-2 text-gray-900 dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <nav className="space-y-4">
               <Link 
                 href="/athletes" 
                 className="block py-2 text-lg font-medium text-gray-900 dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors"
@@ -392,5 +411,3 @@ export default function Navigation() {
     </header>
   );
 }
-
-

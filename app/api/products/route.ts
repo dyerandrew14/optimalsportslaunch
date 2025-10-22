@@ -97,18 +97,14 @@ export async function GET(request: NextRequest) {
       console.log('Seeding error:', seedError);
     }
   }
+  // TEMPORARILY DISABLE ALL FILTERING TO SHOW ALL PRODUCTS
   const filtered = all.filter(p => {
-    if (athlete && p.athleteSlug !== athlete) return false;
-    if (school && p.school !== school) return false;
-    if (name && !(`${p.name}`.toLowerCase().includes(name) || `${p.athleteName}`.toLowerCase().includes(name))) return false;
-    if (category && !(p.categories || []).some(c => c.toLowerCase() === category)) return false;
-    // Only filter by size if the product actually has sizes defined AND size filter is applied
-    if (size && (p.sizes || []).length > 0 && !(p.sizes || []).some(s => s.toLowerCase() === size)) return false;
+    // Only filter by active status, ignore all other filters
     return p.active !== false;
   });
   
   // Clean logging for production
-  console.log(`Products API: ${all.length} total, ${filtered.length} filtered, page ${page}`);
+  console.log(`Products API: ${all.length} total, ${filtered.length} filtered, page ${page} - ALL FILTERING DISABLED`);
   const start = Math.max((page - 1) * limit, 0);
   const paged = filtered.slice(start, start + limit);
   
@@ -120,7 +116,8 @@ export async function GET(request: NextRequest) {
       totalProducts: all.length,
       filteredProducts: filtered.length,
       seededFlagExists: !!seededFlag,
-      allProducts: all.map((p: any) => ({ id: p.id, name: p.name, active: p.active })),
+      allProducts: all.map((p: any) => ({ id: p.id, name: p.name, active: p.active, price: p.price })),
+      filteredProductsDetail: filtered.map((p: any) => ({ id: p.id, name: p.name, active: p.active, price: p.price })),
       timestamp: new Date().toISOString()
     });
   }

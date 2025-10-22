@@ -36,6 +36,7 @@ export default function CatalogExplorer() {
         const timestamp = Date.now();
         const forceTimestamp = forceRefresh;
         
+        console.log('🔄 Loading products from:', `${apiUrl}?${params.toString()}`);
         
         const res = await fetch(`${apiUrl}?${params.toString()}&_t=${timestamp}&_force=${forceTimestamp}`, { 
           cache: "no-store",
@@ -48,12 +49,19 @@ export default function CatalogExplorer() {
             'X-Force-Refresh': 'true'
           }
         });
+        
+        console.log('📡 API Response status:', res.status, res.ok);
+        
         const data: Product[] = res.ok ? await res.json() : [];
+        console.log('📦 Received products:', data.length, data.map(p => ({ id: p.id, name: p.name, price: p.price })));
+        
         if (!cancelled) {
           if (data && data.length > 0) {
             setProducts(data);
+            console.log('✅ Products set successfully');
           } else {
             setProducts([]);
+            console.log('⚠️ No products found, setting empty array');
             // If we're on page 2+ and no products found, go back to page 1
             if (page > 1) {
               setPage(1);
@@ -61,6 +69,7 @@ export default function CatalogExplorer() {
           }
         }
       } catch (e) {
+        console.error('❌ Error loading products:', e);
         if (!cancelled) setProducts([]);
       } finally {
         if (!cancelled) setLoading(false);
@@ -91,12 +100,11 @@ export default function CatalogExplorer() {
   // Apply client-side filters for mock data as well
   const clientFiltered = useMemo(() => {
     return filtered.filter(p => {
-      // Only filter by size if the product actually has sizes defined AND size filter is applied
-      if (selectedSize && (p.sizes || []).length > 0 && !(p.sizes || []).includes(selectedSize)) return false;
+      // Don't filter by size on frontend - backend already handles this
       if (selectedCategory && !(p.categories || []).includes(selectedCategory)) return false;
       return true;
     });
-  }, [filtered, selectedSize, selectedCategory]);
+  }, [filtered, selectedCategory]);
 
   const grouped = useMemo(() => {
     if (groupBy === "none") return { All: clientFiltered } as Record<string, Product[]>;
@@ -166,14 +174,6 @@ export default function CatalogExplorer() {
           <div className="flex items-center justify-between mb-4">
             <div className="text-sm text-gray-500 dark:text-gray-400">Showing 8 per page</div>
             <div className="inline-flex items-center gap-2">
-              <button 
-                className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-800" 
-                onClick={() => setRefreshKey(k => k + 1)} 
-                type="button"
-                title="Refresh products"
-              >
-                🔄 Refresh
-              </button>
               <button className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-200" onClick={() => setPage(p => Math.max(1, p-1))} type="button">Prev</button>
               <span className="text-gray-700 dark:text-gray-300 text-sm">Page {page}</span>
               <button className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-200" onClick={() => setPage(p => p+1)} type="button">Next</button>

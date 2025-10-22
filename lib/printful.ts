@@ -152,11 +152,16 @@ export const printful = new PrintfulService(PRINTFUL_API_KEY);
 
 // Helper function to format our cart items for Printful
 export function formatCartForPrintful(items: any[], shippingInfo: any): PrintfulOrder {
+  // Split name into first and last name
+  const nameParts = shippingInfo.name.split(' ');
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.slice(1).join(' ') || '';
+  
   return {
     external_id: `optimal-${Date.now()}`,
     shipping: 'STANDARD', // Default shipping method
     recipient: {
-      name: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
+      name: `${firstName} ${lastName}`,
       address1: shippingInfo.address1,
       address2: shippingInfo.address2 || '',
       city: shippingInfo.city,
@@ -167,7 +172,7 @@ export function formatCartForPrintful(items: any[], shippingInfo: any): Printful
       email: shippingInfo.email,
     },
     items: items.map(item => ({
-      variant_id: item.variantId || 1, // Default variant ID - you'll need to map these
+      variant_id: parseInt(item.printfulVariantId) || 1, // Use Printful variant ID from product
       quantity: item.quantity,
       retail_price: item.price.toString(),
     })),

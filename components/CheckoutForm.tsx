@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import StripePayment from './StripePayment';
 
 interface CheckoutFormProps {
   product: {
@@ -18,9 +19,23 @@ interface CheckoutFormProps {
 
 export default function CheckoutForm({ product, selectedSize, selectedColor, selectedQuantity, onClose }: CheckoutFormProps) {
   const [quantity, setQuantity] = useState(selectedQuantity);
+
+  // Calculate amount once and store it
+  const productPrice = parseFloat(product.price);
+  const calculatedAmount = productPrice * quantity;
+  
+  useEffect(() => {
+    console.log('✨ CheckoutForm calculated amount (before passing to StripePayment):', { 
+      productPrice: product.price, 
+      parsedPrice: productPrice, 
+      quantity, 
+      calculatedAmount 
+    });
+  }, [product.price, quantity, productPrice, calculatedAmount]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
 
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -42,7 +57,30 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePaymentSuccess = async (paymentIntent: any) => {
+    console.log('🎉 Payment success handler called!', paymentIntent);
+    
+    // Payment successful - no more alert needed
+    
+    // Payment succeeded! The webhook will handle creating the Printful order
+    setIsSubmitting(false);
+    setSuccess(true);
+    
+    console.log('Payment successful:', paymentIntent.id);
+    
+    // Store payment intent ID for order tracking
+    localStorage.setItem('lastPaymentIntent', paymentIntent.id);
+  };
+
+  const handlePaymentError = (error: any) => {
+    console.log('❌ Payment error handler called!', error);
+    // Payment failed - no more alert needed
+    setError(error);
+    setIsSubmitting(false);
+  };
+
+
+  const handleInitialSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
@@ -81,7 +119,10 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
     }
   };
 
+  console.log('🔍 CheckoutForm render - success state:', success, 'isSubmitting:', isSubmitting);
+  
   if (success) {
+    console.log('🎉 Rendering success message!');
     return (
       <div className="fixed inset-0 bg-gray-100 dark:bg-neutral-900 z-50 overflow-y-auto">
         <div className="min-h-screen flex items-center justify-center">
@@ -94,13 +135,16 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Order Placed Successfully!</h3>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Your order has been sent to Printful for processing. You&apos;ll receive a confirmation email shortly.
+              Your payment was successful! Your order is being processed and will be sent to Printful for fulfillment. You&apos;ll receive a confirmation email shortly.
             </p>
             <button
-              onClick={onClose}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+              onClick={() => {
+                console.log('🎉 User clicked close button');
+                onClose();
+              }}
+              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold"
             >
-              Close
+              Continue Shopping
             </button>
           </div>
           </div>
@@ -142,7 +186,15 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
         <div className="max-w-4xl mx-auto px-6 py-8">
           <div className="bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Checkout</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Secure Checkout</h2>
+                <div className="flex items-center gap-2 text-sm text-green-600">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <span>SSL Secured</span>
+                </div>
+              </div>
             </div>
             <div className="p-6">
 
@@ -168,7 +220,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
               </div>
               <div className="flex justify-between font-semibold border-t pt-2">
                 <span className="text-gray-900 dark:text-white">Total:</span>
-                <span className="text-gray-900 dark:text-white">${parseFloat(product.price) * quantity}</span>
+                <span className="text-gray-900 dark:text-white">${calculatedAmount.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -179,7 +231,7 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-4">
             {/* Customer Information */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -328,14 +380,55 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
               </select>
             </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-red-600 text-white py-3 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isSubmitting ? 'Processing Order...' : 'Place Order'}
-            </button>
-          </form>
+            {!showPayment ? (
+              <button
+                type="button"
+                onClick={() => {
+                  console.log('🚀 Continue to Payment clicked');
+                  setShowPayment(true);
+                }}
+                disabled={isSubmitting}
+                className="w-full bg-red-600 text-white py-3 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isSubmitting ? 'Processing Order...' : 'Continue to Payment'}
+              </button>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Secure Payment</h3>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Complete your order with secure payment processing
+                  </p>
+                </div>
+                
+                <div>
+                  <p className="text-sm text-gray-600 mb-4">🔍 StripePayment component is rendering...</p>
+                  <StripePayment
+                    amount={calculatedAmount}
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                    disabled={isSubmitting}
+                    orderData={{
+                      items: [{
+                        productId: product.id,
+                        name: product.name,
+                        size: selectedSize,
+                        color: selectedColor,
+                        quantity: quantity,
+                        price: parseFloat(product.price),
+                      }],
+                      customerInfo: customerInfo,
+                      productDetails: {
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
             </div>
           </div>
         </div>

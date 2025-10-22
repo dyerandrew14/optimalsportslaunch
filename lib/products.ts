@@ -14,6 +14,7 @@ export type Product = {
   createdAt: number;
   updatedAt: number;
   externalUrl?: string; // optional purchase link
+  printfulVariantId?: string; // Printful variant ID for order fulfillment
 };
 
 // Use same-origin by default

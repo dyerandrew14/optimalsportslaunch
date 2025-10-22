@@ -57,7 +57,7 @@ export default function ServicesPage() {
 
   const stats = [
     { number: "500+", label: "Athletes Represented" },
-    { number: "$2B+", label: "Contracts Negotiated" },
+    { number: "$1B+", label: "Contracts Negotiated" },
     { number: "15+", label: "Years Experience" },
     { number: "98%", label: "Client Satisfaction" }
   ];
