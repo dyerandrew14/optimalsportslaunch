@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     
     const results = {
       apiKey: process.env.PRINTFUL_API_KEY ? 'Set' : 'Not set',
-      tests: []
+      tests: [] as any[]
     };
     
     // Test 1: Basic stores endpoint
