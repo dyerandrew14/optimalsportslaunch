@@ -16,7 +16,14 @@ export async function GET(request: NextRequest) {
     
     // Get products from specific store or all stores
     const products = storeId ? await printful.getProducts(parseInt(storeId)) : await printful.getProducts();
-    console.log(`Found ${products.length} products in Printful store`);
+    console.log(`Found ${products.length} products in Printful store${storeId ? ` (store ID: ${storeId})` : ' (all stores)'}`);
+    
+    // If store-specific request returns 0 products, try without store filter to debug
+    if (storeId && products.length === 0) {
+      console.log('Store-specific request returned 0 products, trying without store filter for debugging...');
+      const allProducts = await printful.getProducts();
+      console.log(`All products (no store filter): ${allProducts.length}`);
+    }
     
     // Limit to first 5 products to avoid timeout during build
     const limitedProducts = products.slice(0, 5);
