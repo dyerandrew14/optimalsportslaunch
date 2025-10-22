@@ -82,9 +82,8 @@ export async function POST(request: NextRequest) {
           error: 'Printful API error',
           status: response.status,
           response: responseText,
-          variantId: variantId,
-          storeId: storeId,
-          testOrder: testOrder
+        variantId: variantId,
+        testOrder: testOrder
         }, { status: response.status });
       }
     } catch (apiError) {
@@ -92,8 +91,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         error: 'API test failed',
         details: apiError instanceof Error ? apiError.message : 'Unknown error',
-        variantId: variantId,
-        storeId: storeId
+        variantId: variantId
       }, { status: 500 });
     }
 
