@@ -164,8 +164,22 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Use the first available variant
-    const variant = variants[0];
+    // Find the correct variant ID based on selected size
+    let variantId = null;
+    
+    // Check if product has variantIdsBySize mapping
+    if (product.variantIdsBySize && product.variantIdsBySize[selectedSize]) {
+      variantId = product.variantIdsBySize[selectedSize];
+      console.log(`Using size-specific variant ID for ${selectedSize}: ${variantId}`);
+    } else if (product.printfulVariantId) {
+      variantId = product.printfulVariantId;
+      console.log(`Using general variant ID: ${variantId}`);
+    } else {
+      // Fallback to first available variant
+      const variant = variants[0];
+      variantId = variant.id;
+      console.log(`Using fallback variant ID: ${variantId}`);
+    }
     
     // Format items for Printful
     const items = [{
@@ -173,7 +187,7 @@ export async function POST(request: NextRequest) {
       name: product.name,
       price: parseFloat(product.price),
       quantity: quantity,
-      variantId: variant.id, // Use actual Printful variant ID
+      variantId: variantId, // Use the correct variant ID based on size
       size: selectedSize,
       color: selectedColor
     }];

@@ -1177,6 +1177,36 @@ export default function AdminDashboard() {
                 <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white md:col-span-2" placeholder="Categories (comma-separated)" value={(editingProduct.categories || []).join(', ')} onChange={(e) => setEditingProduct({ ...editingProduct, categories: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} />
                 {/* Sizes */}
                 <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="Sizes (e.g., S,M,L,XL)" value={(editingProduct.sizes || []).join(',')} onChange={(e) => setEditingProduct({ ...editingProduct, sizes: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} />
+                
+                {/* Printful Variant IDs by Size */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2">Printful Variant IDs by Size</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {(editingProduct.sizes || ['S','M','L','XL']).map((size) => (
+                      <div key={size} className="flex items-center gap-2">
+                        <span className="w-8 text-sm font-semibold">{size}</span>
+                        <input 
+                          type="text" 
+                          className="flex-1 px-2 py-1 rounded border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" 
+                          placeholder={`Variant ID for ${size}`}
+                          value={(editingProduct.variantIdsBySize?.[size] || '')} 
+                          onChange={(e) => {
+                            setEditingProduct({ 
+                              ...editingProduct, 
+                              variantIdsBySize: { 
+                                ...(editingProduct.variantIdsBySize || {}), 
+                                [size]: e.target.value 
+                              } 
+                            });
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Enter the Printful variant ID for each size. Get these from your Printful dashboard.
+                  </p>
+                </div>
                 {/* Inventory by size */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-1">Inventory by size</label>

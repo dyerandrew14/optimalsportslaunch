@@ -5,18 +5,25 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Fetching simple variant data...');
+    console.log('[simple-variants] Starting simple variants fetch...');
     
     // Get products directly from Printful API
-    const response = await fetch('https://api.printful.com/stores/7957549/products', {
+    const productsUrl = 'https://api.printful.com/stores/16862505/products';
+    console.log(`[simple-variants] Fetching products from: ${productsUrl}`);
+    
+    const response = await fetch(productsUrl, {
       headers: {
         'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`,
         'Content-Type': 'application/json',
       },
     });
     
+    console.log(`[simple-variants] Products response status: ${response.status}`);
+    
     if (!response.ok) {
-      throw new Error(`Printful API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`[simple-variants] Products fetch failed: ${response.status} - ${errorText}`);
+      throw new Error(`Printful API error: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
@@ -25,14 +32,21 @@ export async function GET(request: NextRequest) {
     // Extract just the variant IDs in a simple format
     const simpleVariants = [];
     
+    console.log(`[simple-variants] Found ${products.length} products, processing first 3...`);
+    
     for (const product of products.slice(0, 3)) { // Just first 3 products
       try {
-        const variantsResponse = await fetch(`https://api.printful.com/products/${product.id}`, {
+        const variantsUrl = `https://api.printful.com/products/${product.id}`;
+        console.log(`[simple-variants] Fetching variants for product ${product.id} (${product.name}) from: ${variantsUrl}`);
+        
+        const variantsResponse = await fetch(variantsUrl, {
           headers: {
             'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`,
             'Content-Type': 'application/json',
           },
         });
+        
+        console.log(`[simple-variants] Variants response status for product ${product.id}: ${variantsResponse.status}`);
         
         if (variantsResponse.ok) {
           const variantsData = await variantsResponse.json();
