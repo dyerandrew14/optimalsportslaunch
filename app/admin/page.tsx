@@ -1148,7 +1148,6 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="Product name" value={editingProduct.name} onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })} required />
                 <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" type="number" step="0.01" placeholder="Price" value={editingProduct.price} onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) || 0 })} required />
-                <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white" placeholder="Printful Variant ID" value={editingProduct.printfulVariantId || ''} onChange={(e) => setEditingProduct({ ...editingProduct, printfulVariantId: e.target.value })} />
                 <input className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white md:col-span-2" placeholder="Main Image URL (optional)" value={editingProduct.imageUrl || ''} onChange={(e) => setEditingProduct({ ...editingProduct, imageUrl: e.target.value })} />
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">Additional Images (one per line)</label>
@@ -1181,8 +1180,9 @@ export default function AdminDashboard() {
                 {/* Printful Variant IDs by Size */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">Printful Variant IDs by Size</label>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Enter the Printful variant ID for each size. Get these from your Printful dashboard.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {(editingProduct.sizes || ['S','M','L','XL']).map((size) => (
+                    {['S','M','L','XL','2XL','3XL'].map((size) => (
                       <div key={size} className="flex items-center gap-2">
                         <span className="w-8 text-sm font-semibold">{size}</span>
                         <input 

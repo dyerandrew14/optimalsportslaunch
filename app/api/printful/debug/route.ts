@@ -81,10 +81,34 @@ export async function GET(request: NextRequest) {
     }
   }
 
+    // Test Marquis product specifically
+    let marquisTest = null;
+    try {
+      const localProductsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/products`);
+      const localProducts = await localProductsResponse.json();
+      
+      const hoodieProduct = localProducts.find((p: any) => 
+        p.name.toLowerCase().includes('hoodie') || 
+        p.name.toLowerCase().includes('zip')
+      );
+      
+      if (hoodieProduct) {
+        marquisTest = {
+          found: true,
+          name: hoodieProduct.name,
+          variantIdsBySize: hoodieProduct.variantIdsBySize,
+          printfulVariantId: hoodieProduct.printfulVariantId
+        };
+      }
+    } catch (error) {
+      marquisTest = { found: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
+
     return NextResponse.json({
       success: true,
       message: "Here are your Printful variant IDs:",
       variantIds: variantIds,
+      marquisTest: marquisTest,
       debug: {
         allProductsCount: allProductsData.result?.length || 0,
         storeProductsCount: storeProductsData.result?.length || 0,
