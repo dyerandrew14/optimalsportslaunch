@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { printful, formatCartForPrintful } from '@/lib/printful';
+import { kv } from '@vercel/kv';
 import Stripe from 'stripe';
 
 // Initialize Stripe only when needed
@@ -192,21 +193,46 @@ export async function POST(request: NextRequest) {
       color: selectedColor
     }];
 
-    // Create Printful order
-    const printfulOrder = formatCartForPrintful(items, customerInfo);
+    // Create Printful order directly (bypassing webhook)
+    try {
+      const printfulOrder = formatCartForPrintful(items, customerInfo);
+      const printfulResponse = await printful.createOrder(printfulOrder);
+      
+      console.log('Printful order created directly:', printfulResponse);
 
-    // Send to Printful
-    const printfulResponse = await printful.createOrder(printfulOrder);
+      // Store order in database
+      if (process.env.KV_REST_API_URL) {
+        await kv.set(`order:${paymentIntentId}`, {
+          stripePaymentId: paymentIntentId,
+          printfulOrderId: printfulResponse.id,
+          printfulExternalId: printfulResponse.external_id,
+          customerInfo,
+          items,
+          amount: parseFloat(product.price) * quantity,
+          currency: 'usd',
+          status: 'confirmed',
+          createdAt: new Date().toISOString(),
+          printfulStatus: printfulResponse.status,
+        });
+      }
 
-    console.log('Printful order created:', printfulResponse);
-
-    // Return success response
-    return NextResponse.json({
-      success: true,
-      orderId: printfulResponse.id,
-      externalId: printfulResponse.external_id,
-      message: 'Order successfully placed with Printful'
-    });
+      return NextResponse.json({
+        success: true,
+        orderId: printfulResponse.id,
+        externalId: printfulResponse.external_id,
+        message: 'Order successfully placed with Printful'
+      });
+    } catch (printfulError) {
+      console.error('Printful order creation failed:', printfulError);
+      
+      // Still return success for the payment, but note Printful failed
+      return NextResponse.json({
+        success: true,
+        orderId: `stripe-${paymentIntentId}`,
+        message: 'Payment successful, but Printful order creation failed. Please contact support.',
+        printfulError: printfulError instanceof Error ? printfulError.message : 'Unknown error'
+      });
+    }
 
   } catch (error) {
     console.error('Checkout error details:', {
