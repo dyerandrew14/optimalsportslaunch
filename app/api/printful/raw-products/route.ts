@@ -5,10 +5,10 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Fetching raw Printful products for store 7957549...');
+    console.log('Fetching raw Printful products for store 16862505...');
     
     // Get products directly from Printful API
-    const response = await fetch('https://api.printful.com/stores/7957549/products', {
+    const response = await fetch('https://api.printful.com/stores/16862505/products', {
       headers: {
         'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`,
         'Content-Type': 'application/json',

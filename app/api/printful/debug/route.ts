@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
     console.log(`All products count: ${allProductsData.result?.length || 0}`);
     
     // Test 2: Get products with store filter
-    console.log('2. Testing /stores/7957549/products endpoint...');
-    const storeProductsResponse = await fetch('https://api.printful.com/stores/7957549/products', {
+    console.log('2. Testing /stores/16862505/products endpoint...');
+    const storeProductsResponse = await fetch('https://api.printful.com/stores/16862505/products', {
       headers: {
         'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`,
         'Content-Type': 'application/json',

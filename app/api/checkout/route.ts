@@ -109,61 +109,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Try to get available Printful products
-    let printfulProducts;
-    try {
-      printfulProducts = await printful.getProducts();
-      console.log('Available Printful products:', printfulProducts.length);
-    } catch (printfulError) {
-      console.error('Printful API error:', printfulError);
-      return NextResponse.json(
-        { 
-          error: 'Printful API connection failed',
-          details: 'Please check your PRINTFUL_API_KEY and Printful account setup',
-          fallback: 'Use /api/checkout/simple for mock orders'
-        },
-        { status: 500 }
-      );
-    }
-    
-    if (printfulProducts.length === 0) {
-      return NextResponse.json(
-        { 
-          error: 'No Printful products available',
-          details: 'Please create products in your Printful account first',
-          fallback: 'Use /api/checkout/simple for mock orders'
-        },
-        { status: 400 }
-      );
-    }
-    
-    // Use the first available product for now
-    const printfulProduct = printfulProducts[0];
-    let variants;
-    try {
-      variants = await printful.getProductVariants(printfulProduct.id);
-    } catch (variantError) {
-      console.error('Printful variants error:', variantError);
-      return NextResponse.json(
-        { 
-          error: 'Failed to get product variants',
-          details: 'Please check your Printful product setup',
-          fallback: 'Use /api/checkout/simple for mock orders'
-        },
-        { status: 500 }
-      );
-    }
-    
-    if (variants.length === 0) {
-      return NextResponse.json(
-        { 
-          error: 'No variants available for the selected product',
-          details: 'Please set up product variants in Printful',
-          fallback: 'Use /api/checkout/simple for mock orders'
-        },
-        { status: 400 }
-      );
-    }
+    // Skip the complex Printful product fetching - we'll use the variant ID from the product data
     
     // Find the correct variant ID based on selected size
     let variantId = null;
@@ -184,10 +130,14 @@ export async function POST(request: NextRequest) {
       variantId = product.printfulVariantId;
       console.log(`⚠️ Using general variant ID: ${variantId}`);
     } else {
-      // Fallback to first available variant
-      const variant = variants[0];
-      variantId = variant.id;
-      console.log(`❌ Using fallback variant ID: ${variantId}`);
+      // No variant ID found
+      console.log(`❌ No variant ID found for product ${product.name}`);
+      return NextResponse.json({
+        error: 'No Printful variant ID found',
+        message: 'Please add a Printful variant ID to this product in the admin dashboard',
+        product: product.name,
+        selectedSize: selectedSize
+      }, { status: 400 });
     }
     
     console.log('🎯 Final variant ID selected:', variantId);
