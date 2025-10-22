@@ -109,9 +109,13 @@ class PrintfulService {
   }
 
   // Create an order
-  async createOrder(order: PrintfulOrder): Promise<PrintfulOrderResponse> {
+  async createOrder(order: PrintfulOrder, storeId?: number): Promise<PrintfulOrderResponse> {
     try {
-      const response = await this.makeRequest('/orders', {
+      // Use store-specific endpoint if storeId is provided, otherwise use default
+      const endpoint = storeId ? `/stores/${storeId}/orders` : '/orders';
+      console.log(`Creating Printful order with endpoint: ${endpoint}`);
+      
+      const response = await this.makeRequest(endpoint, {
         method: 'POST',
         body: JSON.stringify(order),
       });
@@ -176,7 +180,7 @@ export function formatCartForPrintful(items: any[], shippingInfo: any): Printful
       email: shippingInfo.email,
     },
     items: items.map(item => ({
-      variant_id: parseInt(item.printfulVariantId) || 1, // Use Printful variant ID from product
+      variant_id: parseInt(item.variantId) || parseInt(item.printfulVariantId) || 1, // Use variant ID from item
       quantity: item.quantity,
       retail_price: item.price.toString(),
     })),

@@ -206,7 +206,12 @@ export async function POST(request: NextRequest) {
     // Create Printful order directly (bypassing webhook)
     try {
       const printfulOrder = formatCartForPrintful(items, customerInfo);
-      const printfulResponse = await printful.createOrder(printfulOrder);
+      
+      // Use the optimal sports launch store ID (16862505)
+      const storeId = 16862505;
+      console.log(`Creating Printful order for store ID: ${storeId}`);
+      
+      const printfulResponse = await printful.createOrder(printfulOrder, storeId);
       
       console.log('Printful order created directly:', printfulResponse);
 
