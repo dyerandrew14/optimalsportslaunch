@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
           simpleVariants.push({
             productName: product.name,
             productId: product.id,
-            variants: variants.map(v => ({
+            variants: variants.map((v: any) => ({
               variantId: v.id,
               sku: v.sku,
               size: v.size,
