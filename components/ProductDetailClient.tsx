@@ -16,8 +16,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [showCheckout, setShowCheckout] = useState(false);
 
+  // Auto-generate sizes from variant IDs if sizes array is empty
+  const availableSizes = product.sizes && product.sizes.length > 0 
+    ? product.sizes 
+    : product.variantIdsBySize 
+      ? Object.keys(product.variantIdsBySize)
+      : [];
+
   // Set default size for products without sizes
-  const effectiveSelectedSize = product.sizes && product.sizes.length > 0 
+  const effectiveSelectedSize = availableSizes.length > 0 
     ? selectedSize 
     : 'One Size'; // Default for products without size options
 
@@ -30,7 +37,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   const handleCheckout = () => {
     // Only require size selection if the product has sizes
-    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+    if (availableSizes.length > 0 && !selectedSize) {
       alert('Please select a size before checkout');
       return;
     }
@@ -139,7 +146,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Select Size & Quantity</h3>
                   
-                  {product.sizes && product.sizes.length > 0 ? (
+                  {availableSizes.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Size Selection */}
                       <div>
@@ -153,7 +160,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                           required
                         >
                           <option value="">Select a size</option>
-                          {product.sizes.map((size) => {
+                          {availableSizes.map((size) => {
                             const inventory = product.inventoryBySize?.[size] || 0;
                             const isSoldOut = inventory === 0;
                             return (
@@ -317,7 +324,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             id: product.id,
             name: product.name,
             price: product.price.toString(),
-            sizes: product.sizes || [],
+            sizes: availableSizes,
             colors: [], // Disabled until colors are added to Product type
             variantIdsBySize: product.variantIdsBySize || {},
             printfulVariantId: product.printfulVariantId
