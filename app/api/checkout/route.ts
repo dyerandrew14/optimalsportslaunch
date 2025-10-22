@@ -157,9 +157,52 @@ export async function POST(request: NextRequest) {
     try {
       const printfulOrder = formatCartForPrintful(items, customerInfo);
       
-      // Use the optimal sports launch store ID (16862505)
-      const storeId = 16862505;
-      console.log(`Creating Printful order for store ID: ${storeId}`);
+      // Try to find the correct store ID
+      let storeId = null;
+      
+      // First, try to get stores to find the right one
+      try {
+        const storesResponse = await fetch('https://api.printful.com/stores', {
+          headers: {
+            'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (storesResponse.ok) {
+          const storesData = await storesResponse.json();
+          const stores = storesData.result || [];
+          
+          // Use the first store that has products
+          for (const store of stores) {
+            const productsResponse = await fetch(`https://api.printful.com/stores/${store.id}/products`, {
+              headers: {
+                'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`,
+                'Content-Type': 'application/json',
+              },
+            });
+            
+            if (productsResponse.ok) {
+              const productsData = await productsResponse.json();
+              if (productsData.result && productsData.result.length > 0) {
+                storeId = store.id;
+                console.log(`Using store ID: ${storeId} (${store.name})`);
+                break;
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error finding store ID:', error);
+      }
+      
+      if (!storeId) {
+        console.error('No valid store ID found');
+        return NextResponse.json({
+          error: 'No valid Printful store found',
+          message: 'Please check your Printful account setup'
+        }, { status: 400 });
+      }
       
       const printfulResponse = await printful.createOrder(printfulOrder, storeId);
       
