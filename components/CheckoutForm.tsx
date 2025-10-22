@@ -62,11 +62,41 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
   const handlePaymentSuccess = async (paymentIntent: any) => {
     console.log('🎉 Payment success handler called!', paymentIntent);
     
-    // Payment successful - no more alert needed
-    
-    // Payment succeeded! The webhook will handle creating the Printful order
-    setIsSubmitting(false);
-    setSuccess(true);
+    // Now call our checkout API to create the Printful order
+    try {
+      console.log('🔄 Calling /api/checkout after successful payment...');
+      
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product,
+          selectedSize,
+          selectedColor,
+          quantity,
+          customerInfo,
+          retailPrice: product.price,
+          paymentIntentId: paymentIntent.id
+        }),
+      });
+
+      const data = await response.json();
+      console.log('🔍 Checkout API response:', data);
+
+      if (response.ok) {
+        console.log('✅ Printful order created successfully!');
+        setIsSubmitting(false);
+        setSuccess(true);
+      } else {
+        console.error('❌ Printful order creation failed:', data.error);
+        setError(data.error || 'Order failed. Please contact support.');
+      }
+    } catch (err) {
+      console.error('❌ Network error calling checkout API:', err);
+      setError('Order processing failed. Please contact support.');
+    }
     
     console.log('Payment successful:', paymentIntent.id);
     
@@ -104,6 +134,8 @@ export default function CheckoutForm({ product, selectedSize, selectedColor, sel
       });
 
       const data = await response.json();
+      
+      console.log('🔍 Checkout API response:', data);
 
       if (response.ok) {
         setSuccess(true);
