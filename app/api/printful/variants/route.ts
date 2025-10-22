@@ -14,16 +14,30 @@ export async function GET(request: NextRequest) {
     
     console.log('Fetching Printful store products and variants...', storeId ? `for store ${storeId}` : 'for all stores');
     
-    // Get products from specific store or all stores
-    const products = storeId ? await printful.getProducts(parseInt(storeId)) : await printful.getProducts();
-    console.log(`Found ${products.length} products in Printful store${storeId ? ` (store ID: ${storeId})` : ' (all stores)'}`);
-    
-    // If store-specific request returns 0 products, try without store filter to debug
-    if (storeId && products.length === 0) {
-      console.log('Store-specific request returned 0 products, trying without store filter for debugging...');
-      const allProducts = await printful.getProducts();
-      console.log(`All products (no store filter): ${allProducts.length}`);
+    // Get products directly from Printful API (bypassing the broken PrintfulService)
+    let products = [];
+    if (storeId) {
+      console.log(`Fetching products directly from Printful API for store ${storeId}...`);
+      const response = await fetch(`https://api.printful.com/stores/${storeId}/products`, {
+        headers: {
+          'Authorization': `Bearer ${process.env.PRINTFUL_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        products = data.result || [];
+        console.log(`Direct API call returned ${products.length} products for store ${storeId}`);
+      } else {
+        console.error(`Direct API call failed: ${response.status}`);
+      }
+    } else {
+      // Fallback to PrintfulService for all products
+      products = await printful.getProducts();
     }
+    
+    console.log(`Found ${products.length} products in Printful store${storeId ? ` (store ID: ${storeId})` : ' (all stores)'}`);
     
     // Limit to first 5 products to avoid timeout during build
     const limitedProducts = products.slice(0, 5);
