@@ -15,6 +15,7 @@ export type Product = {
   updatedAt: number;
   externalUrl?: string; // optional purchase link
   printfulVariantId?: string; // Printful variant ID for order fulfillment
+  variantIdsBySize?: Record<string, string>; // Printful variant IDs by size, e.g., { S: "12345", M: "67890" }
 };
 
 // Use same-origin by default
