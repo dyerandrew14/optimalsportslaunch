@@ -86,10 +86,13 @@ class PrintfulService {
   async getProducts(storeId?: number): Promise<PrintfulProduct[]> {
     try {
       const endpoint = storeId ? `/stores/${storeId}/products` : '/products';
+      console.log(`PrintfulService.getProducts: Fetching from endpoint: ${endpoint}`);
       const response = await this.makeRequest(endpoint);
+      console.log(`PrintfulService.getProducts: Response received, result length: ${response.result?.length || 0}`);
       return response.result || [];
     } catch (error) {
       console.error('Failed to fetch Printful products:', error);
+      console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
       return [];
     }
   }
