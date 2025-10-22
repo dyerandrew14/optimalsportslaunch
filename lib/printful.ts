@@ -83,9 +83,10 @@ class PrintfulService {
   }
 
   // Get all products from Printful
-  async getProducts(): Promise<PrintfulProduct[]> {
+  async getProducts(storeId?: number): Promise<PrintfulProduct[]> {
     try {
-      const response = await this.makeRequest('/products');
+      const endpoint = storeId ? `/stores/${storeId}/products` : '/products';
+      const response = await this.makeRequest(endpoint);
       return response.result || [];
     } catch (error) {
       console.error('Failed to fetch Printful products:', error);

@@ -9,11 +9,14 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Fetching YOUR Printful store products and variants...');
+    const { searchParams } = new URL(request.url);
+    const storeId = searchParams.get('storeId');
     
-    // Get YOUR products from your Printful store (not the catalog)
-    const products = await printful.getProducts();
-    console.log(`Found ${products.length} products in YOUR Printful store`);
+    console.log('Fetching Printful store products and variants...', storeId ? `for store ${storeId}` : 'for all stores');
+    
+    // Get products from specific store or all stores
+    const products = storeId ? await printful.getProducts(parseInt(storeId)) : await printful.getProducts();
+    console.log(`Found ${products.length} products in Printful store`);
     
     // Limit to first 5 products to avoid timeout during build
     const limitedProducts = products.slice(0, 5);
