@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
             const variantsData = await variantsResponse.json();
             const variants = variantsData.result?.variants || [];
             
-            results[results.length - 1].variants = variants.map((v: any) => ({
+            (results[results.length - 1] as any).variants = variants.map((v: any) => ({
               variantId: v.id,
               sku: v.sku,
               size: v.size,
