@@ -1,18 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  return NextResponse.json({ 
-    message: 'Webhook endpoint is reachable!',
-    timestamp: new Date().toISOString(),
-    url: request.url
-  });
-}
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
-  const body = await request.text();
-  return NextResponse.json({ 
-    message: 'Webhook POST received!',
-    body: body,
+  try {
+    const body = await request.json();
+    
+    console.log('Test webhook received:', body);
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Test webhook received successfully',
+      receivedData: body,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('Test webhook error:', error);
+    return NextResponse.json(
+      { error: 'Test webhook failed' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  return NextResponse.json({
+    message: 'Test webhook endpoint is working',
     timestamp: new Date().toISOString()
   });
 }
