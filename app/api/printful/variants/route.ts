@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         console.error(`Error fetching variants for product ${product.id}:`, error);
         
         // If we hit rate limit, stop processing
-        if (error.message && error.message.includes('429')) {
+        if (error instanceof Error && error.message.includes('429')) {
           console.log('Rate limit hit, stopping processing');
           break;
         }
