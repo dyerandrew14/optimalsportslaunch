@@ -6,25 +6,22 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Fetching Printful products and variants...');
+    console.log('Fetching YOUR Printful store products and variants...');
     
-    // Get all products from Printful
+    // Get YOUR products from your Printful store (not the catalog)
     const products = await printful.getProducts();
-    console.log(`Found ${products.length} products in Printful`);
+    console.log(`Found ${products.length} products in YOUR Printful store`);
     
-    // Limit to first 10 products to avoid rate limiting
-    const limitedProducts = products.slice(0, 10);
-    console.log(`Processing first ${limitedProducts.length} products to avoid rate limits`);
-    
+    // Process all YOUR products (should only be 2)
     const productsWithVariants = [];
     
-    for (let i = 0; i < limitedProducts.length; i++) {
-      const product = limitedProducts[i];
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
       
       try {
-        // Add delay between requests to avoid rate limiting
+        // Add small delay between requests to be respectful to API
         if (i > 0) {
-          await delay(1000); // 1 second delay between requests
+          await delay(500); // 0.5 second delay between requests
         }
         
         const variants = await printful.getProductVariants(product.id);
@@ -57,7 +54,7 @@ export async function GET(request: NextRequest) {
       success: true,
       products: productsWithVariants,
       totalProducts: productsWithVariants.length,
-      message: `Processed ${productsWithVariants.length} products (limited to avoid rate limits)`
+      message: `Found ${productsWithVariants.length} products in YOUR Printful store`
     });
     
   } catch (error) {
