@@ -10,6 +10,8 @@ interface CheckoutFormProps {
     price: string;
     sizes: string[];
     colors: string[];
+    variantIdsBySize?: Record<string, string>;
+    printfulVariantId?: string;
   };
   selectedSize: string;
   selectedColor: string;

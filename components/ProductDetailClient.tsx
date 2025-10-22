@@ -319,6 +319,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             price: product.price.toString(),
             sizes: product.sizes || [],
             colors: [], // Disabled until colors are added to Product type
+            variantIdsBySize: product.variantIdsBySize || {},
+            printfulVariantId: product.printfulVariantId
           }}
           selectedSize={effectiveSelectedSize}
           selectedColor={selectedColor}

@@ -168,19 +168,29 @@ export async function POST(request: NextRequest) {
     // Find the correct variant ID based on selected size
     let variantId = null;
     
+    console.log('🔍 DEBUG: Product data received:', {
+      productId: product.id,
+      productName: product.name,
+      selectedSize,
+      variantIdsBySize: product.variantIdsBySize,
+      printfulVariantId: product.printfulVariantId
+    });
+    
     // Check if product has variantIdsBySize mapping
     if (product.variantIdsBySize && product.variantIdsBySize[selectedSize]) {
       variantId = product.variantIdsBySize[selectedSize];
-      console.log(`Using size-specific variant ID for ${selectedSize}: ${variantId}`);
+      console.log(`✅ Using size-specific variant ID for ${selectedSize}: ${variantId}`);
     } else if (product.printfulVariantId) {
       variantId = product.printfulVariantId;
-      console.log(`Using general variant ID: ${variantId}`);
+      console.log(`⚠️ Using general variant ID: ${variantId}`);
     } else {
       // Fallback to first available variant
       const variant = variants[0];
       variantId = variant.id;
-      console.log(`Using fallback variant ID: ${variantId}`);
+      console.log(`❌ Using fallback variant ID: ${variantId}`);
     }
+    
+    console.log('🎯 Final variant ID selected:', variantId);
     
     // Format items for Printful
     const items = [{
