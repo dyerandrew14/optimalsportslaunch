@@ -4,6 +4,9 @@ import { printful } from '@/lib/printful';
 // Helper function to add delay between API calls
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     console.log('Fetching YOUR Printful store products and variants...');
@@ -12,11 +15,14 @@ export async function GET(request: NextRequest) {
     const products = await printful.getProducts();
     console.log(`Found ${products.length} products in YOUR Printful store`);
     
-    // Process all YOUR products (should only be 2)
+    // Limit to first 5 products to avoid timeout during build
+    const limitedProducts = products.slice(0, 5);
+    console.log(`Processing first ${limitedProducts.length} products to avoid timeout`);
+    
     const productsWithVariants = [];
     
-    for (let i = 0; i < products.length; i++) {
-      const product = products[i];
+    for (let i = 0; i < limitedProducts.length; i++) {
+      const product = limitedProducts[i];
       
       try {
         // Add small delay between requests to be respectful to API
