@@ -153,51 +153,49 @@ export async function POST(request: NextRequest) {
       color: selectedColor
     }];
 
-    // Create Printful order directly (bypassing webhook)
-    try {
-      const printfulOrder = formatCartForPrintful(items, customerInfo);
-      
-             // Use your specific optimalsportslaunch store ID
-             const storeId = 16862505;
-             console.log(`Using optimalsportslaunch store ID: ${storeId}`);
-      
-      const printfulResponse = await printful.createOrder(printfulOrder, storeId);
-      
-      console.log('Printful order created directly:', printfulResponse);
+          // Create order using the new auto-printful system
+          try {
+            const autoOrderResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/auto-printful-order`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                product,
+                selectedSize,
+                selectedColor,
+                quantity,
+                customerInfo,
+                paymentIntentId
+              })
+            });
 
-      // Store order in database
-      if (process.env.KV_REST_API_URL) {
-        await kv.set(`order:${paymentIntentId}`, {
-          stripePaymentId: paymentIntentId,
-          printfulOrderId: printfulResponse.id,
-          printfulExternalId: printfulResponse.external_id,
-          customerInfo,
-          items,
-          amount: parseFloat(product.price) * quantity,
-          currency: 'usd',
-          status: 'confirmed',
-          createdAt: new Date().toISOString(),
-          printfulStatus: printfulResponse.status,
-        });
-      }
+            const autoOrderResult = await autoOrderResponse.json();
+            
+            if (autoOrderResult.success) {
+              console.log('Order created with auto-printful system:', autoOrderResult);
+              
+              return NextResponse.json({
+                success: true,
+                orderId: autoOrderResult.orderId,
+                message: 'Order successfully created! It will be processed by Printful automatically.',
+                printfulVariantId: autoOrderResult.printfulVariantId,
+                printfulStoreId: autoOrderResult.printfulStoreId
+              });
+            } else {
+              throw new Error(autoOrderResult.error || 'Auto-printful order creation failed');
+            }
+          } catch (autoOrderError) {
+            console.error('Auto-printful order creation failed:', autoOrderError);
 
-      return NextResponse.json({
-        success: true,
-        orderId: printfulResponse.id,
-        externalId: printfulResponse.external_id,
-        message: 'Order successfully placed with Printful'
-      });
-    } catch (printfulError) {
-      console.error('Printful order creation failed:', printfulError);
-      
-      // Still return success for the payment, but note Printful failed
-      return NextResponse.json({
-        success: true,
-        orderId: `stripe-${paymentIntentId}`,
-        message: 'Payment successful, but Printful order creation failed. Please contact support.',
-        printfulError: printfulError instanceof Error ? printfulError.message : 'Unknown error'
-      });
-    }
+            // Still return success for the payment, but note Printful failed
+            return NextResponse.json({
+              success: true,
+              orderId: `stripe-${paymentIntentId}`,
+              message: 'Payment successful, but Printful order creation failed. Please contact support.',
+              printfulError: autoOrderError instanceof Error ? autoOrderError.message : 'Unknown error'
+            });
+          }
 
   } catch (error) {
     console.error('Checkout error details:', {
