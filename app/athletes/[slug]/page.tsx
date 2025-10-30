@@ -115,14 +115,6 @@ export default async function AthleteProfile({ params }: { params: Params }) {
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">#{athlete.number}</div>
                 </div>
                 <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Conference</div>
-                  <div className="text-lg font-semibold text-gray-900 dark:text-white">{athlete.conference}</div>
-                </div>
-                <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Class Year</div>
-                  <div className="text-lg font-semibold text-gray-900 dark:text-white">{athlete.classYear}</div>
-                </div>
-                <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
                   <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Position</div>
                   <div className="text-lg font-semibold text-gray-900 dark:text-white">{athlete.position}</div>
                 </div>
@@ -145,22 +137,8 @@ export default async function AthleteProfile({ params }: { params: Params }) {
           athleteSlug={athlete.slug}
         />
 
-        {/* Stats Section */}
-        <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Season Stats</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-neutral-600">
-                <span className="text-gray-600 dark:text-gray-400">2024</span>
-                <span className="font-semibold">12 Games • 1,120 Yards • 10 TD</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-neutral-600">
-                <span className="text-gray-600 dark:text-gray-400">2023</span>
-                <span className="font-semibold">11 Games • 980 Yards • 8 TD</span>
-              </div>
-            </div>
-          </div>
-          {/* Right column - Player Mini Shop */}
+        {/* Shop Section */}
+        <div className="mt-16">
           <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 border border-gray-200 dark:border-neutral-700">
             <AthleteShop
               athleteName={athlete.name}

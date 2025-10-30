@@ -11,6 +11,7 @@ export default function AthletesPage() {
   const searchParams = useSearchParams();
   const [allAthletes, setAllAthletes] = useState<any[]>([]);
   const [filteredAthletes, setFilteredAthletes] = useState<any[]>([]);
+  const [nflAthletes, setNflAthletes] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLeague, setSelectedLeague] = useState(""); // "College" | "NFL" | ""
   const [loading, setLoading] = useState(true);
@@ -68,19 +69,21 @@ export default function AthletesPage() {
     if (selectedLeague) {
       if (selectedLeague === "NFL") {
         filtered = filtered.filter(a => getLeague(a.conference) === "NFL");
+        setNflAthletes([]);
+        setFilteredAthletes(filtered);
       } else if (selectedLeague === "College") {
         filtered = filtered.filter(a => getLeague(a.conference) === "College");
+        setNflAthletes([]);
+        setFilteredAthletes(filtered);
       }
     } else {
-      // Default ordering when no league filter: College first, NFL clients at the bottom
-      filtered = [...filtered].sort((a, b) => {
-        const la = getLeague(a.conference) === 'NFL' ? 1 : 0;
-        const lb = getLeague(b.conference) === 'NFL' ? 1 : 0;
-        return la - lb;
-      });
+      // Separate college and NFL athletes
+      const college = filtered.filter(a => getLeague(a.conference) === "College");
+      const nfl = filtered.filter(a => getLeague(a.conference) === "NFL");
+      
+      setFilteredAthletes(college);
+      setNflAthletes(nfl);
     }
-
-    setFilteredAthletes(filtered);
   }, [searchTerm, selectedLeague, searchParams, allAthletes]);
 
   const clearFilters = () => {
@@ -202,20 +205,116 @@ export default function AthletesPage() {
                       </div>
                     </div>
                     <p className="text-gray-300 text-sm line-clamp-2 mb-3 opacity-90">{athlete.bio}</p>
-                    <div className="flex justify-between text-sm text-gray-300">
-                      <span className="bg-red-600/20 backdrop-blur-sm px-3 py-1 rounded-full border border-red-500/30">
-                        {athlete.conference}
-                      </span>
-                      <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full border border-white/30">
-                        {athlete.classYear}
-                      </span>
-                    </div>
                   </div>
                 </div>
               </Link>
             );
           })}
         </div>
+
+        {/* NFL Roster Section */}
+        {nflAthletes.length > 0 && !selectedLeague && (
+          <div className="mt-20">
+            {/* NFL Roster Header */}
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <svg className="w-12 h-12 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                </svg>
+                <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
+                  NFL Roster
+                </h2>
+                <svg className="w-12 h-12 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                </svg>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
+                <span className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  NFL Drafted
+                </span>
+                <span className="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  Active Roster
+                </span>
+                <span className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Success Stories
+                </span>
+              </div>
+              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Our elite clients who made it to the NFL. Representing the best in professional football.
+              </p>
+            </div>
+
+            {/* NFL Athletes Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {nflAthletes.map((athlete) => {
+                const schoolInfo = getSchoolByName(athlete.school);
+                return (
+                  <Link
+                    key={athlete.slug}
+                    href={`/athletes/${athlete.slug}`}
+                    className="relative bg-black rounded-3xl shadow-2xl overflow-hidden group hover:shadow-blue-500/20 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 border-2 border-blue-500/30"
+                  >
+                    {/* NFL Success Badge */}
+                    <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                      NFL
+                    </div>
+                    
+                    {/* Full Background Image */}
+                    <div className="relative h-96 w-full overflow-hidden rounded-3xl">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={athlete.image} 
+                        alt={athlete.name} 
+                        className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                      />
+                      
+                      {/* Position Badge */}
+                      <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold border border-red-500/50">
+                        {athlete.position}
+                      </div>
+                      
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent"></div>
+                      
+                      {/* Transparent Info Section */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md border-t border-white/20 p-6">
+                        <div className="mb-3">
+                          <h3 className="text-lg font-bold text-white mb-1 group-hover:text-blue-200 transition-colors flex items-center gap-2">
+                            {athlete.name}
+                            <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          </h3>
+                          <div className="flex items-center gap-2">
+                            <p className="text-gray-200 text-sm font-medium">{athlete.school}</p>
+                            {schoolInfo && (
+                              <span className="text-xs bg-white/20 backdrop-blur-sm text-white px-2 py-1 rounded-full border border-white/30">
+                                {schoolInfo.mascot}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-gray-300 text-sm line-clamp-2 mb-3 opacity-90">{athlete.bio}</p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -343,32 +343,6 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
             
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Conference
-              </label>
-              <input
-                type="text"
-                value={formData.conference}
-                onChange={(e) => setFormData({ ...formData, conference: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
-                placeholder="SEC, Big Ten, etc."
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Class Year
-              </label>
-              <input
-                type="text"
-                value={formData.classYear}
-                onChange={(e) => setFormData({ ...formData, classYear: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
-                placeholder="Freshman, Sophomore, etc."
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Jersey Number
               </label>
               <input
@@ -505,71 +479,6 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
                 <option value="to-white">White</option>
                 <option value="to-black">Black</option>
               </select>
-            </div>
-          </div>
-          
-          <div className="pt-4 border-t border-gray-200 dark:border-neutral-700">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Season Stats</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Passing Yards
-                </label>
-                <input
-                  type="number"
-                  value={formData.stats.passingYards}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    stats: { ...formData.stats, passingYards: parseInt(e.target.value) || 0 }
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Rushing Yards
-                </label>
-                <input
-                  type="number"
-                  value={formData.stats.rushingYards}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    stats: { ...formData.stats, rushingYards: parseInt(e.target.value) || 0 }
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Touchdowns
-                </label>
-                <input
-                  type="number"
-                  value={formData.stats.touchdowns}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    stats: { ...formData.stats, touchdowns: parseInt(e.target.value) || 0 }
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Tackles
-                </label>
-                <input
-                  type="number"
-                  value={formData.stats.tackles}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    stats: { ...formData.stats, tackles: parseInt(e.target.value) || 0 }
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
-                />
-              </div>
             </div>
           </div>
           
@@ -1186,8 +1095,6 @@ export default function AdminDashboard() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Athlete</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Position</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">School</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Conference</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Class</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -1211,8 +1118,6 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{athlete.school}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{athlete.conference || 'N/A'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{athlete.classYear || 'N/A'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
                         <button
