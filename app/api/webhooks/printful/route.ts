@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
       for (const orderKey of pendingOrders) {
         try {
-          const orderData = await kv.get(orderKey);
+          const orderData: any = await kv.get(orderKey);
           
           if (orderData && orderData.status === 'pending_printful') {
             console.log('Processing pending order:', orderData.id);
