@@ -41,7 +41,7 @@ export default function HomePage() {
         <VideoBackground />
         
         {/* Enhanced Overlay with depth */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 backdrop-blur-lg" />
         
         {/* Content - Now centered and more prominent */}
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
