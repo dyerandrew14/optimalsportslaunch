@@ -778,7 +778,7 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
             <div className="p-6 border-t border-gray-200 dark:border-neutral-700 space-y-4">
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  <strong>Instructions:</strong> Drag the image to reposition, use the zoom slider below, and adjust the aspect ratio if needed. Click and drag the crop area to focus on the athlete's face or any specific area.
+                  <strong>Instructions:</strong> Drag the image to reposition, use the zoom slider below, and adjust the aspect ratio if needed. Click and drag the crop area to focus on the athlete&apos;s face or any specific area.
                 </p>
               </div>
               
