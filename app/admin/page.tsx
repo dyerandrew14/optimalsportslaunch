@@ -193,7 +193,7 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
           if (attemptWithCORS && !url.startsWith('data:') && !url.startsWith('blob:')) {
             // Retry without CORS
             attemptWithCORS = false;
-            image.crossOrigin = undefined;
+            image.crossOrigin = null;
             image.src = url;
           } else {
             console.error('Error loading image:', url);
