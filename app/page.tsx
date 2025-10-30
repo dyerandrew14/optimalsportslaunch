@@ -226,8 +226,8 @@ export default function HomePage() {
             <div>
               <VisionCarousel
                 slides={[
-                  { src: "/STARTSUPPORTING.webp", title: "Supporting Excellence", subtitle: "Empowering athletes to reach their full potential" },
-                  { src: "/players/rico_flores.webp", title: "Driven by Our Athletes", subtitle: "Relentless commitment to the vision of our players" },
+                  { src: "/frontpage2.png", title: "Supporting Excellence", subtitle: "Empowering athletes to reach their full potential" },
+                  { src: "/frontpage3.png", title: "Driven by Our Athletes", subtitle: "Relentless commitment to the vision of our players" },
                 ]}
                 intervalMs={6000}
               />

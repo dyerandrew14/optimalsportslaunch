@@ -40,11 +40,12 @@ export default function CatalogPage() {
             </div>
             <div className="lg:col-span-6 order-1 lg:order-2 flex justify-center">
               <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl w-full max-w-xl aspect-[4/3] bg-black">
-                <SafeImage
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={infoImg1}
-                  fallbackSrc={`/IMG_3743.webp${buster}`}
                   alt="Quality materials"
                   className="absolute inset-0 w-full h-full object-cover"
+                  style={{ objectPosition: 'center 25%' }}
                 />
               </div>
             </div>
@@ -53,11 +54,15 @@ export default function CatalogPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-16">
             <div className="lg:col-span-6">
               <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl w-full max-w-xl aspect-[4/3] bg-black mx-auto">
-                <SafeImage
-                  src={infoImg2}
-                  fallbackSrc={`/IMG_3899.webp${buster}`}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/catalogimaghe.png"
                   alt="Represent Optimal Sports"
                   className="absolute inset-0 w-full h-full object-cover"
+                  style={{ objectPosition: 'center 18%' }}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = '/IMG_3899.webp';
+                  }}
                 />
               </div>
             </div>
@@ -78,7 +83,7 @@ export default function CatalogPage() {
                   src={infoImg3}
                   fallbackSrc={`/IMG_3903.webp${buster}`}
                   alt="Autographed items"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover object-top"
                 />
               </div>
             </div>

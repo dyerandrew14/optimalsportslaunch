@@ -62,6 +62,7 @@ export default function VisionCarousel({ slides, intervalMs = 5000 }: { slides: 
         src={active.src}
         alt={active.title}
         className="w-full h-full object-cover"
+        style={{ objectPosition: 'center 20%' }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
       <div className="absolute bottom-4 left-4 right-4">
