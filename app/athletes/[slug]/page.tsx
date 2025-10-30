@@ -88,26 +88,6 @@ export default async function AthleteProfile({ params }: { params: Params }) {
                     {athlete.position}
                   </span>
                 </div>
-
-                {/* Number Badge */}
-                <div className="absolute top-6 right-6">
-                  <span className="bg-white/90 text-gray-900 px-4 py-2 rounded-full text-2xl font-bold shadow-lg">
-                    #{athlete.number}
-                  </span>
-                </div>
-
-                {/* School Logo Overlay */}
-                {schoolInfo && (
-                  <div className="absolute bottom-6 right-6">
-                    <div className="w-20 h-20 bg-white rounded-full p-2 shadow-lg border-2 border-white">
-                      <img 
-                        src={schoolInfo.logo} 
-                        alt={schoolInfo.mascot} 
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -118,20 +98,11 @@ export default async function AthleteProfile({ params }: { params: Params }) {
                 <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
                   {athlete.name}
                 </h1>
-                <div className="flex items-center gap-4 mb-6">
+                <div className="mb-6">
                   {schoolInfo && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
-                        <img 
-                          src={schoolInfo.logo} 
-                          alt={schoolInfo.mascot} 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div>
-                        <p className="text-xl font-semibold text-gray-900 dark:text-white">{athlete.school}</p>
-                        <p className="text-gray-600 dark:text-gray-400">{schoolInfo.mascot}</p>
-                      </div>
+                    <div>
+                      <p className="text-xl font-semibold text-gray-900 dark:text-white">{athlete.school}</p>
+                      <p className="text-gray-600 dark:text-gray-400">{schoolInfo.mascot}</p>
                     </div>
                   )}
                 </div>

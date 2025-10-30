@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { athletes as initialAthletes, type Athlete, type MerchandiseItem } from "../../lib/athletes";
 import { fetchAthletes, createAthlete as apiCreateAthlete, updateAthlete as apiUpdateAthlete, deleteAthlete as apiDeleteAthlete } from "../../lib/api";
 import { type Product } from "../../lib/products";
 import { fetchProducts as fetchAllProducts, apiCreateProduct, apiUpdateProduct, apiDeleteProduct } from "../../lib/api";
+import Cropper, { Area } from 'react-easy-crop';
 
 // Password protection component
 function AdminLogin({ onLogin }: { onLogin: () => void }) {
@@ -138,6 +139,14 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
     merchandise: []
   });
 
+  // Image cropping state
+  const [showCrop, setShowCrop] = useState(false);
+  const [cropImage, setCropImage] = useState('');
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [aspectRatio, setAspectRatio] = useState<number>(3 / 4); // Default portrait aspect ratio
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
   useEffect(() => {
     if (athlete) {
       setFormData(athlete);
@@ -166,6 +175,106 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
       });
     }
   }, [athlete]);
+
+  const createImage = (url: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      
+      // Try with CORS first for external images
+      if (!url.startsWith('data:') && !url.startsWith('blob:')) {
+        image.crossOrigin = 'anonymous';
+      }
+      
+      let attemptWithCORS = true;
+      
+      const loadWithCORS = () => {
+        image.addEventListener('load', () => resolve(image));
+        image.addEventListener('error', () => {
+          if (attemptWithCORS && !url.startsWith('data:') && !url.startsWith('blob:')) {
+            // Retry without CORS
+            attemptWithCORS = false;
+            image.crossOrigin = undefined;
+            image.src = url;
+          } else {
+            console.error('Error loading image:', url);
+            reject(new Error('Failed to load image'));
+          }
+        });
+        image.src = url;
+      };
+      
+      loadWithCORS();
+    });
+  };
+
+  const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<string> => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      throw new Error('No 2d context');
+    }
+
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+
+    return new Promise((resolve, reject) => {
+      try {
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            reject(new Error('Canvas is empty'));
+            return;
+          }
+          // Convert blob to base64 data URL so it persists
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(reader.result as string);
+          };
+          reader.onerror = () => {
+            reject(new Error('Failed to convert blob to base64'));
+          };
+          reader.readAsDataURL(blob);
+        }, 'image/jpeg', 0.95);
+      } catch (error) {
+        console.error('Canvas tainted error:', error);
+        // If canvas is tainted, try to get the image from source directly
+        reject(error);
+      }
+    });
+  };
+
+  const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleCropSave = async () => {
+    if (!croppedAreaPixels) return;
+    
+    try {
+      const croppedImageUrl = await getCroppedImg(cropImage, croppedAreaPixels);
+      console.log('Cropped image URL type:', typeof croppedImageUrl);
+      console.log('Cropped image URL length:', croppedImageUrl.length);
+      console.log('Cropped image URL preview:', croppedImageUrl.substring(0, 50));
+      setFormData({ ...formData, image: croppedImageUrl });
+      setShowCrop(false);
+      setCropImage('');
+    } catch (e) {
+      console.error('Error cropping image:', e);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -303,15 +412,42 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    // Create a local object URL for immediate preview/reference
+                    // Create a local object URL for cropping
                     const localUrl = URL.createObjectURL(file);
-                    setFormData({ ...formData, image: localUrl });
+                    setCropImage(localUrl);
+                    setShowCrop(true);
                   }}
                 />
                 Upload
               </label>
+              {formData.image && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCropImage(formData.image);
+                    setShowCrop(true);
+                  }}
+                  className="inline-flex items-center px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-sm text-gray-800 dark:text-gray-200"
+                >
+                  Crop Image
+                </button>
+              )}
             </div>
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Using a hosted URL is recommended for production. Upload sets a temporary local URL for preview; persist by uploading to /public and saving the path.</p>
+            {formData.image && (
+              <div className="mt-3">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Current Image Preview:</p>
+                <img 
+                  src={formData.image} 
+                  alt="Preview" 
+                  className="max-w-xs max-h-48 rounded-lg border border-gray-300 dark:border-neutral-600 object-cover"
+                  onError={(e) => {
+                    console.error('Image failed to load:', formData.image.substring(0, 100));
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
           </div>
           
           <div>
@@ -600,6 +736,134 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
           </div>
         </form>
       </div>
+
+      {/* Image Crop Modal */}
+      {showCrop && cropImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white dark:bg-neutral-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-neutral-700">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                Crop Image
+              </h2>
+              <button
+                onClick={() => {
+                  setShowCrop(false);
+                  setCropImage('');
+                  setCrop({ x: 0, y: 0 });
+                  setZoom(1);
+                  setAspectRatio(3 / 4);
+                  setCroppedAreaPixels(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="relative" style={{ width: '100%', height: '500px', background: '#333' }}>
+              <Cropper
+                key={aspectRatio}
+                image={cropImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={aspectRatio === 0 ? undefined : aspectRatio}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+
+            <div className="p-6 border-t border-gray-200 dark:border-neutral-700 space-y-4">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  <strong>Instructions:</strong> Drag the image to reposition, use the zoom slider below, and adjust the aspect ratio if needed. Click and drag the crop area to focus on the athlete's face or any specific area.
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Aspect Ratio
+                </label>
+                <div className="flex gap-2 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setAspectRatio(3 / 4)}
+                    className={`px-3 py-1 rounded ${aspectRatio === 3 / 4 ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-neutral-700 text-gray-700 dark:text-gray-300'}`}
+                  >
+                    Portrait (3:4)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAspectRatio(4 / 3)}
+                    className={`px-3 py-1 rounded ${aspectRatio === 4 / 3 ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-neutral-700 text-gray-700 dark:text-gray-300'}`}
+                  >
+                    Landscape (4:3)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAspectRatio(1)}
+                    className={`px-3 py-1 rounded ${aspectRatio === 1 ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-neutral-700 text-gray-700 dark:text-gray-300'}`}
+                  >
+                    Square (1:1)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAspectRatio(0)}
+                    className={`px-3 py-1 rounded ${aspectRatio === 0 ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-neutral-700 text-gray-700 dark:text-gray-300'}`}
+                  >
+                    Free (No Ratio)
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Zoom: {zoom.toFixed(1)}x
+                </label>
+                <input
+                  type="range"
+                  min={0.5}
+                  max={5}
+                  step={0.1}
+                  value={zoom}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <span>Zoom Out</span>
+                  <span>Zoom In</span>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleCropSave}
+                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  Save Crop
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCrop(false);
+                    setCropImage('');
+                    setCrop({ x: 0, y: 0 });
+                    setZoom(1);
+                    setAspectRatio(3 / 4);
+                    setCroppedAreaPixels(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-neutral-600 dark:hover:bg-neutral-500 text-gray-700 dark:text-white rounded-lg font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -745,14 +1009,19 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       const updatedAthlete = { ...athleteData, slug: editingAthlete.slug };
+      console.log('Saving athlete with image:', updatedAthlete.image);
+      console.log('Image length:', updatedAthlete.image?.length);
+      console.log('Image preview:', updatedAthlete.image?.substring(0, 50));
       const result = await apiUpdateAthlete(editingAthlete.slug, updatedAthlete);
       
       if (result) {
+        console.log('Athlete updated successfully. Result image:', result.image?.substring(0, 50));
         const updatedAthletes = athletes.map(athlete =>
           athlete.slug === editingAthlete.slug ? result : athlete
         );
         setAthletes(updatedAthletes);
         setEditingAthlete(null);
+        alert('Athlete updated successfully! Refresh the athlete page to see changes.');
       } else {
         alert('Failed to update athlete. Please try again.');
       }

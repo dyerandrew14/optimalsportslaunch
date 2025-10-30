@@ -63,6 +63,9 @@ export async function PUT(
   try {
     const { slug } = params;
     const updatedAthlete: Athlete = await request.json();
+    console.log('API: Updating athlete:', slug);
+    console.log('API: Image preview:', updatedAthlete.image?.substring(0, 50));
+    console.log('API: Image length:', updatedAthlete.image?.length);
     
     // Get current athletes list
     const currentAthletes = await kv.get('athletes:all') || defaultAthletes;
@@ -85,6 +88,9 @@ export async function PUT(
     
     // Update individual record
     await kv.set(`athlete:${slug}`, updatedAthlete);
+    
+    console.log('API: Athlete updated successfully');
+    console.log('API: Saved image preview:', updatedAthlete.image?.substring(0, 50));
     
     return NextResponse.json(updatedAthlete);
   } catch (error) {
