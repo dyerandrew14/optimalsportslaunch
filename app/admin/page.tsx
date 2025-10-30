@@ -361,11 +361,11 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
             </label>
             <div className="flex gap-3 items-center">
               <input
-                type="url"
+                type="text"
                 value={formData.image}
                 onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
-                placeholder="https://example.com/image.jpg or upload below"
+                placeholder="https://example.com/image.jpg or /public/path.jpg"
               />
               <a
                 href="https://cloudinary.com/console/media_library" target="_blank" rel="noopener noreferrer"
