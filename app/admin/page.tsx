@@ -79,21 +79,17 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
             {attempts >= 3 ? 'Access Locked' : 'Access Admin'}
           </button>
 
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 text-center">
             <button type="button" className="text-sm text-red-600 hover:text-red-700" onClick={async()=>{
+              if (email.toLowerCase() !== 'christopergill@optimalsports.net') {
+                alert('Password reset emails can only be sent to christopergill@optimalsports.net');
+                return;
+              }
               const emailPrompt = email || prompt('Enter your email for reset link') || '';
               if (!emailPrompt) return;
               await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'forgot', email: emailPrompt }) });
               alert('If the email exists, a reset link has been sent.');
             }}>Forgot password?</button>
-            {/* Dev button for debugging */}
-            <button type="button" className="text-sm text-blue-600 hover:text-blue-800 ml-2" onClick={async()=>{ 
-              console.log('Dev button clicked'); 
-              try { 
-                await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'login', dev: true }) }); 
-              } catch {}
-              onLogin();
-            }}>Dev</button>
           </div>
         </form>
 

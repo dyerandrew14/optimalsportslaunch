@@ -66,6 +66,12 @@ export async function POST(req: NextRequest) {
 
   if (action === 'forgot') {
     const { email } = body;
+    
+    // Only allow password reset for the admin email
+    if (email.toLowerCase() !== 'christopergill@optimalsports.net') {
+      return NextResponse.json({ ok: false, error: 'Password reset only available for admin email' }, { status: 403 });
+    }
+    
     const token = crypto.randomUUID();
     const expiresAt = Date.now() + 30 * 60 * 1000; // 30 min
     await kv.hset(TOKENS_KEY, { [token]: JSON.stringify({ email, expiresAt }) });
