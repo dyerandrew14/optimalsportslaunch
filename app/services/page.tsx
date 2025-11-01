@@ -55,13 +55,6 @@ export default function ServicesPage() {
     }
   ];
 
-  const stats = [
-    { number: "500+", label: "Athletes Represented" },
-    { number: "$1B+", label: "Contracts Negotiated" },
-    { number: "15+", label: "Years Experience" },
-    { number: "98%", label: "Client Satisfaction" }
-  ];
-
   return (
     <main className="min-h-screen">
       {/* Consistent Hero (matches other pages) */}
@@ -72,21 +65,6 @@ export default function ServicesPage() {
             Comprehensive representation, branding, and career support for elite athletes
           </p>
           <div className="w-24 h-1 bg-gradient-to-r from-red-400 to-red-600 mx-auto mt-6 rounded-full"></div>
-        </div>
-      </section>
-
-      {/* Subtle Stats */}
-      <section className="py-14 bg-white dark:bg-neutral-950 border-b border-gray-200 dark:border-neutral-800" id="overview">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="w-8 h-1 bg-red-600/80 dark:bg-red-500/80 mx-auto mb-2 rounded-full" />
-                <div className="text-2xl md:text-3xl font-extrabold text-white mb-1">{stat.number}</div>
-                <div className="text-xs text-white/80 tracking-wide uppercase">{stat.label}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
