@@ -16,6 +16,25 @@ export const metadata: Metadata = {
     shortcut: '/favicon.svg',
     apple: '/logo-optimal.svg',
   },
+  openGraph: {
+    title: "Optimal Sports Management - College Athlete Marketing & Management",
+    description: "Professional sports management and marketing services for college athletes.",
+    images: [
+      {
+        url: '/output-onlinepngtools (5).png',
+        width: 1200,
+        height: 630,
+        alt: 'Optimal Sports Management',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Optimal Sports Management - College Athlete Marketing & Management",
+    description: "Professional sports management and marketing services for college athletes.",
+    images: ['/output-onlinepngtools (5).png'],
+  },
 };
 
 export default function RootLayout({
