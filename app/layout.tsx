@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "https://optimalsports.net/frontpage3.png",
+        url: "https://optimalsports.net/opengraph-image",
         width: 1200,
         height: 630,
         alt: "Optimal Sports Management",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: "Optimal Sports Management",
     description: "Professional sports management and marketing services for college athletes.",
-    images: ["https://optimalsports.net/frontpage3.png"],
+    images: ["https://optimalsports.net/twitter-image"],
   },
 };
 
