@@ -5,7 +5,8 @@ import AppShell from "@/components/AppShell";
 import ThemeProvider from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "Optimal Sports Management - College Athlete Marketing & Management",
+  metadataBase: new URL("https://optimalsports.net"),
+  title: "Optimal Sports Management",
   description:
     "Professional sports management and marketing services for college athletes.",
   icons: {
@@ -17,23 +18,26 @@ export const metadata: Metadata = {
     apple: '/logo-optimal.svg',
   },
   openGraph: {
-    title: "Optimal Sports Management - College Athlete Marketing & Management",
+    title: "Optimal Sports Management",
     description: "Professional sports management and marketing services for college athletes.",
+    url: "https://optimalsports.net",
+    siteName: "Optimal Sports Management",
+    locale: "en_US",
     images: [
       {
-        url: '/output-onlinepngtools (5).png',
+        url: "https://optimalsports.net/frontpage3.png",
         width: 1200,
         height: 630,
-        alt: 'Optimal Sports Management',
+        alt: "Optimal Sports Management",
       },
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Optimal Sports Management - College Athlete Marketing & Management",
+    title: "Optimal Sports Management",
     description: "Professional sports management and marketing services for college athletes.",
-    images: ['/output-onlinepngtools (5).png'],
+    images: ["https://optimalsports.net/frontpage3.png"],
   },
 };
 
