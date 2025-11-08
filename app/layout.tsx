@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://optimalsports.net"),
   title: "Optimal Sports Management",
   description:
-    "Professional sports management and marketing services for college athletes.",
+    "Optimal Sports Management is a full-service agency representing elite athletes. With a foundation built on trust, discipline, and purpose, we strive to elevate our clients and redefine the standard of excellence in sports representation.",
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -19,7 +19,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Optimal Sports Management",
-    description: "Professional sports management and marketing services for college athletes.",
+    description:
+      "Optimal Sports Management is a full-service agency representing elite athletes. With a foundation built on trust, discipline, and purpose, we strive to elevate our clients and redefine the standard of excellence in sports representation.",
     url: "https://optimalsports.net",
     siteName: "Optimal Sports Management",
     locale: "en_US",
@@ -36,7 +37,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: "Optimal Sports Management",
-    description: "Professional sports management and marketing services for college athletes.",
+    description:
+      "Optimal Sports Management is a full-service agency representing elite athletes. With a foundation built on trust, discipline, and purpose, we strive to elevate our clients and redefine the standard of excellence in sports representation.",
     images: ["https://optimalsports.net/twitter-image"],
   },
 };

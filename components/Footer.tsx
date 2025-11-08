@@ -26,7 +26,9 @@ export default function Footer() {
                 className="h-12 w-auto" 
               />
             </div>
-            <p className="text-gray-400 mb-4">Professional sports management and marketing services for college athletes.</p>
+            <p className="text-gray-400 mb-4">
+              Optimal Sports Management is a full-service agency representing elite athletes. With a foundation built on trust, discipline, and purpose, we strive to elevate our clients and redefine the standard of excellence in sports representation.
+            </p>
             <div className="flex gap-4 justify-center md:justify-start">
               <a href="https://instagram.com/optimalsportsmgmt" className="text-gray-400 hover:text-gray-300 transition-colors" aria-label="Instagram">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
