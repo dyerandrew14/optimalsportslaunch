@@ -61,7 +61,7 @@ export default function HomePage() {
           </div>
 
           <p className="text-gray-100 text-xl md:text-2xl max-w-3xl mx-auto mb-8 leading-relaxed">
-            Elevating athletes through professional representation and premium merchandise partnerships
+            Elevating athletes through professional representation
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
@@ -238,9 +238,6 @@ export default function HomePage() {
           <div className="mb-8 md:mb-16">
             <div className="text-center mb-8">
               <h3 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">How We Serve Our Athletes</h3>
-              <p className="text-gray-600 dark:text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-                Scroll to explore our services. The section pins to the screen and updates as you scroll.
-              </p>
             </div>
             <ServicesScroller />
             <div className="text-center mt-8">

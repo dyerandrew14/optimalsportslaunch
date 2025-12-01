@@ -2,6 +2,14 @@ import Link from "next/link";
 import Image from "next/image";
 import FounderCard from "@/components/FounderCard";
 import { kv } from "@/lib/redis";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 type Executive = {
   id: string;
