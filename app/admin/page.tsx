@@ -135,6 +135,9 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
     merchandise: []
   });
 
+  // Determine if athlete is NFL based on conference
+  const isNFL = formData.conference === 'NFL';
+
   // Image cropping state
   const [showCrop, setShowCrop] = useState(false);
   const [cropImage, setCropImage] = useState('');
@@ -329,7 +332,7 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
             
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                School *
+                School / Team *
               </label>
               <input
                 type="text"
@@ -337,10 +340,63 @@ function AthleteModal({ isOpen, onClose, athlete, onSave, mode }: AthleteModalPr
                 value={formData.school}
                 onChange={(e) => setFormData({ ...formData, school: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
-                placeholder="University Name"
+                placeholder={isNFL ? "NFL Team Name" : "University Name"}
               />
             </div>
             
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                League *
+              </label>
+              <select
+                required
+                value={isNFL ? 'NFL' : 'College'}
+                onChange={(e) => {
+                  const league = e.target.value;
+                  if (league === 'NFL') {
+                    setFormData({ 
+                      ...formData, 
+                      conference: 'NFL'
+                    });
+                  } else {
+                    setFormData({ 
+                      ...formData, 
+                      conference: formData.conference === 'NFL' ? '' : formData.conference
+                    });
+                  }
+                }}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+              >
+                <option value="College">College</option>
+                <option value="NFL">NFL</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Conference {isNFL ? '(Auto-set to NFL)' : '*'}
+            </label>
+            {isNFL ? (
+              <input
+                type="text"
+                value="NFL"
+                disabled
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg bg-gray-100 dark:bg-neutral-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+              />
+            ) : (
+              <input
+                type="text"
+                required={!isNFL}
+                value={formData.conference}
+                onChange={(e) => setFormData({ ...formData, conference: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-neutral-700 dark:text-white"
+                placeholder="Big Ten, SEC, ACC, etc."
+              />
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Jersey Number
