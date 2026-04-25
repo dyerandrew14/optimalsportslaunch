@@ -226,7 +226,7 @@ export default function HomePage() {
             <div>
               <VisionCarousel
                 slides={[
-                  { src: "/frontpage2.png", title: "Supporting Excellence", subtitle: "Empowering athletes to reach their full potential" },
+                  { src: "/images (1).JPEG", title: "Supporting Excellence", subtitle: "Empowering athletes to reach their full potential" },
                   { src: "/frontpage3.png", title: "Driven by Our Athletes", subtitle: "Relentless commitment to the vision of our players" },
                 ]}
                 intervalMs={6000}

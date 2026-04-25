@@ -32,29 +32,6 @@ export type Athlete = {
 
 export const athletes: Athlete[] = [
   {
-    slug: "jonah-coleman",
-    name: "Jonah Coleman",
-    position: "Running Back",
-    school: "University of Washington",
-    conference: "Big Ten",
-    classYear: "Junior",
-    number: "0",
-    bio: "Dynamic back with elite balance and contact courage. Versatile in the passing game with strong lower-body power.",
-    image: "/players/jonah_coleman.webp",
-    colors: { from: "from-purple-600", to: "to-blue-600" },
-    stats: {
-      passingYards: 0,
-      rushingYards: 0,
-      receivingYards: 0,
-      touchdowns: 0,
-      interceptions: 0,
-      tackles: 0,
-      sacks: 0,
-    },
-    hasMerchandise: false,
-    merchandise: [],
-  },
-  {
     slug: "madden-faraimo",
     name: "Madden Faraimo",
     position: "Linebacker",
